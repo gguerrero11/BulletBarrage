@@ -33,6 +33,7 @@ static const NSInteger pitchOffset = 30;
 @property (nonatomic, strong) SCNBox *ground;
 @property (nonatomic, strong) SCNNode *cameraNode;
 @property (nonatomic, strong) SCNNode *cameraHeadingRotationNode;
+@property (nonatomic, strong) SCNNode *cameraPitchRotationNode;
 
 
 
@@ -146,7 +147,7 @@ static const NSInteger pitchOffset = 30;
     
     //create a scene
     SCNScene *scene = [SCNScene scene];
-
+    
     //self.sceneView.allowsCameraControl = true;
     
     SCNCamera *camera = [SCNCamera camera];
@@ -158,8 +159,13 @@ static const NSInteger pitchOffset = 30;
     //self.cameraNode.position = SCNVector3Make(0, 0, [self meterToAngstrom:self.mapView.camera.altitude]);
     self.cameraNode.position = SCNVector3Make(0, 20, 0);
     self.cameraNode.rotation = SCNVector4Make(1, 0, 0, 270 * (M_PI / 180));
+    
     self.cameraHeadingRotationNode = [SCNNode node];
-    self.cameraHeadingRotationNode.camera = camera;
+    [self.cameraHeadingRotationNode addChildNode:self.cameraPitchRotationNode];
+    
+    self.cameraPitchRotationNode = [SCNNode node];
+    self.cameraPitchRotationNode.camera = camera;
+    
     [self.cameraNode addChildNode:self.cameraHeadingRotationNode];
     
     [scene.rootNode addChildNode:self.cameraNode];
@@ -172,7 +178,7 @@ static const NSInteger pitchOffset = 30;
     self.ground = [SCNBox boxWithWidth:10 height:.1 length:10 chamferRadius:0];
     self.ground.firstMaterial.diffuse.contents = [UIColor brownColor];
     
-
+    
     SCNNode *cubeNode = [SCNNode nodeWithGeometry:self.cube];
     //SCNNode *groundNode = [SCNNode nodeWithGeometry:self.ground];
     [scene.rootNode addChildNode:cubeNode];
@@ -183,7 +189,7 @@ static const NSInteger pitchOffset = 30;
     // Add scene to SceneView
     self.sceneView.scene = scene;
     [self.view addSubview:self.sceneView];
-
+    
     
 }
 
@@ -236,30 +242,7 @@ static const NSInteger pitchOffset = 30;
     }
 }
 
-- (void)drawLine {
-    
-    //    // remove polyline if one exists
-    //    [self.mapView removeOverlay:self.polyline];
-    //
-    //    // create an array of coordinates from allPins
-    //    CLLocationCoordinate2D coordinates[self.allPins.count];
-    //    int i = 0;
-    //    for (Pin *currentPin in self.allPins) {
-    //        coordinates[i] = currentPin.coordinate;
-    //        i++;
-    //    }
-    //
-    //    // create a polyline with all cooridnates
-    //    MKPolyline *polyline = [MKPolyline polylineWithCoordinates:coordinates count:self.allPins.count];
-    //    [self.mapView addOverlay:polyline];
-    //    self.polyline = polyline;
-    //
-    //    // create an MKPolylineView and add it to the map view
-    //    self.lineView = [[MKPolylineView alloc]initWithPolyline:self.polyline];
-    //    self.lineView.strokeColor = [UIColor redColor];
-    //    self.lineView.lineWidth = 5;
-    
-}
+
 
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
@@ -321,7 +304,7 @@ static const NSInteger pitchOffset = 30;
         self.myLocation = lastLocation;
         //[mapView setCamera:mapCamera animated:YES];
         
-
+        
         [self.locationManager stopUpdatingLocation];
     }
 }
