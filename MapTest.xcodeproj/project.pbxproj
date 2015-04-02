@@ -9,11 +9,12 @@
 /* Begin PBXBuildFile section */
 		49B9DBBE1ACDD519003EA46E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DBBD1ACDD519003EA46E /* main.m */; };
 		49B9DBC11ACDD519003EA46E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DBC01ACDD519003EA46E /* AppDelegate.m */; };
-		49B9DBC41ACDD519003EA46E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DBC31ACDD519003EA46E /* ViewController.m */; };
 		49B9DBC71ACDD519003EA46E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49B9DBC51ACDD519003EA46E /* Main.storyboard */; };
 		49B9DBC91ACDD519003EA46E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 49B9DBC81ACDD519003EA46E /* Images.xcassets */; };
 		49B9DBCC1ACDD519003EA46E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49B9DBCA1ACDD519003EA46E /* LaunchScreen.xib */; };
 		49B9DBD81ACDD519003EA46E /* MapTestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DBD71ACDD519003EA46E /* MapTestTests.m */; };
+		49B9DBEB1ACDDB2A003EA46E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DBEA1ACDDB2A003EA46E /* MapViewController.m */; };
+		49B9DBEE1ACDDB3E003EA46E /* Target.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DBED1ACDDB3E003EA46E /* Target.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,14 +33,16 @@
 		49B9DBBD1ACDD519003EA46E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		49B9DBBF1ACDD519003EA46E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		49B9DBC01ACDD519003EA46E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		49B9DBC21ACDD519003EA46E /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		49B9DBC31ACDD519003EA46E /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		49B9DBC61ACDD519003EA46E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		49B9DBC81ACDD519003EA46E /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		49B9DBCB1ACDD519003EA46E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		49B9DBD11ACDD519003EA46E /* MapTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MapTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		49B9DBD61ACDD519003EA46E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		49B9DBD71ACDD519003EA46E /* MapTestTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapTestTests.m; sourceTree = "<group>"; };
+		49B9DBE91ACDDB2A003EA46E /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
+		49B9DBEA1ACDDB2A003EA46E /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
+		49B9DBEC1ACDDB3E003EA46E /* Target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Target.h; sourceTree = "<group>"; };
+		49B9DBED1ACDDB3E003EA46E /* Target.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Target.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,8 +86,10 @@
 			children = (
 				49B9DBBF1ACDD519003EA46E /* AppDelegate.h */,
 				49B9DBC01ACDD519003EA46E /* AppDelegate.m */,
-				49B9DBC21ACDD519003EA46E /* ViewController.h */,
-				49B9DBC31ACDD519003EA46E /* ViewController.m */,
+				49B9DBE91ACDDB2A003EA46E /* MapViewController.h */,
+				49B9DBEA1ACDDB2A003EA46E /* MapViewController.m */,
+				49B9DBEC1ACDDB3E003EA46E /* Target.h */,
+				49B9DBED1ACDDB3E003EA46E /* Target.m */,
 				49B9DBC51ACDD519003EA46E /* Main.storyboard */,
 				49B9DBC81ACDD519003EA46E /* Images.xcassets */,
 				49B9DBCA1ACDD519003EA46E /* LaunchScreen.xib */,
@@ -219,8 +224,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49B9DBC41ACDD519003EA46E /* ViewController.m in Sources */,
+				49B9DBEB1ACDDB2A003EA46E /* MapViewController.m in Sources */,
 				49B9DBC11ACDD519003EA46E /* AppDelegate.m in Sources */,
+				49B9DBEE1ACDDB3E003EA46E /* Target.m in Sources */,
 				49B9DBBE1ACDD519003EA46E /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -412,6 +418,7 @@
 				49B9DBDD1ACDD519003EA46E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		49B9DBDE1ACDD519003EA46E /* Build configuration list for PBXNativeTarget "MapTestTests" */ = {
 			isa = XCConfigurationList;
@@ -420,6 +427,7 @@
 				49B9DBE01ACDD519003EA46E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
