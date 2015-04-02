@@ -22,12 +22,12 @@ static const NSInteger pitchOffset = 30;
 
 @property (nonatomic,strong) CLLocation *myLocation;
 @property (nonatomic,strong) MKMapCamera *targetCamera;
-@property (weak, nonatomic) UIButton *fireButton;
+@property (strong, nonatomic) UIButton *fireButton;
 @property (nonatomic,strong) MKPolyline *polyline;
 @property (nonatomic, strong) UILabel *pitchLabelData;
 
 // SceneKit Properties
-@property (weak, nonatomic) SCNView *sceneView;
+@property (strong, nonatomic) SCNView *sceneView;
 @property (nonatomic, strong) SCNNode *cubeNode;
 @property (nonatomic, strong) SCNBox *cube;
 @property (nonatomic, strong) SCNBox *ground;
@@ -47,8 +47,9 @@ static const NSInteger pitchOffset = 30;
     [self setUpMotionManager];
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
-    [self setupSceneKitView];
     [self setUpDataView];
+    [self setupSceneKitView];
+    
     
     // Create Dummy Data
     CLLocation *dummyLocale1 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.764, -111.896)
@@ -63,8 +64,8 @@ static const NSInteger pitchOffset = 30;
     
     Target *testTarget1 = [[Target alloc]initWithTargetNumber:@"1" location:dummyLocale1 fromUserLocation:self.myLocation];
     Target *testTarget2 = [[Target alloc]initWithTargetNumber:@"2" location:dummyLocale2 fromUserLocation:self.myLocation];
-    [self.mainMapView addAnnotation:testTarget1];
-    [self.mainMapView addAnnotation:testTarget2];
+    [self.mapView addAnnotation:testTarget1];
+    [self.mapView addAnnotation:testTarget2];
     
     self.targetCamera = [MKMapCamera cameraLookingAtCenterCoordinate:testTarget2.coordinate fromEyeCoordinate:self.myLocation.coordinate eyeAltitude:10];
     
@@ -122,24 +123,30 @@ static const NSInteger pitchOffset = 30;
 
 - (void)showMainMapView {
     
-    self.mainMapView = [[MKMapView alloc] initWithFrame:self.view.frame];
-    self.mainMapView.backgroundColor = [UIColor redColor];
-    [self.view addSubview:self.mainMapView];
-    self.mainMapView.mapType = MKMapTypeStandard;
-    self.mainMapView.delegate = self;
-    self.mainMapView.showsUserLocation = YES; // Must be YES in order for the MKMapView protocol to fire.
+    self.mapView = [[MKMapView alloc] initWithFrame:self.view.frame];
+    self.mapView.backgroundColor = [UIColor redColor];
+    [self.view addSubview:self.mapView];
+    self.mapView.mapType = MKMapTypeStandard;
+    self.mapView.delegate = self;
+    self.mapView.rotateEnabled = NO;
+    self.mapView.scrollEnabled = NO;
+    self.mapView.showsUserLocation = YES; // Must be YES in order for the MKMapView protocol to fire.
     
     MKCoordinateSpan span = MKCoordinateSpanMake(0.14, 0.14);
     MKCoordinateRegion region = MKCoordinateRegionMake(self.myLocation.coordinate, span);
     
-    [self.mainMapView setRegion:region animated:YES];
+    [self.mapView setRegion:region animated:YES];
 }
 
 #pragma mark SceneKit methods
 - (void)setupSceneKitView {
+    self.sceneView = [[SCNView alloc]initWithFrame:self.view.frame];
     self.sceneView.backgroundColor = [UIColor clearColor];
+    self.sceneView.userInteractionEnabled = NO;
+    
     //create a scene
     SCNScene *scene = [SCNScene scene];
+
     //self.sceneView.allowsCameraControl = true;
     
     SCNCamera *camera = [SCNCamera camera];
@@ -149,32 +156,34 @@ static const NSInteger pitchOffset = 30;
     self.cameraNode = [SCNNode node];
     //self.cameraNode.camera = camera;
     //self.cameraNode.position = SCNVector3Make(0, 0, [self meterToAngstrom:self.mapView.camera.altitude]);
-    self.cameraNode.position = SCNVector3Make(0, 50, 0);
+    self.cameraNode.position = SCNVector3Make(0, 20, 0);
     self.cameraNode.rotation = SCNVector4Make(1, 0, 0, 270 * (M_PI / 180));
     self.cameraHeadingRotationNode = [SCNNode node];
     self.cameraHeadingRotationNode.camera = camera;
     [self.cameraNode addChildNode:self.cameraHeadingRotationNode];
     
-    
     [scene.rootNode addChildNode:self.cameraNode];
     
     // Create cube
-    self.cube = [SCNBox boxWithWidth:3 height:6 length:6 chamferRadius:0];
+    self.cube = [SCNBox boxWithWidth:1 height:1 length:1 chamferRadius:.2];
     self.cube.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
     
     // Create ground
     self.ground = [SCNBox boxWithWidth:10 height:.1 length:10 chamferRadius:0];
     self.ground.firstMaterial.diffuse.contents = [UIColor brownColor];
     
+
     SCNNode *cubeNode = [SCNNode nodeWithGeometry:self.cube];
-    SCNNode *groundNode = [SCNNode nodeWithGeometry:self.ground];
+    //SCNNode *groundNode = [SCNNode nodeWithGeometry:self.ground];
     [scene.rootNode addChildNode:cubeNode];
-    [scene.rootNode addChildNode:groundNode];
+    //[scene.rootNode addChildNode:groundNode];
     self.cubeNode = cubeNode;
     
     
     // Add scene to SceneView
     self.sceneView.scene = scene;
+    [self.view addSubview:self.sceneView];
+
     
 }
 
@@ -201,6 +210,12 @@ static const NSInteger pitchOffset = 30;
     self.pitchLabelData.textAlignment = NSTextAlignmentCenter;
     self.pitchLabelData.textColor = [UIColor blackColor];
     
+    // Set up fire button
+    self.fireButton = [[UIButton alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height - 100, self.view.frame.size.width, 40)];
+    [self.fireButton setTitle:@"Fire!" forState:UIControlStateNormal];
+    [self.fireButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    [self.fireButton addTarget:self action:@selector(fireButtonPressed:) forControlEvents:UIControlEventTouchDown];
+    [self.view addSubview:self.fireButton];
     
 }
 
@@ -212,8 +227,8 @@ static const NSInteger pitchOffset = 30;
     
     //NSLog(@"%f", self.mapView.camera.heading);
     //NSLog(@"TARGET %f",targetCamera.heading);
-    if ( self.mainMapView.camera.heading > self.targetCamera.heading - handicap &&
-        self.mainMapView.camera.heading < self.targetCamera.heading + handicap) {
+    if ( self.mapView.camera.heading > self.targetCamera.heading - handicap &&
+        self.mapView.camera.heading < self.targetCamera.heading + handicap) {
         
         NSLog(@"BOOM! HIT!");
     } else {
@@ -256,15 +271,15 @@ static const NSInteger pitchOffset = 30;
                                        newHeading.trueHeading : newHeading.magneticHeading);
     
     self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 0, 1, theHeading * -(M_PI/180));
-    self.cameraNode.position = SCNVector3Make(0, self.mainMapView.camera.altitude / 6, 0);
+    self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60) / 6, 0);
     //NSLog(@"%f", self.cameraNode.position.y);
-    //NSLog(@"%f", self.mapView.camera.altitude);
+    NSLog(@"%f", self.mapView.camera.altitude);
     
     //    NSLog(@"heading %f", newHeading.trueHeading);
     //   NSLog(@"True Heading %f", theHeading);
-    //[self.mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
+    [self.mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
     
-    self.mainMapView.camera.heading = theHeading;
+    //self.mapView.camera.heading = theHeading;
     //self.mapView.camera.pitch = 77;
     //self.mapView.camera.altitude = 62;
     
@@ -303,10 +318,10 @@ static const NSInteger pitchOffset = 30;
     
     if(accuracy < 10.0) {
         
-        //self.myLocation = lastLocation;
+        self.myLocation = lastLocation;
         //[mapView setCamera:mapCamera animated:YES];
         
-        self.mainMapView.userTrackingMode = MKUserTrackingModeFollowWithHeading;
+
         [self.locationManager stopUpdatingLocation];
     }
 }
