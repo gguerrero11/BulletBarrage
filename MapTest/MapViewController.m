@@ -160,12 +160,17 @@ static const NSInteger pitchOffset = 30;
     self.cameraNode.position = SCNVector3Make(0, 20, 0);
     self.cameraNode.rotation = SCNVector4Make(1, 0, 0, 270 * (M_PI / 180));
     
-    self.cameraHeadingRotationNode = [SCNNode node];
-    [self.cameraHeadingRotationNode addChildNode:self.cameraPitchRotationNode];
-    
+    // Create a pitch node for camera's Heading node
     self.cameraPitchRotationNode = [SCNNode node];
     self.cameraPitchRotationNode.camera = camera;
     
+    // Create heading node and attach Pitch rotation node to it.
+    self.cameraHeadingRotationNode = [SCNNode node];
+    [self.cameraHeadingRotationNode addChildNode:self.cameraPitchRotationNode];
+    
+    // We now have separate controllable nodes for heading and pitch when we change them.
+    // Why? Because rotation is controlled per-axis basis. Each VectorMake only controls rotation for ONE axis.
+    // Having two with a parent hierarchy, allows to moves them independently, although the order of parenting does matter.
     [self.cameraNode addChildNode:self.cameraHeadingRotationNode];
     
     [scene.rootNode addChildNode:self.cameraNode];
@@ -255,8 +260,8 @@ static const NSInteger pitchOffset = 30;
     
     self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 0, 1, theHeading * -(M_PI/180));
     self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60) / 6, 0);
-    //NSLog(@"%f", self.cameraNode.position.y);
-    NSLog(@"%f", self.mapView.camera.altitude);
+    NSLog(@"%@", self.cameraHeadingRotationNode);
+    //NSLog(@"%f", self.mapView.camera.altitude);
     
     //    NSLog(@"heading %f", newHeading.trueHeading);
     //   NSLog(@"True Heading %f", theHeading);
