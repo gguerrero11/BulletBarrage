@@ -1,5 +1,5 @@
 //
-//  ProfileviewControllerViewController.h
+//  ProfileTableViewCell.h
 //  MapTest
 //
 //  Created by Gabriel Guerrero on 4/3/15.
@@ -8,9 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ProfileviewControllerViewController : UIViewController
-{
-    NSMutableDictionary *selectedIndexes;
-}
+@interface ProfileTableViewCell : UITableViewCell
 
 @end

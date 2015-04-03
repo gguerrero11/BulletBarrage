@@ -7,6 +7,7 @@
 //
 
 #import "ProfileViewDataSource.h"
+#import "ProfileTableViewCell.h"
 
 static NSString *cellIdentifier = @"profileCell";
 
@@ -20,7 +21,7 @@ static NSString *cellIdentifier = @"profileCell";
 
 - (void)registerTableView:(UITableView *)tableView {
     self.tableView = tableView;
-    [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:cellIdentifier];
+    [tableView registerClass:[ProfileTableViewCell class] forCellReuseIdentifier:cellIdentifier];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -29,7 +30,7 @@ static NSString *cellIdentifier = @"profileCell";
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    ProfileTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     cell.textLabel.text = @"Cell";
     return cell;
 }

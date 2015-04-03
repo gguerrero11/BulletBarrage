@@ -15,16 +15,28 @@ static int paddingFromGroupTable = 35;
 
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) ProfileViewDataSource *dataSource;
-@property (nonatomic) float unselectedCellSize;
-@property (nonatomic) float selectedCellSize;
+@property (nonatomic) float unselectedCellHeight;
+@property (nonatomic) float selectedCellHeight;
+
+- (BOOL)cellIsSelected:(NSIndexPath *)indexPath;
 
 @end
 
 @implementation ProfileviewControllerViewController
 
+- (BOOL)cellIsSelected:(NSIndexPath *)indexPath {
+    // Return whether the cell at the specified index path is selected or not
+    NSNumber *selectedIndex = [selectedIndexes objectForKey:indexPath];
+    return selectedIndex == nil ? FALSE : [selectedIndex boolValue];
+}
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"Profile";
+    
+    // init array for selecting cells
+    selectedIndexes = [NSMutableDictionary new];
     
     // table datasource stuff
     self.dataSource = [ProfileViewDataSource new];
@@ -43,26 +55,36 @@ static int paddingFromGroupTable = 35;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    self.selectedCellSize = self.view.frame.size.width;
-    if (indexPath.row == 0) {
-        return self.selectedCellSize;
+    self.selectedCellHeight = self.view.frame.size.width;
+    
+    if ([self cellIsSelected:indexPath]) {
+
+        return self.selectedCellHeight;
+        
     }
-    NSLog(@"height %f", self.view.frame.size.height);
-        NSLog(@"width %f", self.view.frame.size.width);
-    
-    NSLog(@"TFrame %f", self.navigationController.navigationBar.frame.size.height);
-    NSLog(@"TBounds %f", self.tabBarController.tabBar.frame.size.height);
-    
     float remainingFrameSize =  self.view.frame.size.height -
                                 self.navigationController.navigationBar.frame.size.height -
                                 self.tabBarController.tabBar.frame.size.height -
                                 self.view.frame.size.width -
                                 20;
+    self.unselectedCellHeight = remainingFrameSize / 2;
+    return self.unselectedCellHeight;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Deselect cell
+    [tableView deselectRowAtIndexPath:indexPath animated:TRUE];
     
-    NSLog(@"%f", remainingFrameSize);
+    // Toggle 'selected' state
+    BOOL isSelected = ![self cellIsSelected:indexPath];
     
-    self.unselectedCellSize = remainingFrameSize / 2;
-    return self.unselectedCellSize;
+    // Store cell 'selected' state keyed on indexPath
+    NSNumber *selectedIndex = [NSNumber numberWithBool:isSelected];
+    [selectedIndexes setObject:selectedIndex forKey:indexPath];
+    
+    // This is where magic happens...
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
 }
 
 /*
