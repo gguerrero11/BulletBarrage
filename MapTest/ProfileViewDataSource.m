@@ -32,6 +32,7 @@ static NSString *cellIdentifier = @"profileCell";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     ProfileTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     cell.textLabel.text = @"Cell";
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     return cell;
 }
 

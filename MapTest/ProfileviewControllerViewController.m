@@ -48,6 +48,8 @@ static int paddingFromGroupTable = 35;
     // Dispose of any resources that can be recreated.
 }
 
+
+#pragma mark TableView delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     self.selectedCellHeight = self.view.frame.size.width;
     
@@ -67,7 +69,8 @@ static int paddingFromGroupTable = 35;
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // Deselect cell
-    [tableView deselectRowAtIndexPath:indexPath animated:TRUE];
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
     self.selectedIndex = indexPath.row;
     
@@ -75,6 +78,8 @@ static int paddingFromGroupTable = 35;
     [self.tableView beginUpdates];
     [self.tableView endUpdates];
 }
+
+
 
 /*
  #pragma mark - Navigation
