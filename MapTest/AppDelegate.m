@@ -25,6 +25,7 @@
     mapView.tabBarItem.image = [UIImage imageNamed:@"Mortar Filled-50"];
     
     UINavigationController *navBarMapView = [[UINavigationController alloc]initWithRootViewController:mapView];
+    navBarMapView.navigationBarHidden = YES;
     
     LeaderboardViewController *leaderboardVC = [LeaderboardViewController new];
     leaderboardVC.tabBarItem.title = @"Leaderboards";

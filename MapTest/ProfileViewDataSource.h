@@ -1,5 +1,5 @@
 //
-//  LeaderboardDataSource.h
+//  ProfileViewDataSource.h
 //  MapTest
 //
 //  Created by Gabriel Guerrero on 4/3/15.
@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
-@interface LeaderboardDataSource : NSObject  <UITableViewDataSource>
+@interface ProfileViewDataSource : NSObject   <UITableViewDataSource>
 
 - (void)registerTableView:(UITableView *)tableView;
 

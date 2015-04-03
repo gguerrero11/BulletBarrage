@@ -18,6 +18,7 @@
 		49B9DC321ACF2A9A003EA46E /* LeaderboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DC311ACF2A9A003EA46E /* LeaderboardViewController.m */; };
 		49B9DC381ACF2BEA003EA46E /* LeaderboardDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DC371ACF2BEA003EA46E /* LeaderboardDataSource.m */; };
 		49B9DC3B1ACF2D94003EA46E /* ProfileviewControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DC3A1ACF2D94003EA46E /* ProfileviewControllerViewController.m */; };
+		49B9DC411ACF394E003EA46E /* ProfileViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DC401ACF394E003EA46E /* ProfileViewDataSource.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,8 @@
 		49B9DC371ACF2BEA003EA46E /* LeaderboardDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LeaderboardDataSource.m; path = ../LeaderboardDataSource.m; sourceTree = "<group>"; };
 		49B9DC391ACF2D94003EA46E /* ProfileviewControllerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileviewControllerViewController.h; sourceTree = "<group>"; };
 		49B9DC3A1ACF2D94003EA46E /* ProfileviewControllerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileviewControllerViewController.m; sourceTree = "<group>"; };
+		49B9DC3F1ACF394E003EA46E /* ProfileViewDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileViewDataSource.h; sourceTree = "<group>"; };
+		49B9DC401ACF394E003EA46E /* ProfileViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewDataSource.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +162,8 @@
 			children = (
 				49B9DC391ACF2D94003EA46E /* ProfileviewControllerViewController.h */,
 				49B9DC3A1ACF2D94003EA46E /* ProfileviewControllerViewController.m */,
+				49B9DC3F1ACF394E003EA46E /* ProfileViewDataSource.h */,
+				49B9DC401ACF394E003EA46E /* ProfileViewDataSource.m */,
 			);
 			name = Profile;
 			sourceTree = "<group>";
@@ -264,6 +269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				49B9DBEB1ACDDB2A003EA46E /* MapViewController.m in Sources */,
+				49B9DC411ACF394E003EA46E /* ProfileViewDataSource.m in Sources */,
 				49B9DC3B1ACF2D94003EA46E /* ProfileviewControllerViewController.m in Sources */,
 				49B9DC321ACF2A9A003EA46E /* LeaderboardViewController.m in Sources */,
 				49B9DC381ACF2BEA003EA46E /* LeaderboardDataSource.m in Sources */,

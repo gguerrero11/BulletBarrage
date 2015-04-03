@@ -1,22 +1,22 @@
 //
-//  LeaderboardDataSource.m
+//  ProfileViewDataSource.m
 //  MapTest
 //
 //  Created by Gabriel Guerrero on 4/3/15.
 //  Copyright (c) 2015 Gabe Guerrero. All rights reserved.
 //
 
-#import "LeaderboardDataSource.h"
+#import "ProfileViewDataSource.h"
 
-static NSString *cellIdentifier = @"leaderboardCell";
+static NSString *cellIdentifier = @"profileCell";
 
-@interface LeaderboardDataSource ()
+@interface ProfileViewDataSource ()
 
-@property (nonatomic,strong) UITableView *tableView;
+@property (strong, nonatomic) UITableView *tableView;
 
 @end
 
-@implementation LeaderboardDataSource
+@implementation ProfileViewDataSource
 
 - (void)registerTableView:(UITableView *)tableView {
     self.tableView = tableView;
@@ -24,13 +24,17 @@ static NSString *cellIdentifier = @"leaderboardCell";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 2;
+    return 3;
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    cell.textLabel.text = @"Cell";
     return cell;
 }
+
+
+
 
 @end
