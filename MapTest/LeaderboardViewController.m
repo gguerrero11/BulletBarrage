@@ -18,9 +18,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    self.title = @"Title";
+    
     self.tableView = [[UITableView alloc]initWithFrame:self.view.frame];
     [self.view addSubview:self.tableView];
+    
 }
 
 - (void)didReceiveMemoryWarning {

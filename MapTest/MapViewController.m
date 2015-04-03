@@ -271,6 +271,8 @@ static const NSInteger pitchOffset = 30;
 
 
 
+
+
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 0)
         return;
