@@ -187,11 +187,11 @@ static const NSInteger pitchOffset = 30;
     [scene.rootNode addChildNode:self.cameraHeadingRotationNode];
     
     // Create cube
-    self.cube = [SCNBox boxWithWidth:1 height:1 length:1 chamferRadius:.2];
+    self.cube = [SCNBox boxWithWidth:.3 height:.3 length:.3 chamferRadius:0];
     self.cube.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
     
     // Create ground
-    self.ground = [SCNBox boxWithWidth:3 height:.1 length:3 chamferRadius:0];
+    self.ground = [SCNBox boxWithWidth:.6 height:0 length:.6 chamferRadius:0];
     self.ground.firstMaterial.diffuse.contents = [UIColor brownColor];
     
     //SCNFloor use later
@@ -278,7 +278,7 @@ static const NSInteger pitchOffset = 30;
     //         self.cameraHeadingRotationNode.eulerAngles = SCNVector3Make(0, 0, theHeading * -(M_PI/180));
     //         self.cameraTargetNode.eulerAngles = SCNVector3Make(self.mapView.camera.pitch * (M_PI/180), 0, 0);
     
-    self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * -(M_PI/180));
+    self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, newHeading.magneticHeading * -(M_PI/180));
     self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, self.mapView.camera.pitch * (M_PI/180));
     
     
