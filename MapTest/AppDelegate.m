@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "MapViewController.h"
+#import "LeaderboardViewController.h"
 
 @interface AppDelegate ()
 
@@ -19,7 +20,8 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
     
-    self.window.rootViewController = [MapViewController new];
+//    self.window.rootViewController = [MapViewController new];
+        self.window.rootViewController = [LeaderboardViewController new];
     return YES;
 }
 
