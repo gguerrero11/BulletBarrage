@@ -17,26 +17,20 @@ static int paddingFromGroupTable = 35;
 @property (nonatomic, strong) ProfileViewDataSource *dataSource;
 @property (nonatomic) float unselectedCellHeight;
 @property (nonatomic) float selectedCellHeight;
+@property (nonatomic) NSInteger selectedIndex;
 
-- (BOOL)cellIsSelected:(NSIndexPath *)indexPath;
+
 
 @end
 
 @implementation ProfileviewControllerViewController
-
-- (BOOL)cellIsSelected:(NSIndexPath *)indexPath {
-    // Return whether the cell at the specified index path is selected or not
-    NSNumber *selectedIndex = [selectedIndexes objectForKey:indexPath];
-    return selectedIndex == nil ? FALSE : [selectedIndex boolValue];
-}
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"Profile";
     
     // init array for selecting cells
-    selectedIndexes = [NSMutableDictionary new];
+
     
     // table datasource stuff
     self.dataSource = [ProfileViewDataSource new];
@@ -57,7 +51,7 @@ static int paddingFromGroupTable = 35;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     self.selectedCellHeight = self.view.frame.size.width;
     
-    if ([self cellIsSelected:indexPath]) {
+    if (indexPath.row == self.selectedIndex) {
 
         return self.selectedCellHeight;
         
@@ -75,12 +69,7 @@ static int paddingFromGroupTable = 35;
     // Deselect cell
     [tableView deselectRowAtIndexPath:indexPath animated:TRUE];
     
-    // Toggle 'selected' state
-    BOOL isSelected = ![self cellIsSelected:indexPath];
-    
-    // Store cell 'selected' state keyed on indexPath
-    NSNumber *selectedIndex = [NSNumber numberWithBool:isSelected];
-    [selectedIndexes setObject:selectedIndex forKey:indexPath];
+    self.selectedIndex = indexPath.row;
     
     // This is where magic happens...
     [self.tableView beginUpdates];

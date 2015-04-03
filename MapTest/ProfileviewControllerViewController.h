@@ -9,8 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface ProfileviewControllerViewController : UIViewController
-{
-    NSMutableDictionary *selectedIndexes;
-}
+
 
 @end
