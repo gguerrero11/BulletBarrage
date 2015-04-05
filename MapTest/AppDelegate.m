@@ -8,6 +8,8 @@
 
 #import "AppDelegate.h"
 #import "MapViewController.h"
+#import "LeaderboardViewController.h"
+#import "ProfileviewControllerViewController.h"
 
 @interface AppDelegate ()
 
@@ -17,9 +19,32 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
     
-    self.window.rootViewController = [MapViewController new];
+    MapViewController *mapView = [MapViewController new];
+    mapView.tabBarItem.title = @"Select Target";
+    mapView.tabBarItem.image = [UIImage imageNamed:@"Mortar Filled-50"];
+    
+    UINavigationController *navBarMapView = [[UINavigationController alloc]initWithRootViewController:mapView];
+    navBarMapView.navigationBarHidden = YES;
+    
+    LeaderboardViewController *leaderboardVC = [LeaderboardViewController new];
+    leaderboardVC.tabBarItem.title = @"Leaderboards";
+    leaderboardVC.tabBarItem.image = [UIImage imageNamed:@"Medal-50"];
+    
+    UINavigationController *navBarLeaderboard = [[UINavigationController alloc]initWithRootViewController:leaderboardVC];
+    
+    ProfileviewControllerViewController *profileVC = [ProfileviewControllerViewController new];
+    profileVC.tabBarItem.title = @"Profile";
+    profileVC.tabBarItem.image = [UIImage imageNamed:@"Military Backpack Radio Filled-50"];
+    
+    UINavigationController *navBarProfileVC = [[UINavigationController alloc]initWithRootViewController:profileVC];
+    
+    UITabBarController *tabBarController = [UITabBarController new];
+    tabBarController.viewControllers = @[navBarLeaderboard, navBarMapView, navBarProfileVC];
+    tabBarController.selectedIndex = 1;
+    
+    self.window.rootViewController = tabBarController;
+    
     return YES;
 }
 

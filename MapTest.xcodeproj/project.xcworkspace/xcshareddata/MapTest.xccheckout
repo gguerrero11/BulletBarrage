@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>DF9C1BCF-9E7D-43E0-A068-803B56B8D718</string>
+	<key>IDESourceControlProjectName</key>
+	<string>MapTest</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>1DD9A7475344D6A0149F75B810DBD77D341B0582</key>
+		<string>https://github.com/gguerrero11/BulletBarrage.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>MapTest.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>1DD9A7475344D6A0149F75B810DBD77D341B0582</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/gguerrero11/BulletBarrage.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>1DD9A7475344D6A0149F75B810DBD77D341B0582</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>1DD9A7475344D6A0149F75B810DBD77D341B0582</string>
+			<key>IDESourceControlWCCName</key>
+			<string>MapTest</string>
+		</dict>
+	</array>
+</dict>
+</plist>
