@@ -10,6 +10,7 @@
 #import "MapViewController.h"
 #import "LeaderboardViewController.h"
 #import "ProfileviewControllerViewController.h"
+#import <Parse/Parse.h>
 
 @interface AppDelegate ()
 
@@ -19,6 +20,12 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    [Parse setApplicationId:@"7ueGpbdEj9VRrPEEjiE81T98AZ7WMDiI3xEwVpnx"
+                  clientKey:@"OJgDQPnkJz6i2bsZWYomMLeuKAUzh2n5SOcn0Ciu"];
+    
+    // [Optional] Track statistics around application opens.
+    [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
     MapViewController *mapView = [MapViewController new];
     mapView.tabBarItem.title = @"Select Target";
