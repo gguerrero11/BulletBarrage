@@ -91,7 +91,13 @@ static const NSInteger handicap = 1;
             //            float offsetY = motion.attitude.pitch * self.view.frame.size.height;
             self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[self convertToDegrees:attitude.pitch]];
             
-            //self.mapView.camera.pitch = [self convertToDegrees:attitude.pitch];
+            // Set pitch limit for map camera
+            if ([self convertToDegrees:attitude.pitch] > 75){
+                self.mapView.camera.pitch = 75;
+            } else {
+            self.mapView.camera.pitch = [self convertToDegrees:attitude.pitch];
+            }
+            
             //self.mapView.camera.altitude = 200;
             //self.mapView.camera.heading = [self convertToDegrees:attitude.yaw];
             
@@ -153,7 +159,7 @@ static const NSInteger handicap = 1;
 #pragma mark SceneKit methods
 - (void)setupSceneKitView {
     // Init the scene and default lighting
-    self.sceneView = [[SCNView alloc]initWithFrame:self.view.frame];
+    self.sceneView = [[SCNView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height/2)];
     self.sceneView.backgroundColor = [UIColor clearColor];
     self.sceneView.userInteractionEnabled = NO;
     self.sceneView.autoenablesDefaultLighting = YES;
@@ -287,18 +293,17 @@ static const NSInteger handicap = 1;
     self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * -(M_PI/180));
     self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, self.mapView.camera.pitch * (M_PI/180));
     
+    self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60)/17 + 1.1 ,0);
+    
+    [self.mapView setUserTrackingMode:MKUserTrackingModeFollow];
+    
+    self.mapView.camera.heading = theHeading;
+    self.mapView.camera.altitude = 62;
+//    self.mapView.camera.pitch = 77;
 
-
     
-    self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/30)/6+.7 ,0);
-    
-    [self.mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
-    
-    //self.mapView.camera.heading = theHeading;
-    //self.mapView.camera.altitude = 62;
-    
-    //    NSLog(@"Altitude %f", self.mapView.camera.altitude);
-    //    NSLog(@"Pitch %f", self.mapView.camera.pitch);
+        NSLog(@"Altitude %f", self.mapView.camera.altitude);
+        NSLog(@"Pitch %f", self.mapView.camera.pitch);
     
     
     /*

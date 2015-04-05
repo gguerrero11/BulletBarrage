@@ -6,6 +6,18 @@
 //  Copyright (c) 2015 Gabe Guerrero. All rights reserved.
 //
 
+/* APP NAMES IDEAS
+ Shell Storm
+ Shell Scatter
+ Shell Strike
+ Bullet Barrage
+ Bullet Blast
+ Bullet Bombardment
+ Bullet Blitz
+ Bomb Blitz
+ Ammo _____
+ */
+
 #import "AppDelegate.h"
 #import "MapViewController.h"
 #import "LeaderboardViewController.h"
