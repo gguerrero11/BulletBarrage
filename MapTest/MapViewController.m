@@ -13,7 +13,7 @@
 @import SceneKit;
 
 static const NSInteger handicap = 1;
-static const NSInteger pitchOffset = 30;
+
 ;
 
 @interface MapViewController ()

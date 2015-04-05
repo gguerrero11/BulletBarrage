@@ -62,7 +62,7 @@ static int paddingFromGroupTable = 35;
                                 self.navigationController.navigationBar.frame.size.height -
                                 self.tabBarController.tabBar.frame.size.height -
                                 self.view.frame.size.width -
-                                20;
+                                [UIApplication sharedApplication].statusBarFrame.size.height;
     self.unselectedCellHeight = remainingFrameSize / 2;
     return self.unselectedCellHeight;
 }

@@ -24,12 +24,15 @@ static NSString *cellIdentifier = @"leaderboardCell";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 2;
+    return 10;
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+ 
+    cell.textLabel.text = [NSString stringWithFormat:@"%lu.", indexPath.row + 1];
+
     return cell;
 }
 
