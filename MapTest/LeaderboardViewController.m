@@ -8,6 +8,9 @@
 
 #import "LeaderboardViewController.h"
 #import "LeaderboardDataSource.h"
+#import "UserController.h"
+#import <Parse/Parse.h>
+#import "UserController.h"
 
 static double padding = 15;
 
@@ -19,6 +22,11 @@ static double padding = 15;
 @property (nonatomic, strong) UISegmentedControl *segControl;
 @property (nonatomic) double heightOfStatusBarNavBar;
 
+@property (nonatomic,strong) NSArray *arrayForAccuracy;
+@property (nonatomic,strong) NSArray *arrayForDistance;
+@property (nonatomic,strong) NSArray *arrayForKD;
+
+
 @end
 
 @implementation LeaderboardViewController
@@ -27,6 +35,7 @@ static double padding = 15;
     [super viewDidLoad];
     self.title = @"Leaderboards";
     self.view.backgroundColor = [UIColor whiteColor];
+    
     
     // set size of top bar size
     self.heightOfStatusBarNavBar = self.navigationController.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height;
@@ -46,10 +55,9 @@ static double padding = 15;
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, self.heightOfStatusBarNavBar + self.segControl.frame.size.height + padding * 2, self.view.frame.size.width, self.view.frame.size.height)];
     self.tableView.dataSource = self.dataSource;
     self.tableView.delegate = self;
-
+    
     [self.dataSource registerTableView:self.tableView];
     [self.view addSubview:self.tableView];
-    
     
     
 }

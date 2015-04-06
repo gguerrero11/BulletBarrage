@@ -9,6 +9,13 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
+static NSString *cellIdentifier = @"leaderboardCell";
+static NSString *usernameKey = @"username";
+static NSString *distanceKey = @"longestDistance";
+static NSString *deathKey = @"deaths";
+static NSString *killKey = @"kills";
+static NSString *accuracyKey = @"accuracy";
+
 @interface LeaderboardDataSource : NSObject  <UITableViewDataSource>
 
 - (void)registerTableView:(UITableView *)tableView;

@@ -10,9 +10,6 @@
 #import "UserController.h"
 #import <Parse/Parse.h>
 
-static NSString *cellIdentifier = @"leaderboardCell";
-static NSString *usernameKey = @"username";
-
 @interface LeaderboardDataSource ()
 
 @property (nonatomic,strong) UITableView *tableView;
@@ -35,11 +32,25 @@ static NSString *usernameKey = @"username";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     NSArray *arrayOfUsers = [[NSArray alloc]initWithArray:[UserController sharedInstance].arrayOfUsers];
-    PFUser *user = arrayOfUsers[indexPath.row];
- 
-    cell.textLabel.text = [NSString stringWithFormat:@"%lu. %@", indexPath.row + 1, user[usernameKey]];
+    
+    // Sorting the array by Distance for each User
+    NSSortDescriptor *distanceDescriptor = [[NSSortDescriptor alloc] initWithKey:distanceKey ascending:NO];
+    
+    // Sorting the array by Kill/Death for each User
+    //NSSortDescriptor *distanceDescriptor = [[NSSortDescriptor alloc] initWithKey:killKey ascending:NO];
+    
+    // Sorting the array by Accuracy for each User
+    //NSSortDescriptor *distanceDescriptor = [[NSSortDescriptor alloc] initWithKey:accuracyKey ascending:NO];
+
+    NSArray *sortDescriptors = [NSArray arrayWithObject:distanceDescriptor];
+    NSArray *arraySortedForDistance = [arrayOfUsers sortedArrayUsingDescriptors:sortDescriptors];
+    PFUser *user = arraySortedForDistance[indexPath.row];
+
+    cell.textLabel.text = [NSString stringWithFormat:@"%lu. %@ %@m , %@/%@, %@%%", indexPath.row + 1, user[usernameKey], user[distanceKey],user[killKey], user[deathKey], user[accuracyKey]];
 
     return cell;
 }
+
+
 
 @end

@@ -150,7 +150,7 @@ static const NSInteger handicap = 1;
     [self.mapView addAnnotation:testTarget1];
     [self.mapView addAnnotation:testTarget2];
     
-    self.targetCamera = [MKMapCamera cameraLookingAtCenterCoordinate:testTarget2.coordinate fromEyeCoordinate:self.myLocation.coordinate eyeAltitude:10];
+    self.targetCamera = [MKMapCamera cameraLookingAtCenterCoordinate:testTarget1.coordinate fromEyeCoordinate:self.myLocation.coordinate eyeAltitude:10];
     
     // Set this in an array for all headings of targets
     NSLog(@"TARGET %f", self.targetCamera.heading);
@@ -289,9 +289,11 @@ static const NSInteger handicap = 1;
     
     SCNNode *cubeNode = [SCNNode nodeWithGeometry:self.cube];
     cubeNode.position = SCNVector3Make(0, .05, 0);
+    
     SCNNode *groundNode = [SCNNode nodeWithGeometry:self.ground];
+    
     [scene.rootNode addChildNode:cubeNode];
-    [scene.rootNode addChildNode:groundNode];
+    //[scene.rootNode addChildNode:groundNode];
     self.cubeNode = cubeNode;
     
     // Add scene to SceneView
@@ -348,7 +350,7 @@ static const NSInteger handicap = 1;
         
         NSLog(@"BOOM! HIT!");
     } else {
-        NSLog(@"You missed!");
+        NSLog(@"You missed! ");
     }
 }
 

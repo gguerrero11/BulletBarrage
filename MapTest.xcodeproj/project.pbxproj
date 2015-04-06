@@ -270,14 +270,14 @@
 			children = (
 				49B9DC391ACF2D94003EA46E /* ProfileviewControllerViewController.h */,
 				49B9DC3A1ACF2D94003EA46E /* ProfileviewControllerViewController.m */,
+				49B9DC3F1ACF394E003EA46E /* ProfileViewDataSource.h */,
+				49B9DC401ACF394E003EA46E /* ProfileViewDataSource.m */,
 				49603D651AD0B87200AB3E50 /* AvatarTableViewCell.h */,
 				49603D661AD0B87200AB3E50 /* AvatarTableViewCell.m */,
 				49603D621AD0B84700AB3E50 /* WeaponsTableViewCell.h */,
 				49603D631AD0B84700AB3E50 /* WeaponsTableViewCell.m */,
 				49B9DC421ACF4952003EA46E /* ProfileTableViewCell.h */,
 				49B9DC431ACF4952003EA46E /* ProfileTableViewCell.m */,
-				49B9DC3F1ACF394E003EA46E /* ProfileViewDataSource.h */,
-				49B9DC401ACF394E003EA46E /* ProfileViewDataSource.m */,
 			);
 			name = Profile;
 			sourceTree = "<group>";
