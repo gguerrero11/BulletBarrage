@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		49603D641AD0B84700AB3E50 /* WeaponsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D631AD0B84700AB3E50 /* WeaponsTableViewCell.m */; };
 		49603D671AD0B87200AB3E50 /* AvatarTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D661AD0B87200AB3E50 /* AvatarTableViewCell.m */; };
+		49603D6C1AD1022300AB3E50 /* CustomLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D691AD1022300AB3E50 /* CustomLoginViewController.m */; };
+		49603D6D1AD1022300AB3E50 /* CustomSignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D6B1AD1022300AB3E50 /* CustomSignUpViewController.m */; };
+		49603D711AD20ADF00AB3E50 /* UserController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D701AD20ADF00AB3E50 /* UserController.m */; };
 		497063471AD0B68600FBA403 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 497063441AD0B68600FBA403 /* Bolts.framework */; };
 		497063481AD0B68600FBA403 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 497063451AD0B68600FBA403 /* Parse.framework */; };
 		497063491AD0B68600FBA403 /* ParseUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 497063461AD0B68600FBA403 /* ParseUI.framework */; };
@@ -56,6 +59,12 @@
 		49603D631AD0B84700AB3E50 /* WeaponsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeaponsTableViewCell.m; sourceTree = "<group>"; };
 		49603D651AD0B87200AB3E50 /* AvatarTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvatarTableViewCell.h; sourceTree = "<group>"; };
 		49603D661AD0B87200AB3E50 /* AvatarTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvatarTableViewCell.m; sourceTree = "<group>"; };
+		49603D681AD1022300AB3E50 /* CustomLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomLoginViewController.h; sourceTree = "<group>"; };
+		49603D691AD1022300AB3E50 /* CustomLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomLoginViewController.m; sourceTree = "<group>"; };
+		49603D6A1AD1022300AB3E50 /* CustomSignUpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomSignUpViewController.h; sourceTree = "<group>"; };
+		49603D6B1AD1022300AB3E50 /* CustomSignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomSignUpViewController.m; sourceTree = "<group>"; };
+		49603D6F1AD20ADF00AB3E50 /* UserController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserController.h; sourceTree = "<group>"; };
+		49603D701AD20ADF00AB3E50 /* UserController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserController.m; sourceTree = "<group>"; };
 		497063441AD0B68600FBA403 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = MapTest/Bolts.framework; sourceTree = "<group>"; };
 		497063451AD0B68600FBA403 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parse.framework; path = MapTest/Parse.framework; sourceTree = "<group>"; };
 		497063461AD0B68600FBA403 /* ParseUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ParseUI.framework; path = MapTest/ParseUI.framework; sourceTree = "<group>"; };
@@ -135,6 +144,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		49603D6E1AD1023500AB3E50 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				49603D681AD1022300AB3E50 /* CustomLoginViewController.h */,
+				49603D691AD1022300AB3E50 /* CustomLoginViewController.m */,
+				49603D6A1AD1022300AB3E50 /* CustomSignUpViewController.h */,
+				49603D6B1AD1022300AB3E50 /* CustomSignUpViewController.m */,
+			);
+			name = Login;
+			sourceTree = "<group>";
+		};
 		497063661AD0B71200FBA403 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -181,8 +201,11 @@
 		49B9DBBA1ACDD518003EA46E /* MapTest */ = {
 			isa = PBXGroup;
 			children = (
+				49603D6F1AD20ADF00AB3E50 /* UserController.h */,
+				49603D701AD20ADF00AB3E50 /* UserController.m */,
 				49B9DBBF1ACDD519003EA46E /* AppDelegate.h */,
 				49B9DBC01ACDD519003EA46E /* AppDelegate.m */,
+				49603D6E1AD1023500AB3E50 /* Login */,
 				49B9DC3C1ACF37BB003EA46E /* MapView */,
 				49B9DC3D1ACF37C6003EA46E /* LeaderBoard */,
 				49B9DC3E1ACF37D1003EA46E /* Profile */,
@@ -359,6 +382,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49603D6D1AD1022300AB3E50 /* CustomSignUpViewController.m in Sources */,
 				49B9DBEB1ACDDB2A003EA46E /* MapViewController.m in Sources */,
 				49603D671AD0B87200AB3E50 /* AvatarTableViewCell.m in Sources */,
 				49B9DC411ACF394E003EA46E /* ProfileViewDataSource.m in Sources */,
@@ -366,8 +390,10 @@
 				49B9DC321ACF2A9A003EA46E /* LeaderboardViewController.m in Sources */,
 				49B9DC381ACF2BEA003EA46E /* LeaderboardDataSource.m in Sources */,
 				49603D641AD0B84700AB3E50 /* WeaponsTableViewCell.m in Sources */,
+				49603D711AD20ADF00AB3E50 /* UserController.m in Sources */,
 				49B9DBC11ACDD519003EA46E /* AppDelegate.m in Sources */,
 				49B9DC441ACF4952003EA46E /* ProfileTableViewCell.m in Sources */,
+				49603D6C1AD1022300AB3E50 /* CustomLoginViewController.m in Sources */,
 				49B9DBEE1ACDDB3E003EA46E /* Target.m in Sources */,
 				49B9DBBE1ACDD519003EA46E /* main.m in Sources */,
 			);

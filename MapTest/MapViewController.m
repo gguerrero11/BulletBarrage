@@ -9,6 +9,9 @@
 #import "MapViewController.h"
 #import "Target.h"
 #import <CoreMotion/CoreMotion.h>
+#import "CustomLoginViewController.h"
+#import "CustomSignUpViewController.h"
+#import <Parse/Parse.h>
 
 @import SceneKit;
 
@@ -16,7 +19,7 @@ static const NSInteger handicap = 1;
 
 ;
 
-@interface MapViewController ()
+@interface MapViewController () <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate>
 {
     CMMotionManager *_motionManager;
 }
@@ -37,25 +40,97 @@ static const NSInteger handicap = 1;
 @property (nonatomic, strong) SCNNode *cameraPitchRotationNode;
 @property (nonatomic, strong) SCNNode *cameraTargetNode;
 
-
-
-
-
-
 @end
 
 @implementation MapViewController
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    
+    if (![PFUser currentUser]) { // No user logged in
+        // Create the log in view controller
+        CustomLoginViewController *logInViewController = [[CustomLoginViewController alloc] init];
+        [logInViewController setDelegate:self]; // Set ourselves as the delegate
+        
+        
+        // Create the sign up view controller
+        CustomSignUpViewController *signUpViewController = [[CustomSignUpViewController alloc] init];
+        [signUpViewController setDelegate:self]; // Set ourselves as the delegate
+        
+        // Assign our sign up controller to be displayed from the login controller
+        [logInViewController setSignUpController:signUpViewController];
+        
+        // Present the log in view controller
+        [self presentViewController:logInViewController animated:YES completion:NULL];
+    }
+}
+
+// Sent to the delegate when a PFUser is logged in.
+- (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+// Sent to the delegate when the log in attempt fails.
+- (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error {
+    NSLog(@"Failed to log in...");
+}
+
+// Sent to the delegate when the log in screen is dismissed.
+- (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+// Sent to the delegate to determine whether the sign up request should be submitted to the server.
+- (BOOL)signUpViewController:(PFSignUpViewController *)signUpController shouldBeginSignUp:(NSDictionary *)info {
+    BOOL informationComplete = YES;
+    
+    // loop through all of the submitted data
+    for (id key in info) {
+        NSString *field = [info objectForKey:key];
+        if (!field || field.length == 0) { // check completion
+            informationComplete = NO;
+            break;
+        }
+    }
+    
+    // Display an alert if a field wasn't completed
+    if (!informationComplete) {
+        [[[UIAlertView alloc] initWithTitle:@"Missing Information"
+                                    message:@"Make sure you fill out all of the information!"
+                                   delegate:nil
+                          cancelButtonTitle:@"ok"
+                          otherButtonTitles:nil] show];
+    }
+    
+    return informationComplete;
+}
+
+// Sent to the delegate when a PFUser is signed up.
+- (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
+    [self dismissViewControllerAnimated:YES completion:nil]; // Dismiss the PFSignUpViewController
+}
+
+// Sent to the delegate when the sign up attempt fails.
+- (void)signUpViewController:(PFSignUpViewController *)signUpController didFailToSignUpWithError:(NSError *)error {
+    NSLog(@"Failed to sign up...");
+}
+
+// Sent to the delegate when the sign up screen is dismissed.
+- (void)signUpViewControllerDidCancelSignUp:(PFSignUpViewController *)signUpController {
+    NSLog(@"User dismissed the signUpViewController");
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+
+    
     [self setUpMotionManager];
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
-    [self setUpDataView];
     [self setupSceneKitView];
-    
+    [self setUpDataView];
     
     // Create Dummy Data
     CLLocation *dummyLocale1 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.764, -111.896)
@@ -92,11 +167,11 @@ static const NSInteger handicap = 1;
             self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[self convertToDegrees:attitude.pitch]];
             
             // Set pitch limit for map camera
-            if ([self convertToDegrees:attitude.pitch] > 75){
-                self.mapView.camera.pitch = 75;
-            } else {
-            self.mapView.camera.pitch = [self convertToDegrees:attitude.pitch];
-            }
+            //            if ([self convertToDegrees:attitude.pitch] > 75){
+            //                self.mapView.camera.pitch = 75;
+            //            } else {
+            //            self.mapView.camera.pitch = [self convertToDegrees:attitude.pitch];
+            //            }
             
             //self.mapView.camera.altitude = 200;
             //self.mapView.camera.heading = [self convertToDegrees:attitude.yaw];
@@ -116,6 +191,7 @@ static const NSInteger handicap = 1;
     
     if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
         [self.locationManager requestWhenInUseAuthorization];
+        
     }
     
     // Start location services to get the true heading.
@@ -137,18 +213,23 @@ static const NSInteger handicap = 1;
 
 - (void)showMainMapView {
     
-    self.mapView = [[MKMapView alloc] initWithFrame:self.view.frame];
+    // create scroll view
+    UIScrollView *scrollView = [[UIScrollView alloc]initWithFrame:self.view.frame];
+    [self.view addSubview:scrollView];
+    
+    // attach the mapview to the scroll view so we can move the center for the map visually lower on the screen
+    self.mapView = [[MKMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 950)];
     self.mapView.backgroundColor = [UIColor redColor];
-    [self.view addSubview:self.mapView];
     self.mapView.mapType = MKMapTypeStandard;
     self.mapView.delegate = self;
     self.mapView.rotateEnabled = NO;
     self.mapView.scrollEnabled = NO;
+    self.mapView.zoomEnabled = NO;
     self.mapView.showsPointsOfInterest = NO;
     self.mapView.showsBuildings = NO;
     self.mapView.showsUserLocation = YES; // Must be YES in order for the MKMapView protocol to fire.
+    [scrollView addSubview:self.mapView];
     
-
     
     MKCoordinateSpan span = MKCoordinateSpanMake(0.14, 0.14);
     MKCoordinateRegion region = MKCoordinateRegionMake(self.myLocation.coordinate, span);
@@ -159,7 +240,7 @@ static const NSInteger handicap = 1;
 #pragma mark SceneKit methods
 - (void)setupSceneKitView {
     // Init the scene and default lighting
-    self.sceneView = [[SCNView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height/2)];
+    self.sceneView = [[SCNView alloc]initWithFrame:CGRectMake(0,175, self.view.frame.size.width, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height/2)];
     self.sceneView.backgroundColor = [UIColor clearColor];
     self.sceneView.userInteractionEnabled = NO;
     self.sceneView.autoenablesDefaultLighting = YES;
@@ -180,10 +261,6 @@ static const NSInteger handicap = 1;
     self.cameraHeadingRotationNode = [SCNNode node];
     self.cameraPitchRotationNode = [SCNNode node];
     
-    //    // Setup TargetNode
-    //    self.cameraTargetNode.position = SCNVector3Make(0, 0, 0);
-    //    [self.cameraTargetNode addChildNode:self.cameraNode];
-    
     // Setup heading rotation node
     self.cameraHeadingRotationNode.position = SCNVector3Make(0, 0, 0);
     [self.cameraHeadingRotationNode addChildNode: self.cameraPitchRotationNode];
@@ -192,7 +269,7 @@ static const NSInteger handicap = 1;
     [self.cameraPitchRotationNode addChildNode:self.cameraNode];
     
     // Setup camera node
-    self.cameraNode.position = SCNVector3Make(0, 20, 0);
+    self.cameraNode.position = SCNVector3Make(0, 5, 0);
     self.cameraNode.rotation = SCNVector4Make(1, 0, 0, 270 * (M_PI / 180));
     self.cameraNode.camera = camera;
     
@@ -274,11 +351,6 @@ static const NSInteger handicap = 1;
     }
 }
 
-
-
-
-
-
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 0)
         return;
@@ -293,17 +365,17 @@ static const NSInteger handicap = 1;
     self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * -(M_PI/180));
     self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, self.mapView.camera.pitch * (M_PI/180));
     
-    self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60)/17 + 1.1 ,0);
+    self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60)/17 + 1.2 ,0);
     
-    [self.mapView setUserTrackingMode:MKUserTrackingModeFollow];
+    //[self.mapView setUserTrackingMode:MKUserTrackingModeFollow];
     
     self.mapView.camera.heading = theHeading;
-    self.mapView.camera.altitude = 62;
-//    self.mapView.camera.pitch = 77;
-
+    self.mapView.camera.altitude = 63;
+    self.mapView.camera.pitch = 75;
     
-        NSLog(@"Altitude %f", self.mapView.camera.altitude);
-        NSLog(@"Pitch %f", self.mapView.camera.pitch);
+    
+    //NSLog(@"Altitude %f", self.mapView.camera.altitude);
+    //NSLog(@"Pitch %f", self.mapView.camera.pitch);
     
     
     /*
@@ -330,13 +402,14 @@ static const NSInteger handicap = 1;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+    self.mapView.showsUserLocation = NO;
     CLLocation *lastLocation = [locations lastObject];
     
     CLLocationAccuracy accuracy = [lastLocation horizontalAccuracy];
     //NSLog(@"Received location %@ with accuracy %f", lastLocation, accuracy);
     
     if(accuracy < 10.0) {
-        
+
         self.myLocation = lastLocation;
         //[mapView setCamera:mapCamera animated:YES];
         
@@ -348,7 +421,6 @@ static const NSInteger handicap = 1;
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-    
     
 }
 

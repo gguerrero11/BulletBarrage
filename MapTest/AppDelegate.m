@@ -33,6 +33,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarAnimationSlide;
+    [UIApplication sharedApplication].statusBarHidden = YES;
+    
     [Parse setApplicationId:@"7ueGpbdEj9VRrPEEjiE81T98AZ7WMDiI3xEwVpnx"
                   clientKey:@"OJgDQPnkJz6i2bsZWYomMLeuKAUzh2n5SOcn0Ciu"];
     
