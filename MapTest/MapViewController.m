@@ -12,6 +12,7 @@
 #import "CustomLoginViewController.h"
 #import "CustomSignUpViewController.h"
 #import <Parse/Parse.h>
+#import "UserController.h"
 
 @import SceneKit;
 
@@ -129,6 +130,7 @@ static const NSInteger handicap = 1;
     [self setUpMotionManager];
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
+    [UserController queryUsersNearCurrentUser:self.locationManager.location.coordinate withinMileRadius:10];
     [self setupSceneKitView];
     [self setUpDataView];
     
@@ -151,7 +153,7 @@ static const NSInteger handicap = 1;
     self.targetCamera = [MKMapCamera cameraLookingAtCenterCoordinate:testTarget2.coordinate fromEyeCoordinate:self.myLocation.coordinate eyeAltitude:10];
     
     // Set this in an array for all headings of targets
-    //NSLog(@"TARGET %f",targetCamera.heading);
+    NSLog(@"TARGET %f", self.targetCamera.heading);
     
 }
 
@@ -173,8 +175,6 @@ static const NSInteger handicap = 1;
             //            self.mapView.camera.pitch = [self convertToDegrees:attitude.pitch];
             //            }
             
-            //self.mapView.camera.altitude = 200;
-            //self.mapView.camera.heading = [self convertToDegrees:attitude.yaw];
             
         }];
         
@@ -227,7 +227,8 @@ static const NSInteger handicap = 1;
     self.mapView.zoomEnabled = NO;
     self.mapView.showsPointsOfInterest = NO;
     self.mapView.showsBuildings = NO;
-    self.mapView.showsUserLocation = YES; // Must be YES in order for the MKMapView protocol to fire.
+    self.mapView.showsUserLocation = NO; // Must be YES in order for the MKMapView protocol to fire.
+    [self.mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
     [scrollView addSubview:self.mapView];
     
     
@@ -240,7 +241,7 @@ static const NSInteger handicap = 1;
 #pragma mark SceneKit methods
 - (void)setupSceneKitView {
     // Init the scene and default lighting
-    self.sceneView = [[SCNView alloc]initWithFrame:CGRectMake(0,175, self.view.frame.size.width, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height/2)];
+    self.sceneView = [[SCNView alloc]initWithFrame:CGRectMake(0,153, self.view.frame.size.width, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height/2)];
     self.sceneView.backgroundColor = [UIColor clearColor];
     self.sceneView.userInteractionEnabled = NO;
     self.sceneView.autoenablesDefaultLighting = YES;
@@ -252,8 +253,8 @@ static const NSInteger handicap = 1;
     //self.sceneView.allowsCameraControl = true;
     
     SCNCamera *camera = [SCNCamera camera];
-    camera.xFov = 0;
-    camera.yFov = 0;
+    camera.xFov = 10;
+    camera.yFov = 10;
     
     // Init our nodes
     self.cameraTargetNode = [SCNNode new];
@@ -276,11 +277,11 @@ static const NSInteger handicap = 1;
     [scene.rootNode addChildNode:self.cameraHeadingRotationNode];
     
     // Create cube
-    self.cube = [SCNBox boxWithWidth:.1 height:.1 length:.1 chamferRadius:0];
+    self.cube = [SCNBox boxWithWidth:.1 height:.1 length:.1 chamferRadius:.005];
     self.cube.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
     
     // Create ground
-    self.ground = [SCNBox boxWithWidth:.3 height:0 length:.3 chamferRadius:0];
+    self.ground = [SCNBox boxWithWidth:.24 height:0 length:.24 chamferRadius:0];
     self.ground.firstMaterial.diffuse.contents = [UIColor brownColor];
     
     //SCNFloor use later
@@ -362,47 +363,22 @@ static const NSInteger handicap = 1;
     //    self.cameraHeadingRotationNode.eulerAngles = SCNVector3Make(self.mapView.camera.pitch, 0, theHeading * -(M_PI/180));
     //         self.cameraHeadingRotationNode.eulerAngles = SCNVector3Make(0, 0, theHeading * -(M_PI/180));
     //         self.cameraTargetNode.eulerAngles = SCNVector3Make(self.mapView.camera.pitch * (M_PI/180), 0, 0);
+    
     self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * -(M_PI/180));
-    self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, self.mapView.camera.pitch * (M_PI/180));
+    self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (self.mapView.camera.pitch) * (M_PI/180) );
+    self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60)/17 + 4 ,0);
     
-    self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60)/17 + 1.2 ,0);
-    
-    //[self.mapView setUserTrackingMode:MKUserTrackingModeFollow];
+    [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
     
     self.mapView.camera.heading = theHeading;
-    self.mapView.camera.altitude = 63;
-    self.mapView.camera.pitch = 75;
-    
-    
-    //NSLog(@"Altitude %f", self.mapView.camera.altitude);
-    //NSLog(@"Pitch %f", self.mapView.camera.pitch);
-    
-    
-    /*
-     Altitude 62
-     Pitch 77
-     
-     Alt 88
-     Pitch 75
-     
-     Alt 135
-     Pitch 72
-     
-     Alt 256
-     Pitch 66
-     
-     Alt 674
-     Pitch 58
-     
-     Alt 946
-     Pitch 56
-     
-     */
+    self.mapView.camera.altitude = 93;
+    self.mapView.camera.pitch = 78;
+
     
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    self.mapView.showsUserLocation = NO;
+
     CLLocation *lastLocation = [locations lastObject];
     
     CLLocationAccuracy accuracy = [lastLocation horizontalAccuracy];
@@ -410,7 +386,7 @@ static const NSInteger handicap = 1;
     
     if(accuracy < 10.0) {
 
-        self.myLocation = lastLocation;
+        //self.myLocation = lastLocation;
         //[mapView setCamera:mapCamera animated:YES];
         
         

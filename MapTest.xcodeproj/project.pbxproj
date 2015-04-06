@@ -201,10 +201,10 @@
 		49B9DBBA1ACDD518003EA46E /* MapTest */ = {
 			isa = PBXGroup;
 			children = (
-				49603D6F1AD20ADF00AB3E50 /* UserController.h */,
-				49603D701AD20ADF00AB3E50 /* UserController.m */,
 				49B9DBBF1ACDD519003EA46E /* AppDelegate.h */,
 				49B9DBC01ACDD519003EA46E /* AppDelegate.m */,
+				49603D6F1AD20ADF00AB3E50 /* UserController.h */,
+				49603D701AD20ADF00AB3E50 /* UserController.m */,
 				49603D6E1AD1023500AB3E50 /* Login */,
 				49B9DC3C1ACF37BB003EA46E /* MapView */,
 				49B9DC3D1ACF37C6003EA46E /* LeaderBoard */,

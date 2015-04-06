@@ -7,9 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <MapKit/MapKit.h>
+
+
 
 @interface UserController : NSObject
 
 + (UserController *) sharedInstance;
+
+@property (nonatomic,strong) NSArray *arrayOfUsers;
+
++ (void) queryUsersNearCurrentUser:(CLLocationCoordinate2D)coordinates
+                  withinMileRadius:(double)radiusFromLocationInMiles;
+
 
 @end

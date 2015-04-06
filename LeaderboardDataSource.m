@@ -7,8 +7,11 @@
 //
 
 #import "LeaderboardDataSource.h"
+#import "UserController.h"
+#import <Parse/Parse.h>
 
 static NSString *cellIdentifier = @"leaderboardCell";
+static NSString *usernameKey = @"username";
 
 @interface LeaderboardDataSource ()
 
@@ -30,8 +33,11 @@ static NSString *cellIdentifier = @"leaderboardCell";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    
+    NSArray *arrayOfUsers = [[NSArray alloc]initWithArray:[UserController sharedInstance].arrayOfUsers];
+    PFUser *user = arrayOfUsers[indexPath.row];
  
-    cell.textLabel.text = [NSString stringWithFormat:@"%lu.", indexPath.row + 1];
+    cell.textLabel.text = [NSString stringWithFormat:@"%lu. %@", indexPath.row + 1, user[usernameKey]];
 
     return cell;
 }

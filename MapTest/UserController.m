@@ -8,6 +8,9 @@
 
 #import "UserController.h"
 #import <Parse/Parse.h>
+#import <MapKit/MapKit.h>
+
+static NSString *userLocationkey = @"userLocation";
 
 @implementation UserController
 
@@ -20,37 +23,27 @@
     return sharedInstance;
 }
 
-- (void) queryUsers {
++ (void) queryUsersNearCurrentUser:(CLLocationCoordinate2D)coordinates
+                  withinMileRadius:(double)radiusFromLocationInMiles{
+
     // Parse query calls.
+    PFQuery *queryForUsers = [PFUser query];
     
-    PFQuery *queryForVideos = [PFQuery queryWithClassName:@"Video"];
-    PFGeoPoint *geoPoint = [PFGeoPoint geoPointWithLatitude:coordinates.latitude
-                                                  longitude:coordinates.longitude];
-    [queryForVideos whereKey:locationKeyOfVideo
-                nearGeoPoint:geoPoint
-                 withinMiles:radiusFromLocationInMiles];
-    [queryForVideos findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+//    PFGeoPoint *geoPoint = [PFGeoPoint geoPointWithLatitude:coordinates.latitude
+//                                                  longitude:coordinates.longitude];
+    
+    [queryForUsers findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (error) {
             NSLog(@"%@", error);
         }
         else {
-            NSArray *arrayOfVideos = [[NSMutableArray alloc] initWithArray:objects];
+
+            [UserController sharedInstance].arrayOfUsers = objects;
             
-            NSMutableArray *mutableArray = [[NSMutableArray alloc]initWithArray:self.arrayOfAllVideoPins];
-            for (Video *video in arrayOfVideos) {
-                VideoPin *videoPin = [[VideoPin alloc]initWithVideo:video];
-                [mutableArray addObject:videoPin];
-            }
-            self.arrayOfAllVideoPins = mutableArray;
-            
-            [VideoController sharedInstance].arrayOfVideosNearLocation = arrayOfVideos;
-            [self.allAnnotationsMapView addAnnotations:mutableArray];
-            [self updateVisibleAnnotations];
-            
-            NSLog(@"Videos Near Location: %ld",[VideoController sharedInstance].arrayOfVideosNearLocation.count);
+            NSLog(@"Videos Near Location: %@",[UserController sharedInstance].arrayOfUsers);
         }
     }];
-
+    
 }
 
 
