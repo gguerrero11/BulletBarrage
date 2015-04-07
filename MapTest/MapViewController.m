@@ -22,10 +22,11 @@ static const NSInteger handicap = 1;
 
 ;
 
-@interface MapViewController () <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate>
+@interface MapViewController () <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate, GMSMapViewDelegate, GMSMapViewDelegate>
 {
     CMMotionManager *_motionManager;
-    GMSServices *gmMapView;
+    GMSMapView *gmMapView;
+    GMSCameraPosition *gmCamera;
 }
 
 @property (nonatomic,strong) CLLocation *myLocation;
@@ -47,6 +48,13 @@ static const NSInteger handicap = 1;
 @end
 
 @implementation MapViewController
+
+//- (void)mapView:(GMSMapView *)mapView
+//didChangeCameraPosition:(GMSCameraPosition *)position {
+//    [gmMapView animateToBearing:self
+//     NSLog(@"%@", position);
+//}
+
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
@@ -125,10 +133,12 @@ static const NSInteger handicap = 1;
     NSLog(@"User dismissed the signUpViewController");
 }
 
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-
+    
     
     [self setUpMotionManager];
     [self setUpLocationManagerAndHeading];
@@ -162,6 +172,9 @@ static const NSInteger handicap = 1;
 
 - (void) setUpMotionManager {
     _motionManager = [CMMotionManager new];
+    
+    
+    
     if (_motionManager.isGyroAvailable) {
         //tell maanger to start pulling gyroscope info
         [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
@@ -170,6 +183,15 @@ static const NSInteger handicap = 1;
             //            float offsetX = motion.attitude.roll * self.view.frame.size.width;
             //            float offsetY = motion.attitude.pitch * self.view.frame.size.height;
             self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[self convertToDegrees:attitude.pitch]];
+            
+            [gmMapView animateToBearing:[self convertToDegrees:attitude.yaw]];
+            [gmMapView animateToViewingAngle:45];
+            [gmMapView animateToZoom:20];
+            [gmMapView animateToLocation:self.myLocation.coordinate];
+            NSLog(@"%f", gmMapView.camera.viewingAngle);
+            self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (gmMapView.camera.viewingAngle) * (M_PI/180) );
+            
+            NSLog(@"%f", [self convertToDegrees:attitude.yaw]);
             
             // Set pitch limit for map camera
             //            if ([self convertToDegrees:attitude.pitch] > 75){
@@ -216,44 +238,54 @@ static const NSInteger handicap = 1;
 
 
 - (void)showMainMapView {
-
-
     
     
+    gmCamera = [GMSCameraPosition cameraWithLatitude:40.11 longitude:-111.01 zoom:6];
+    gmMapView = [GMSMapView mapWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height + 250) camera:gmCamera];
+    gmMapView.myLocationEnabled = YES;
+    gmMapView.delegate = self;
+    [self.view addSubview:gmMapView];
+    
+    GMSMarker *marker = [GMSMarker new];
+    marker.position = CLLocationCoordinate2DMake(40.12, -111.1);
+    marker.title = @"Target";
+    marker.snippet = @"HIT";
+    marker.map = gmMapView;
     
     // Apple Maps
-//    // create scroll view
-//    UIScrollView *scrollView = [[UIScrollView alloc]initWithFrame:self.view.frame];
-//    [self.view addSubview:scrollView];
-//    
-//    // attach the mapview to the scroll view so we can move the center for the map visually lower on the screen
-//    self.mapView = [[MKMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 950)];
-//    self.mapView.backgroundColor = [UIColor redColor];
-//    self.mapView.mapType = MKMapTypeStandard;
-//    self.mapView.delegate = self;
-//    self.mapView.rotateEnabled = NO;
-//    self.mapView.scrollEnabled = NO;
-//    self.mapView.zoomEnabled = NO;
-//    self.mapView.showsPointsOfInterest = NO;
-//    self.mapView.showsBuildings = NO;
-//    self.mapView.showsUserLocation = YES; // Must be YES in order for the MKMapView protocol to fire.
-//    //[self.mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
-//    [scrollView addSubview:self.mapView];
-//    
-//    
-//    MKCoordinateSpan span = MKCoordinateSpanMake(0.14, 0.14);
-//    MKCoordinateRegion region = MKCoordinateRegionMake(self.myLocation.coordinate, span);
-//    
-//    [self.mapView setRegion:region animated:YES];
+    //    // create scroll view
+    //    UIScrollView *scrollView = [[UIScrollView alloc]initWithFrame:self.view.frame];
+    //    [self.view addSubview:scrollView];
+    //
+    //    // attach the mapview to the scroll view so we can move the center for the map visually lower on the screen
+    //    self.mapView = [[MKMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 950)];
+    //    self.mapView.backgroundColor = [UIColor redColor];
+    //    self.mapView.mapType = MKMapTypeStandard;
+    //    self.mapView.delegate = self;
+    //    self.mapView.rotateEnabled = NO;
+    //    self.mapView.scrollEnabled = NO;
+    //    self.mapView.zoomEnabled = NO;
+    //    self.mapView.showsPointsOfInterest = NO;
+    //    self.mapView.showsBuildings = NO;
+    //    self.mapView.showsUserLocation = YES; // Must be YES in order for the MKMapView protocol to fire.
+    //    //[self.mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
+    //    [scrollView addSubview:self.mapView];
+    //
+    //
+    //    MKCoordinateSpan span = MKCoordinateSpanMake(0.14, 0.14);
+    //    MKCoordinateRegion region = MKCoordinateRegionMake(self.myLocation.coordinate, span);
+    //
+    //    [self.mapView setRegion:region animated:YES];
 }
 
 #pragma mark SceneKit methods
 - (void)setupSceneKitView {
     // Init the scene and default lighting
-    self.sceneView = [[SCNView alloc]initWithFrame:CGRectMake(0,153, self.view.frame.size.width, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height/2)];
+    self.sceneView = [[SCNView alloc]initWithFrame:CGRectMake(0,0, self.view.frame.size.width, self.view.frame.size.height + 250)];
     self.sceneView.backgroundColor = [UIColor clearColor];
     self.sceneView.userInteractionEnabled = NO;
     self.sceneView.autoenablesDefaultLighting = YES;
+    
     
     //create a scene
     SCNScene *scene = [SCNScene scene];
@@ -352,11 +384,9 @@ static const NSInteger handicap = 1;
 
 - (void)fireButtonPressed:(id)sender {
     
-
-    
     double distanceOfProjectile = 0.005;
     CLLocationDegrees newLongitude = self.myLocation.coordinate.longitude + distanceOfProjectile;
-
+    
     CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:self.myLocation.coordinate.latitude longitude:newLongitude];
     
     Target *hitTarget = [[Target alloc]initWithTargetNumber:@"Hit position" location:hitLocation fromUserLocation:self.myLocation];
@@ -382,13 +412,9 @@ static const NSInteger handicap = 1;
     // Use the true heading if it is valid.
     CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
                                        newHeading.trueHeading : newHeading.magneticHeading);
-    // Heading rotation
-    //    self.cameraHeadingRotationNode.eulerAngles = SCNVector3Make(self.mapView.camera.pitch, 0, theHeading * -(M_PI/180));
-    //         self.cameraHeadingRotationNode.eulerAngles = SCNVector3Make(0, 0, theHeading * -(M_PI/180));
-    //         self.cameraTargetNode.eulerAngles = SCNVector3Make(self.mapView.camera.pitch * (M_PI/180), 0, 0);
     
-    self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * -(M_PI/180));
-    self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (self.mapView.camera.pitch) * (M_PI/180) );
+    self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * (M_PI/180));
+    //self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (self.mapView.camera.pitch) * (M_PI/180) );
     self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60)/17 + 4 ,0);
     
     [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
@@ -396,7 +422,7 @@ static const NSInteger handicap = 1;
     self.mapView.camera.heading = theHeading;
     self.mapView.camera.altitude = 93;
     self.mapView.camera.pitch = 78;
-
+    
     
     //NSLog(@"%f", self.mapView.camera.heading);
     
@@ -411,7 +437,7 @@ static const NSInteger handicap = 1;
     //NSLog(@"Received location %@ with accuracy %f", lastLocation, accuracy);
     
     if(accuracy < 10.0) {
-
+        
         //self.myLocation = lastLocation;
         //[mapView setCamera:mapCamera animated:YES];
         

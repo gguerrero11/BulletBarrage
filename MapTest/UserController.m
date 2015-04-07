@@ -40,7 +40,7 @@ static NSString *userLocationkey = @"userLocation";
 
             [UserController sharedInstance].arrayOfUsers = objects;
             
-            NSLog(@"Videos Near Location: %@",[UserController sharedInstance].arrayOfUsers);
+            //NSLog(@"Videos Near Location: %@",[UserController sharedInstance].arrayOfUsers);
         }
     }];
     
