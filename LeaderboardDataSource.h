@@ -9,6 +9,14 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 
+typedef enum
+{
+    sortByDistance, // == 0 (by default)
+    sortByKill, // == 1 (incremented by 1 from previous)
+    sortByAccuracy // == 2
+    
+} SortMode ;
+
 static NSString *cellIdentifier = @"leaderboardCell";
 static NSString *usernameKey = @"username";
 static NSString *distanceKey = @"longestDistance";
@@ -19,5 +27,7 @@ static NSString *accuracyKey = @"accuracy";
 @interface LeaderboardDataSource : NSObject  <UITableViewDataSource>
 
 - (void)registerTableView:(UITableView *)tableView;
+
+@property (nonatomic,assign) SortMode sortMode;
 
 @end

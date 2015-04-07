@@ -8,6 +8,7 @@
 
 #import "LeaderboardViewController.h"
 #import "LeaderboardDataSource.h"
+#import "LeaderBoardController.h"
 #import "UserController.h"
 #import <Parse/Parse.h>
 #import "UserController.h"
@@ -19,12 +20,12 @@ static double padding = 15;
 
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) LeaderboardDataSource *dataSource;
-@property (nonatomic, strong) UISegmentedControl *segControl;
 @property (nonatomic) double heightOfStatusBarNavBar;
 
 @property (nonatomic,strong) NSArray *arrayForAccuracy;
 @property (nonatomic,strong) NSArray *arrayForDistance;
 @property (nonatomic,strong) NSArray *arrayForKD;
+@property (nonatomic,strong) UISegmentedControl *segControl;
 
 
 @end
@@ -49,6 +50,8 @@ static double padding = 15;
     // create segment control
     self.segControl = [[UISegmentedControl alloc]initWithItems:array];
     self.segControl.frame = CGRectMake(padding, self.heightOfStatusBarNavBar + padding, self.view.frame.size.width - padding * 2, 35);
+    self.segControl.selectedSegmentIndex = 2;
+    [self.segControl addTarget:self action:@selector(updateSort:) forControlEvents:UIControlEventValueChanged];
     [self.view addSubview:self.segControl];
     
     // set up table view
@@ -59,7 +62,12 @@ static double padding = 15;
     [self.dataSource registerTableView:self.tableView];
     [self.view addSubview:self.tableView];
     
-    
+}
+
+- (void) updateSort:(id)sender {
+    UISegmentedControl *segControl = sender;
+    self.dataSource.sortMode = segControl.selectedSegmentIndex;
+    [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning {

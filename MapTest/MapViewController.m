@@ -227,8 +227,8 @@ static const NSInteger handicap = 1;
     self.mapView.zoomEnabled = NO;
     self.mapView.showsPointsOfInterest = NO;
     self.mapView.showsBuildings = NO;
-    self.mapView.showsUserLocation = NO; // Must be YES in order for the MKMapView protocol to fire.
-    [self.mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
+    self.mapView.showsUserLocation = YES; // Must be YES in order for the MKMapView protocol to fire.
+    //[self.mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
     [scrollView addSubview:self.mapView];
     
     
@@ -343,6 +343,18 @@ static const NSInteger handicap = 1;
 
 - (void)fireButtonPressed:(id)sender {
     
+
+    
+    double distanceOfProjectile = 0.005;
+    CLLocationDegrees newLongitude = self.myLocation.coordinate.longitude + distanceOfProjectile;
+
+    CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:self.myLocation.coordinate.latitude longitude:newLongitude];
+    
+    Target *hitTarget = [[Target alloc]initWithTargetNumber:@"Hit position" location:hitLocation fromUserLocation:self.myLocation];
+    [self.mapView addAnnotation:hitTarget];
+    
+    
+    
     //NSLog(@"%f", self.mapView.camera.heading);
     //NSLog(@"TARGET %f",targetCamera.heading);
     if ( self.mapView.camera.heading > self.targetCamera.heading - handicap &&
@@ -377,10 +389,13 @@ static const NSInteger handicap = 1;
     self.mapView.camera.pitch = 78;
 
     
+    //NSLog(@"%f", self.mapView.camera.heading);
+    
+    
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-
+    self.mapView.showsUserLocation = NO;
     CLLocation *lastLocation = [locations lastObject];
     
     CLLocationAccuracy accuracy = [lastLocation horizontalAccuracy];
@@ -401,5 +416,7 @@ static const NSInteger handicap = 1;
     // Dispose of any resources that can be recreated.
     
 }
+
+
 
 @end
