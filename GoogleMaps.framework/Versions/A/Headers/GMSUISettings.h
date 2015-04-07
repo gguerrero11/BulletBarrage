@@ -25,7 +25,6 @@
  * movement of the camera.
  */
 @property(nonatomic, assign) BOOL scrollGestures;
-
 /**
  * Controls whether zoom gestures are enabled (default) or disabled. If
  * enabled, users may double tap/two-finger tap or pinch to zoom the camera.

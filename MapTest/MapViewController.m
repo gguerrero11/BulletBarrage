@@ -45,15 +45,12 @@ static const NSInteger handicap = 1;
 @property (nonatomic, strong) SCNNode *cameraPitchRotationNode;
 @property (nonatomic, strong) SCNNode *cameraTargetNode;
 
+// GMS Map
+@property (nonatomic) NSInteger zoomSelection;
+
 @end
 
 @implementation MapViewController
-
-//- (void)mapView:(GMSMapView *)mapView
-//didChangeCameraPosition:(GMSCameraPosition *)position {
-//    [gmMapView animateToBearing:self
-//     NSLog(@"%@", position);
-//}
 
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -134,11 +131,8 @@ static const NSInteger handicap = 1;
 }
 
 
-
-- (void)viewDidLoad {
+- (void) viewDidLoad {
     [super viewDidLoad];
-    
-    
     
     [self setUpMotionManager];
     [self setUpLocationManagerAndHeading];
@@ -146,6 +140,7 @@ static const NSInteger handicap = 1;
     [UserController queryUsersNearCurrentUser:self.locationManager.location.coordinate withinMileRadius:10];
     [self setupSceneKitView];
     [self setUpDataView];
+    [self setUpPOVButton];
     
     // Create Dummy Data
     CLLocation *dummyLocale1 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.764, -111.896)
@@ -182,16 +177,21 @@ static const NSInteger handicap = 1;
             CMAttitude *attitude = motion.attitude;
             //            float offsetX = motion.attitude.roll * self.view.frame.size.width;
             //            float offsetY = motion.attitude.pitch * self.view.frame.size.height;
+            
             self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[self convertToDegrees:attitude.pitch]];
             
-            [gmMapView animateToBearing:[self convertToDegrees:attitude.yaw]];
-            [gmMapView animateToViewingAngle:45];
-            [gmMapView animateToZoom:20];
-            [gmMapView animateToLocation:self.myLocation.coordinate];
-            NSLog(@"%f", gmMapView.camera.viewingAngle);
+            //[gmMapView animateToBearing:[self convertToDegrees:attitude.yaw]];
+            //[gmMapView animateToViewingAngle:45];
+            //[gmMapView animateToZoom:20];
+            //[gmMapView animateToLocation:self.myLocation.coordinate];
+            // NSLog(@"%f", gmMapView.camera.viewingAngle);
+            
             self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (gmMapView.camera.viewingAngle) * (M_PI/180) );
             
-            NSLog(@"%f", [self convertToDegrees:attitude.yaw]);
+            self.cameraNode.position = SCNVector3Make(0, -((double)gmMapView.camera.zoom - 22) * 5  ,0);
+            NSLog(@"%f", -((double)gmMapView.camera.zoom - 22) * 5);
+            
+            // NSLog(@"%f", [self convertToDegrees:attitude.yaw]);
             
             // Set pitch limit for map camera
             //            if ([self convertToDegrees:attitude.pitch] > 75){
@@ -206,7 +206,8 @@ static const NSInteger handicap = 1;
     }
 }
 
-- (void)setUpLocationManagerAndHeading {
+
+- (void) setUpLocationManagerAndHeading {
     if (!self.locationManager) {
         
         // Retain the object in a property.
@@ -237,13 +238,17 @@ static const NSInteger handicap = 1;
 }
 
 
-- (void)showMainMapView {
+- (void) showMainMapView {
     
     
-    gmCamera = [GMSCameraPosition cameraWithLatitude:40.11 longitude:-111.01 zoom:6];
+    gmCamera = [GMSCameraPosition cameraWithTarget:self.myLocation.coordinate zoom:15 bearing:32 viewingAngle:17];
+    //    gmCamera = [GMSCameraPosition cameraWithLatitude:40.11 longitude:-111.01 zoom:6];
+    
     gmMapView = [GMSMapView mapWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height + 250) camera:gmCamera];
     gmMapView.myLocationEnabled = YES;
+    gmMapView.settings.scrollGestures = NO;
     gmMapView.delegate = self;
+    
     [self.view addSubview:gmMapView];
     
     GMSMarker *marker = [GMSMarker new];
@@ -279,7 +284,7 @@ static const NSInteger handicap = 1;
 }
 
 #pragma mark SceneKit methods
-- (void)setupSceneKitView {
+- (void) setupSceneKitView {
     // Init the scene and default lighting
     self.sceneView = [[SCNView alloc]initWithFrame:CGRectMake(0,0, self.view.frame.size.width, self.view.frame.size.height + 250)];
     self.sceneView.backgroundColor = [UIColor clearColor];
@@ -318,7 +323,7 @@ static const NSInteger handicap = 1;
     [scene.rootNode addChildNode:self.cameraHeadingRotationNode];
     
     // Create cube
-    self.cube = [SCNBox boxWithWidth:.1 height:.1 length:.1 chamferRadius:.005];
+    self.cube = [SCNBox boxWithWidth:.7 height:.7 length:.7 chamferRadius:.005];
     self.cube.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
     
     // Create ground
@@ -326,7 +331,6 @@ static const NSInteger handicap = 1;
     self.ground.firstMaterial.diffuse.contents = [UIColor brownColor];
     
     //SCNFloor use later
-    
     
     SCNNode *cubeNode = [SCNNode nodeWithGeometry:self.cube];
     cubeNode.position = SCNVector3Make(0, .05, 0);
@@ -374,25 +378,59 @@ static const NSInteger handicap = 1;
     [self.fireButton addTarget:self action:@selector(fireButtonPressed:) forControlEvents:UIControlEventTouchDown];
     [self.view addSubview:self.fireButton];
     
-    
+}
+
+- (void) setUpPOVButton {
+    UIButton *zoom = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    zoom.layer.cornerRadius = 25;
+    zoom.frame = CGRectMake(self.view.frame.size.width - 65, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height - 80, 50, 50);
+    UIImageView *homeIcon = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"homelocation"]];
+    homeIcon.frame = CGRectMake(zoom.frame.size.width / 2 - zoom.frame.size.width * 0.75 / 2, zoom.frame.size.height / 2 - zoom.frame.size.height * 0.75 / 2 , zoom.frame.size.width * 0.75, zoom.frame.size.height * 0.75);
+    [zoom addSubview:homeIcon];
+    zoom.tintColor = [UIColor whiteColor];
+    zoom.backgroundColor = [UIColor blueColor];
+    [self.view addSubview:zoom];
+    [zoom addTarget:self action:@selector(changeZoom) forControlEvents:UIControlEventTouchUpInside];
     
 }
+
+- (void) changeZoom {
+    
+    switch (self.zoomSelection) {
+        case 0:
+            [gmMapView animateToZoom:18];
+            self.zoomSelection = 1;
+            break;
+        case 1:
+            [gmMapView animateToZoom:17];
+            self.zoomSelection = 2;
+            break;
+        case 2:
+            [gmMapView animateToZoom:14];
+            self.zoomSelection = 0;
+            break;
+            
+    }
+    
+}
+
 
 - (double) convertToDegrees:(double)pitch {
     return pitch * 60;
 }
 
-- (void)fireButtonPressed:(id)sender {
+- (void) fireButtonPressed:(id)sender {
     
     double distanceOfProjectile = 0.005;
     CLLocationDegrees newLongitude = self.myLocation.coordinate.longitude + distanceOfProjectile;
     
     CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:self.myLocation.coordinate.latitude longitude:newLongitude];
     
+    
+    
+    
     Target *hitTarget = [[Target alloc]initWithTargetNumber:@"Hit position" location:hitLocation fromUserLocation:self.myLocation];
     [self.mapView addAnnotation:hitTarget];
-    
-    
     
     //NSLog(@"%f", self.mapView.camera.heading);
     //NSLog(@"TARGET %f",targetCamera.heading);
@@ -405,7 +443,7 @@ static const NSInteger handicap = 1;
     }
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+- (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 0)
         return;
     
@@ -415,21 +453,19 @@ static const NSInteger handicap = 1;
     
     self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * (M_PI/180));
     //self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (self.mapView.camera.pitch) * (M_PI/180) );
-    self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60)/17 + 4 ,0);
+
     
-    [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
-    
-    self.mapView.camera.heading = theHeading;
-    self.mapView.camera.altitude = 93;
-    self.mapView.camera.pitch = 78;
-    
+    // Apple Maps
+    //    self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60)/17 + 4 ,0);
+    //    [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
+    //    self.mapView.camera.heading = theHeading;
+    //    self.mapView.camera.altitude = 93;
+    //    self.mapView.camera.pitch = 78;
     
     //NSLog(@"%f", self.mapView.camera.heading);
-    
-    
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+- (void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
     self.mapView.showsUserLocation = NO;
     CLLocation *lastLocation = [locations lastObject];
     
@@ -446,12 +482,10 @@ static const NSInteger handicap = 1;
     }
 }
 
-- (void)didReceiveMemoryWarning {
+- (void) didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
     
 }
-
-
 
 @end
