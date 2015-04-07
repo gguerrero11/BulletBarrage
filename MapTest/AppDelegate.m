@@ -23,6 +23,7 @@
 #import "LeaderboardViewController.h"
 #import "ProfileviewControllerViewController.h"
 #import <Parse/Parse.h>
+#import <GoogleMaps/GoogleMaps.h>
 
 @interface AppDelegate ()
 
@@ -35,6 +36,8 @@
     
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarAnimationSlide;
     [UIApplication sharedApplication].statusBarHidden = YES;
+    
+    [GMSServices provideAPIKey:@"AIzaSyCS6OjomXIt4W-tlts-J7tG55sPJTK_sA4"];
     
     [Parse setApplicationId:@"7ueGpbdEj9VRrPEEjiE81T98AZ7WMDiI3xEwVpnx"
                   clientKey:@"OJgDQPnkJz6i2bsZWYomMLeuKAUzh2n5SOcn0Ciu"];
