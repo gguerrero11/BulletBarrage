@@ -14,6 +14,8 @@
 #import <Parse/Parse.h>
 #import "UserController.h"
 
+#import <GoogleMaps/GoogleMaps.h>
+
 @import SceneKit;
 
 static const NSInteger handicap = 1;
@@ -23,6 +25,7 @@ static const NSInteger handicap = 1;
 @interface MapViewController () <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate>
 {
     CMMotionManager *_motionManager;
+    GMSServices *gmMapView;
 }
 
 @property (nonatomic,strong) CLLocation *myLocation;
@@ -211,31 +214,37 @@ static const NSInteger handicap = 1;
     self.myLocation = self.locationManager.location;
 }
 
+
 - (void)showMainMapView {
-    
-    // create scroll view
-    UIScrollView *scrollView = [[UIScrollView alloc]initWithFrame:self.view.frame];
-    [self.view addSubview:scrollView];
-    
-    // attach the mapview to the scroll view so we can move the center for the map visually lower on the screen
-    self.mapView = [[MKMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 950)];
-    self.mapView.backgroundColor = [UIColor redColor];
-    self.mapView.mapType = MKMapTypeStandard;
-    self.mapView.delegate = self;
-    self.mapView.rotateEnabled = NO;
-    self.mapView.scrollEnabled = NO;
-    self.mapView.zoomEnabled = NO;
-    self.mapView.showsPointsOfInterest = NO;
-    self.mapView.showsBuildings = NO;
-    self.mapView.showsUserLocation = YES; // Must be YES in order for the MKMapView protocol to fire.
-    //[self.mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
-    [scrollView addSubview:self.mapView];
+
+
     
     
-    MKCoordinateSpan span = MKCoordinateSpanMake(0.14, 0.14);
-    MKCoordinateRegion region = MKCoordinateRegionMake(self.myLocation.coordinate, span);
     
-    [self.mapView setRegion:region animated:YES];
+    // Apple Maps
+//    // create scroll view
+//    UIScrollView *scrollView = [[UIScrollView alloc]initWithFrame:self.view.frame];
+//    [self.view addSubview:scrollView];
+//    
+//    // attach the mapview to the scroll view so we can move the center for the map visually lower on the screen
+//    self.mapView = [[MKMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 950)];
+//    self.mapView.backgroundColor = [UIColor redColor];
+//    self.mapView.mapType = MKMapTypeStandard;
+//    self.mapView.delegate = self;
+//    self.mapView.rotateEnabled = NO;
+//    self.mapView.scrollEnabled = NO;
+//    self.mapView.zoomEnabled = NO;
+//    self.mapView.showsPointsOfInterest = NO;
+//    self.mapView.showsBuildings = NO;
+//    self.mapView.showsUserLocation = YES; // Must be YES in order for the MKMapView protocol to fire.
+//    //[self.mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
+//    [scrollView addSubview:self.mapView];
+//    
+//    
+//    MKCoordinateSpan span = MKCoordinateSpanMake(0.14, 0.14);
+//    MKCoordinateRegion region = MKCoordinateRegionMake(self.myLocation.coordinate, span);
+//    
+//    [self.mapView setRegion:region animated:YES];
 }
 
 #pragma mark SceneKit methods
