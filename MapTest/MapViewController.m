@@ -17,7 +17,7 @@
 #import "Weapon.h"
 #import "WeaponController.h"
 #import "UserController.h"
-#import <math.h>
+
 
 #import <GoogleMaps/GoogleMaps.h>
 
@@ -25,7 +25,7 @@
 @import SceneKit;
 
 //static const NSInteger handicap = 1;
-static const NSInteger gravityStatic = -9.8;
+static const NSInteger gravityStatic = 9.8;
 
 ;
 
@@ -181,8 +181,6 @@ static const NSInteger gravityStatic = -9.8;
 
 - (void) setUpMotionManager {
     _motionManager = [CMMotionManager new];
-    
-    
     
     if (_motionManager.isGyroAvailable) {
         //tell maanger to start pulling gyroscope info
@@ -439,23 +437,23 @@ static const NSInteger gravityStatic = -9.8;
 }
 
 - (CGFloat) calculateDistanceFromUserWeapon {
-    
     Weapon *currentWeapon = [Weapon new];
     NSNumber *velocityOfProjectile = currentWeapon.velocity;
-    CGFloat range = [velocityOfProjectile floatValue] / gravityStatic * sin(2 * self.attitude.pitch);
-    NSLog(@"%f", self.attitude.pitch);
+    CGFloat range = ( pow([velocityOfProjectile doubleValue], 2 ) * sin(2 * self.attitude.pitch) / gravityStatic);
     return range;
+}
+
+- (CGFloat) latitudeDegreesFromDistance {
+    CGFloat distance = [self calculateDistanceFromUserWeapon];
+    return distance / 111111;
 }
 
 - (void) fireButtonPressed:(id)sender {
     [gmMapView clear];
     
-    double distanceOfProjectile = [self calculateDistanceFromUserWeapon];
-    NSLog(@"%f", distanceOfProjectile);
-    CLLocationDegrees newLongitude = self.myLocation.coordinate.longitude + distanceOfProjectile;
+    CLLocationDegrees newLongitude = self.myLocation.coordinate.longitude + [self latitudeDegreesFromDistance];
     
     CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:self.myLocation.coordinate.latitude longitude:newLongitude];
-    
     
     GMSMarker *hitMarker = [GMSMarker new];
     hitMarker.position = hitLocation.coordinate;
