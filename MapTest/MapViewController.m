@@ -153,7 +153,7 @@ static const NSInteger gravityStatic = 9.8;
     [self showMainMapView];
     [UserController queryUsersNearCurrentUser:self.locationManager.location.coordinate withinMileRadius:10];
     [self setupSceneKitView];
-    [self setUpDataView];
+    [self setUpDataViewFireButton];
     [self setUpPOVButton];
     
     // Create Dummy Data
@@ -366,7 +366,7 @@ static const NSInteger gravityStatic = 9.8;
     
 }
 
-- (void) setUpDataView {
+- (void) setUpDataViewFireButton {
     
     // Set up grey box
     double widthOfStatView = self.view.frame.size.width *0.3;
@@ -390,9 +390,11 @@ static const NSInteger gravityStatic = 9.8;
     self.pitchLabelData.textColor = [UIColor blackColor];
     
     // Set up fire button
-    self.fireButton = [[UIButton alloc]initWithFrame:CGRectMake(0, self.view.frame.size.height - 100, self.view.frame.size.width, 40)];
+    self.fireButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 30, self.view.frame.size.height - 130, 80, 80)];
+    self.fireButton.layer.cornerRadius = 40;
+    self.fireButton.backgroundColor = [UIColor redColor];
     [self.fireButton setTitle:@"Fire!" forState:UIControlStateNormal];
-    [self.fireButton setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    [self.fireButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.fireButton addTarget:self action:@selector(fireButtonPressed:) forControlEvents:UIControlEventTouchDown];
     [self.view addSubview:self.fireButton];
     
@@ -445,9 +447,9 @@ static const NSInteger gravityStatic = 9.8;
 
 - (CLLocationCoordinate2D) calculateHitLocation {
     
-    
-    double meterOffsetLongitude = [self calculateDistanceFromUserWeapon] * sin(self.attitude.yaw);
-    double meterOffsetLatitude = [self calculateDistanceFromUserWeapon] * cos(self.attitude.yaw);
+    // using laws of cosine/sine to calculate a / b sides of a right triangle based on the hypotenuse (distance of projectile)
+    double meterOffsetLongitude = [self calculateDistanceFromUserWeapon] * cos(self.attitude.yaw);
+    double meterOffsetLatitude = [self calculateDistanceFromUserWeapon] * sin(self.attitude.yaw);
     
     // convert meter offsets to degrees, ("dirty caluclation" of 111,111m = 1 degree)
     double degreeOffsetLongitude = meterOffsetLongitude / 111111;

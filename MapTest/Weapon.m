@@ -11,7 +11,7 @@
 @implementation Weapon
 
 - (NSNumber *) velocity {
-    return @30;
+    return @100;
 }
 
 @end
