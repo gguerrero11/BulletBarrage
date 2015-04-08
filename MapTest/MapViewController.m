@@ -283,6 +283,12 @@ static const NSInteger handicap = 1;
     //    [self.mapView setRegion:region animated:YES];
 }
 
+- (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
+
+    
+    return YES;
+}
+
 #pragma mark SceneKit methods
 - (void) setupSceneKitView {
     // Init the scene and default lighting
@@ -427,20 +433,27 @@ static const NSInteger handicap = 1;
     CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:self.myLocation.coordinate.latitude longitude:newLongitude];
     
     
+    GMSMarker *hitMarker = [GMSMarker new];
+    hitMarker.position = hitLocation.coordinate;
+    hitMarker.title = @"Target";
+    hitMarker.snippet = @"HIT";
+    hitMarker.map = gmMapView;
     
+
     
-    Target *hitTarget = [[Target alloc]initWithTargetNumber:@"Hit position" location:hitLocation fromUserLocation:self.myLocation];
-    [self.mapView addAnnotation:hitTarget];
-    
-    //NSLog(@"%f", self.mapView.camera.heading);
-    //NSLog(@"TARGET %f",targetCamera.heading);
-    if ( self.mapView.camera.heading > self.targetCamera.heading - handicap &&
-        self.mapView.camera.heading < self.targetCamera.heading + handicap) {
-        
-        NSLog(@"BOOM! HIT!");
-    } else {
-        NSLog(@"You missed! ");
-    }
+    // Apple Maps
+//    Target *hitTarget = [[Target alloc]initWithTargetNumber:@"Hit position" location:hitLocation fromUserLocation:self.myLocation];
+//    [self.mapView addAnnotation:hitTarget];
+//    
+//    //NSLog(@"%f", self.mapView.camera.heading);
+//    //NSLog(@"TARGET %f",targetCamera.heading);
+//    if ( self.mapView.camera.heading > self.targetCamera.heading - handicap &&
+//        self.mapView.camera.heading < self.targetCamera.heading + handicap) {
+//        
+//        NSLog(@"BOOM! HIT!");
+//    } else {
+//        NSLog(@"You missed! ");
+//    }
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
