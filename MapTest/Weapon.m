@@ -6,13 +6,12 @@
 //  Copyright (c) 2015 Gabe Guerrero. All rights reserved.
 //
 
-#import "Projectile.h"
+#import "Weapon.h"
 
-@implementation Projectile
+@implementation Weapon
 
 - (NSNumber *) velocity {
     return @30;
 }
-
 
 @end

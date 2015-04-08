@@ -9,8 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <math.h>
 
-@interface Projectile : NSObject
+static NSString * const velocityKey = @"velocity";
+
+
+@interface Weapon : NSObject
 
 @property (nonatomic) NSNumber *velocity;
+
 
 @end

@@ -68,7 +68,7 @@
     
     // Sets cell color to indicate the current user, and its ability to be selected
     if ([user.objectId isEqualToString:[PFUser currentUser].objectId]) {
-        cell.backgroundColor = [UIColor colorWithRed:.37 green:.55 blue:.835 alpha:1];
+        cell.backgroundColor = [UIColor colorWithRed:.47 green:.65 blue:.935 alpha:1];
         cell.textLabel.textColor = [UIColor whiteColor];
         NSLog(@"%@", cell.backgroundColor);
         cell.userInteractionEnabled = NO;

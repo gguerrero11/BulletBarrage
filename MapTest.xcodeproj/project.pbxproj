@@ -7,12 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		493583DF1AD5B173007A46EC /* WeaponController.m in Sources */ = {isa = PBXBuildFile; fileRef = 493583DE1AD5B173007A46EC /* WeaponController.m */; };
 		49603D641AD0B84700AB3E50 /* WeaponsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D631AD0B84700AB3E50 /* WeaponsTableViewCell.m */; };
 		49603D671AD0B87200AB3E50 /* AvatarTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D661AD0B87200AB3E50 /* AvatarTableViewCell.m */; };
 		49603D6C1AD1022300AB3E50 /* CustomLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D691AD1022300AB3E50 /* CustomLoginViewController.m */; };
 		49603D6D1AD1022300AB3E50 /* CustomSignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D6B1AD1022300AB3E50 /* CustomSignUpViewController.m */; };
 		49603D711AD20ADF00AB3E50 /* UserController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D701AD20ADF00AB3E50 /* UserController.m */; };
-		4968573F1AD5993E000CE114 /* Projectile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4968573E1AD5993E000CE114 /* Projectile.m */; };
+		4968573F1AD5993E000CE114 /* Weapon.m in Sources */ = {isa = PBXBuildFile; fileRef = 4968573E1AD5993E000CE114 /* Weapon.m */; };
 		497063471AD0B68600FBA403 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 497063441AD0B68600FBA403 /* Bolts.framework */; };
 		497063481AD0B68600FBA403 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 497063451AD0B68600FBA403 /* Parse.framework */; };
 		497063491AD0B68600FBA403 /* ParseUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 497063461AD0B68600FBA403 /* ParseUI.framework */; };
@@ -68,6 +69,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		493583DD1AD5B173007A46EC /* WeaponController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeaponController.h; sourceTree = "<group>"; };
+		493583DE1AD5B173007A46EC /* WeaponController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeaponController.m; sourceTree = "<group>"; };
 		49603D621AD0B84700AB3E50 /* WeaponsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeaponsTableViewCell.h; sourceTree = "<group>"; };
 		49603D631AD0B84700AB3E50 /* WeaponsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeaponsTableViewCell.m; sourceTree = "<group>"; };
 		49603D651AD0B87200AB3E50 /* AvatarTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvatarTableViewCell.h; sourceTree = "<group>"; };
@@ -78,8 +81,8 @@
 		49603D6B1AD1022300AB3E50 /* CustomSignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomSignUpViewController.m; sourceTree = "<group>"; };
 		49603D6F1AD20ADF00AB3E50 /* UserController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserController.h; sourceTree = "<group>"; };
 		49603D701AD20ADF00AB3E50 /* UserController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserController.m; sourceTree = "<group>"; };
-		4968573D1AD5993E000CE114 /* Projectile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Projectile.h; sourceTree = "<group>"; };
-		4968573E1AD5993E000CE114 /* Projectile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Projectile.m; sourceTree = "<group>"; };
+		4968573D1AD5993E000CE114 /* Weapon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Weapon.h; sourceTree = "<group>"; };
+		4968573E1AD5993E000CE114 /* Weapon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Weapon.m; sourceTree = "<group>"; };
 		497063441AD0B68600FBA403 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = MapTest/Bolts.framework; sourceTree = "<group>"; };
 		497063451AD0B68600FBA403 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parse.framework; path = MapTest/Parse.framework; sourceTree = "<group>"; };
 		497063461AD0B68600FBA403 /* ParseUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ParseUI.framework; path = MapTest/ParseUI.framework; sourceTree = "<group>"; };
@@ -197,8 +200,10 @@
 		496857401AD59946000CE114 /* Weapons */ = {
 			isa = PBXGroup;
 			children = (
-				4968573D1AD5993E000CE114 /* Projectile.h */,
-				4968573E1AD5993E000CE114 /* Projectile.m */,
+				4968573D1AD5993E000CE114 /* Weapon.h */,
+				4968573E1AD5993E000CE114 /* Weapon.m */,
+				493583DD1AD5B173007A46EC /* WeaponController.h */,
+				493583DE1AD5B173007A46EC /* WeaponController.m */,
 			);
 			name = Weapons;
 			sourceTree = "<group>";
@@ -459,9 +464,10 @@
 				49603D641AD0B84700AB3E50 /* WeaponsTableViewCell.m in Sources */,
 				49603D711AD20ADF00AB3E50 /* UserController.m in Sources */,
 				49B9DBC11ACDD519003EA46E /* AppDelegate.m in Sources */,
-				4968573F1AD5993E000CE114 /* Projectile.m in Sources */,
+				4968573F1AD5993E000CE114 /* Weapon.m in Sources */,
 				49B9DC441ACF4952003EA46E /* ProfileTableViewCell.m in Sources */,
 				49603D6C1AD1022300AB3E50 /* CustomLoginViewController.m in Sources */,
+				493583DF1AD5B173007A46EC /* WeaponController.m in Sources */,
 				49B9DBEE1ACDDB3E003EA46E /* Target.m in Sources */,
 				49B9DBBE1ACDD519003EA46E /* main.m in Sources */,
 			);

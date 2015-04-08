@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
+#import "Weapon.h"
 
 
 
@@ -19,6 +20,10 @@
 
 + (void) queryUsersNearCurrentUser:(CLLocationCoordinate2D)coordinates
                   withinMileRadius:(double)radiusFromLocationInMiles;
+
++ (void) setWeapon:(Weapon *)weapon {
+    
+}
 
 
 @end

@@ -14,14 +14,16 @@
 #import <Parse/Parse.h>
 #import "UserController.h"
 
-#import "Projectile.h"
+#import "Weapon.h"
+#import <math.h>
 
 #import <GoogleMaps/GoogleMaps.h>
 
 
 @import SceneKit;
 
-static const NSInteger handicap = 1;
+//static const NSInteger handicap = 1;
+static const CGFloat gravityStatic = -9.8;
 
 ;
 
@@ -49,7 +51,10 @@ static const NSInteger handicap = 1;
 @property (nonatomic, strong) SCNNode *cameraTargetNode;
 
 // GMS Map
-@property (nonatomic) NSInteger zoomSelection;
+@property (nonatomic,assign) NSInteger zoomSelection;
+
+
+@property (nonatomic,strong) CMAttitude *attitude;
 
 @end
 
@@ -139,6 +144,8 @@ static const NSInteger handicap = 1;
 - (void) viewDidLoad {
     [super viewDidLoad];
     
+    
+    
     [self setUpMotionManager];
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
@@ -179,11 +186,11 @@ static const NSInteger handicap = 1;
         //tell maanger to start pulling gyroscope info
         [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
             // attitude what its 3d orientation is (pitch, roll, yaw)
-            CMAttitude *attitude = motion.attitude;
+            self.attitude = motion.attitude;
             //            float offsetX = motion.attitude.roll * self.view.frame.size.width;
             //            float offsetY = motion.attitude.pitch * self.view.frame.size.height;
             
-            self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[self convertToDegrees:attitude.pitch]];
+            self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[self convertToDegrees:self.attitude.pitch]];
             
             //[gmMapView animateToBearing:[self convertToDegrees:attitude.yaw]];
             //[gmMapView animateToViewingAngle:45];
@@ -430,9 +437,15 @@ static const NSInteger handicap = 1;
     return pitch * 60;
 }
 
+- (void) calculateDistanceFromVelocity:(CGFloat)velocityOfProjectile {
+//    CGFloat *range = (velocityOfProjectile / gravityStatic) * sin(2 * self.attitude.pitch);
+
+
+}
+
 - (void) fireButtonPressed:(id)sender {
     
-    Projectile *shell = [Projectile new];
+    Weapon *shell = [Weapon new];
     NSLog(@"%@",shell.velocity);
     
     
