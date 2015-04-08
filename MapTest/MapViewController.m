@@ -443,18 +443,29 @@ static const NSInteger gravityStatic = 9.8;
     return range;
 }
 
-- (CGFloat) latitudeDegreesFromDistance {
-    CGFloat distance = [self calculateDistanceFromUserWeapon];
-    return distance / 111111;
+- (CLLocationCoordinate2D) calculateHitLocation {
+    
+    
+    double meterOffsetLongitude = [self calculateDistanceFromUserWeapon] * sin(self.attitude.yaw);
+    double meterOffsetLatitude = [self calculateDistanceFromUserWeapon] * cos(self.attitude.yaw);
+    
+    // convert meter offsets to degrees, ("dirty caluclation" of 111,111m = 1 degree)
+    double degreeOffsetLongitude = meterOffsetLongitude / 111111;
+    double degreeOffsetLatitude = meterOffsetLatitude / 111111;
+    
+    NSLog(@"%f", self.attitude.yaw);
+    
+    return CLLocationCoordinate2DMake(self.myLocation.coordinate.latitude + degreeOffsetLatitude,
+                                      self.myLocation.coordinate.longitude + degreeOffsetLongitude);
 }
 
 - (void) fireButtonPressed:(id)sender {
     [gmMapView clear];
     
-    CLLocationDegrees newLongitude = self.myLocation.coordinate.longitude + [self latitudeDegreesFromDistance];
+    CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
+                                                        longitude:[self calculateHitLocation].longitude];
     
-    CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:self.myLocation.coordinate.latitude longitude:newLongitude];
-    
+    NSLog(@"%@", hitLocation);
     GMSMarker *hitMarker = [GMSMarker new];
     hitMarker.position = hitLocation.coordinate;
     hitMarker.title = @"Target";
