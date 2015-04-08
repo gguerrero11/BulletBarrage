@@ -15,6 +15,8 @@
 #import "UserController.h"
 
 #import "Weapon.h"
+#import "WeaponController.h"
+#import "UserController.h"
 #import <math.h>
 
 #import <GoogleMaps/GoogleMaps.h>
@@ -23,7 +25,7 @@
 @import SceneKit;
 
 //static const NSInteger handicap = 1;
-static const CGFloat gravityStatic = -9.8;
+static const NSInteger gravityStatic = -9.8;
 
 ;
 
@@ -144,7 +146,7 @@ static const CGFloat gravityStatic = -9.8;
 - (void) viewDidLoad {
     [super viewDidLoad];
     
-    
+    [UserController setWeaponForUser:cannon];
     
     [self setUpMotionManager];
     [self setUpLocationManagerAndHeading];
@@ -296,7 +298,7 @@ static const CGFloat gravityStatic = -9.8;
 }
 
 - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
-
+    
     
     return YES;
 }
@@ -432,25 +434,24 @@ static const CGFloat gravityStatic = -9.8;
     
 }
 
-
 - (double) convertToDegrees:(double)pitch {
     return pitch * 60;
 }
 
-- (void) calculateDistanceFromVelocity:(CGFloat)velocityOfProjectile {
-//    CGFloat *range = (velocityOfProjectile / gravityStatic) * sin(2 * self.attitude.pitch);
-
-
+- (CGFloat) calculateDistanceFromUserWeapon {
+    
+    Weapon *currentWeapon = [Weapon new];
+    NSNumber *velocityOfProjectile = currentWeapon.velocity;
+    CGFloat range = [velocityOfProjectile floatValue] / gravityStatic * sin(2 * self.attitude.pitch);
+    NSLog(@"%f", self.attitude.pitch);
+    return range;
 }
 
 - (void) fireButtonPressed:(id)sender {
+    [gmMapView clear];
     
-    Weapon *shell = [Weapon new];
-    NSLog(@"%@",shell.velocity);
-    
-    
-    double distanceOfProjectile = 0.005;
-
+    double distanceOfProjectile = [self calculateDistanceFromUserWeapon];
+    NSLog(@"%f", distanceOfProjectile);
     CLLocationDegrees newLongitude = self.myLocation.coordinate.longitude + distanceOfProjectile;
     
     CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:self.myLocation.coordinate.latitude longitude:newLongitude];
@@ -462,21 +463,21 @@ static const CGFloat gravityStatic = -9.8;
     hitMarker.snippet = @"HIT";
     hitMarker.map = gmMapView;
     
-
+    
     
     // Apple Maps
-//    Target *hitTarget = [[Target alloc]initWithTargetNumber:@"Hit position" location:hitLocation fromUserLocation:self.myLocation];
-//    [self.mapView addAnnotation:hitTarget];
-//    
-//    //NSLog(@"%f", self.mapView.camera.heading);
-//    //NSLog(@"TARGET %f",targetCamera.heading);
-//    if ( self.mapView.camera.heading > self.targetCamera.heading - handicap &&
-//        self.mapView.camera.heading < self.targetCamera.heading + handicap) {
-//        
-//        NSLog(@"BOOM! HIT!");
-//    } else {
-//        NSLog(@"You missed! ");
-//    }
+    //    Target *hitTarget = [[Target alloc]initWithTargetNumber:@"Hit position" location:hitLocation fromUserLocation:self.myLocation];
+    //    [self.mapView addAnnotation:hitTarget];
+    //
+    //    //NSLog(@"%f", self.mapView.camera.heading);
+    //    //NSLog(@"TARGET %f",targetCamera.heading);
+    //    if ( self.mapView.camera.heading > self.targetCamera.heading - handicap &&
+    //        self.mapView.camera.heading < self.targetCamera.heading + handicap) {
+    //
+    //        NSLog(@"BOOM! HIT!");
+    //    } else {
+    //        NSLog(@"You missed! ");
+    //    }
     
 }
 
@@ -490,7 +491,7 @@ static const CGFloat gravityStatic = -9.8;
     
     self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * (M_PI/180));
     //self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (self.mapView.camera.pitch) * (M_PI/180) );
-
+    
     
     // Apple Maps
     //    self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60)/17 + 4 ,0);

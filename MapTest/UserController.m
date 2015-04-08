@@ -9,8 +9,10 @@
 #import "UserController.h"
 #import <Parse/Parse.h>
 #import <MapKit/MapKit.h>
+#import "WeaponController.h"
 
 static NSString *userLocationkey = @"userLocation";
+static NSString * const weaponNameKey = @"weaponSelected";
 
 @implementation UserController
 
@@ -46,6 +48,20 @@ static NSString *userLocationkey = @"userLocation";
         }
     }];
     
+}
+
++ (Weapon *) setWeaponForUser:(NSString *)weaponString {
+    [PFUser currentUser][weaponNameKey] = weaponString;
+    [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            NSLog(@"User Saved");
+        } else {
+            NSLog(@"%@", error);
+        }
+    }];
+    
+    Weapon *weapon = [WeaponController setWeapon:weaponString];
+    return weapon;
 }
 
 

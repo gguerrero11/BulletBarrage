@@ -14,16 +14,15 @@
 
 @interface UserController : NSObject
 
-+ (UserController *) sharedInstance;
-
 @property (nonatomic,strong) NSArray *arrayOfUsers;
+
++ (UserController *) sharedInstance;
 
 + (void) queryUsersNearCurrentUser:(CLLocationCoordinate2D)coordinates
                   withinMileRadius:(double)radiusFromLocationInMiles;
 
-+ (void) setWeapon:(Weapon *)weapon {
-    
-}
++ (Weapon *) setWeaponForUser:(NSString *)weaponString;
+
 
 
 @end

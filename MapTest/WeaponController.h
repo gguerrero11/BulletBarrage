@@ -13,6 +13,8 @@ static NSString * const cannon = @"cannon";
 
 @interface WeaponController : NSObject
 
+
+
 + (Weapon *) setWeapon:(NSString *)weapon;
 
 @end
