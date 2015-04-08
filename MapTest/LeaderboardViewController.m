@@ -32,6 +32,20 @@ static double padding = 15;
 
 @implementation LeaderboardViewController
 
+- (void) registerForNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"updateTable" object:nil];
+    //[self.loadCircle removeFromSuperview];
+}
+
+- (void) reloadTable {
+    
+    // NOTE: Putting the reloadData in the main queue SOLVES the issue where the user has to interact with the table in order for the table to reload, visually
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tableView reloadData];
+    });
+}
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"Leaderboards";
@@ -50,7 +64,7 @@ static double padding = 15;
     // create segment control
     self.segControl = [[UISegmentedControl alloc]initWithItems:array];
     self.segControl.frame = CGRectMake(padding, self.heightOfStatusBarNavBar + padding, self.view.frame.size.width - padding * 2, 35);
-    self.segControl.selectedSegmentIndex = 2;
+    self.segControl.selectedSegmentIndex = 0;
     [self.segControl addTarget:self action:@selector(updateSort:) forControlEvents:UIControlEventValueChanged];
     [self.view addSubview:self.segControl];
     

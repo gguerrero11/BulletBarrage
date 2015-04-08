@@ -17,12 +17,13 @@ typedef enum
     
 } SortMode ;
 
-static NSString *cellIdentifier = @"leaderboardCell";
-static NSString *usernameKey = @"username";
-static NSString *distanceKey = @"longestDistance";
-static NSString *deathKey = @"deaths";
-static NSString *killKey = @"kills";
-static NSString *accuracyKey = @"accuracy";
+static NSString * const cellIdentifier = @"leaderboardCell";
+static NSString * const usernameKey = @"username";
+static NSString * const distanceKey = @"longestDistance";
+static NSString * const deathKey = @"deaths";
+static NSString * const killKey = @"kills";
+static NSString * const accuracyKey = @"accuracy";
+static NSString * const objectIdKey = @"objectId";
 
 @interface LeaderboardDataSource : NSObject  <UITableViewDataSource>
 

@@ -41,6 +41,8 @@ static NSString *userLocationkey = @"userLocation";
             [UserController sharedInstance].arrayOfUsers = objects;
             
             //NSLog(@"Videos Near Location: %@",[UserController sharedInstance].arrayOfUsers);
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"updateTable" object:nil];
         }
     }];
     

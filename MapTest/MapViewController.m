@@ -14,7 +14,10 @@
 #import <Parse/Parse.h>
 #import "UserController.h"
 
+#import "Projectile.h"
+
 #import <GoogleMaps/GoogleMaps.h>
+
 
 @import SceneKit;
 
@@ -51,6 +54,8 @@ static const NSInteger handicap = 1;
 @end
 
 @implementation MapViewController
+
+
 
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -189,7 +194,7 @@ static const NSInteger handicap = 1;
             self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (gmMapView.camera.viewingAngle) * (M_PI/180) );
             
             self.cameraNode.position = SCNVector3Make(0, -((double)gmMapView.camera.zoom - 22) * 5  ,0);
-            NSLog(@"%f", -((double)gmMapView.camera.zoom - 22) * 5);
+            //NSLog(@"%f", -((double)gmMapView.camera.zoom - 22) * 5);
             
             // NSLog(@"%f", [self convertToDegrees:attitude.yaw]);
             
@@ -427,7 +432,12 @@ static const NSInteger handicap = 1;
 
 - (void) fireButtonPressed:(id)sender {
     
+    Projectile *shell = [Projectile new];
+    NSLog(@"%@",shell.velocity);
+    
+    
     double distanceOfProjectile = 0.005;
+
     CLLocationDegrees newLongitude = self.myLocation.coordinate.longitude + distanceOfProjectile;
     
     CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:self.myLocation.coordinate.latitude longitude:newLongitude];
@@ -454,6 +464,7 @@ static const NSInteger handicap = 1;
 //    } else {
 //        NSLog(@"You missed! ");
 //    }
+    
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
@@ -474,7 +485,6 @@ static const NSInteger handicap = 1;
     //    self.mapView.camera.heading = theHeading;
     //    self.mapView.camera.altitude = 93;
     //    self.mapView.camera.pitch = 78;
-    
     //NSLog(@"%f", self.mapView.camera.heading);
 }
 

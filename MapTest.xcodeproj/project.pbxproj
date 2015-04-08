@@ -12,6 +12,7 @@
 		49603D6C1AD1022300AB3E50 /* CustomLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D691AD1022300AB3E50 /* CustomLoginViewController.m */; };
 		49603D6D1AD1022300AB3E50 /* CustomSignUpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D6B1AD1022300AB3E50 /* CustomSignUpViewController.m */; };
 		49603D711AD20ADF00AB3E50 /* UserController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D701AD20ADF00AB3E50 /* UserController.m */; };
+		4968573F1AD5993E000CE114 /* Projectile.m in Sources */ = {isa = PBXBuildFile; fileRef = 4968573E1AD5993E000CE114 /* Projectile.m */; };
 		497063471AD0B68600FBA403 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 497063441AD0B68600FBA403 /* Bolts.framework */; };
 		497063481AD0B68600FBA403 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 497063451AD0B68600FBA403 /* Parse.framework */; };
 		497063491AD0B68600FBA403 /* ParseUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 497063461AD0B68600FBA403 /* ParseUI.framework */; };
@@ -77,6 +78,8 @@
 		49603D6B1AD1022300AB3E50 /* CustomSignUpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomSignUpViewController.m; sourceTree = "<group>"; };
 		49603D6F1AD20ADF00AB3E50 /* UserController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserController.h; sourceTree = "<group>"; };
 		49603D701AD20ADF00AB3E50 /* UserController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserController.m; sourceTree = "<group>"; };
+		4968573D1AD5993E000CE114 /* Projectile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Projectile.h; sourceTree = "<group>"; };
+		4968573E1AD5993E000CE114 /* Projectile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Projectile.m; sourceTree = "<group>"; };
 		497063441AD0B68600FBA403 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = MapTest/Bolts.framework; sourceTree = "<group>"; };
 		497063451AD0B68600FBA403 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Parse.framework; path = MapTest/Parse.framework; sourceTree = "<group>"; };
 		497063461AD0B68600FBA403 /* ParseUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ParseUI.framework; path = MapTest/ParseUI.framework; sourceTree = "<group>"; };
@@ -191,6 +194,15 @@
 			name = Login;
 			sourceTree = "<group>";
 		};
+		496857401AD59946000CE114 /* Weapons */ = {
+			isa = PBXGroup;
+			children = (
+				4968573D1AD5993E000CE114 /* Projectile.h */,
+				4968573E1AD5993E000CE114 /* Projectile.m */,
+			);
+			name = Weapons;
+			sourceTree = "<group>";
+		};
 		497063661AD0B71200FBA403 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -297,6 +309,7 @@
 				49B9DBEC1ACDDB3E003EA46E /* Target.h */,
 				49B9DBED1ACDDB3E003EA46E /* Target.m */,
 				49835E151AD39C050058917B /* GoogleMapAPI.h */,
+				496857401AD59946000CE114 /* Weapons */,
 			);
 			name = MapView;
 			sourceTree = "<group>";
@@ -446,6 +459,7 @@
 				49603D641AD0B84700AB3E50 /* WeaponsTableViewCell.m in Sources */,
 				49603D711AD20ADF00AB3E50 /* UserController.m in Sources */,
 				49B9DBC11ACDD519003EA46E /* AppDelegate.m in Sources */,
+				4968573F1AD5993E000CE114 /* Projectile.m in Sources */,
 				49B9DC441ACF4952003EA46E /* ProfileTableViewCell.m in Sources */,
 				49603D6C1AD1022300AB3E50 /* CustomLoginViewController.m in Sources */,
 				49B9DBEE1ACDDB3E003EA46E /* Target.m in Sources */,

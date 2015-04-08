@@ -53,7 +53,7 @@
             // Sorting the array by Kill/Death for each User
         case sortByKill:
             descriptor = [[NSSortDescriptor alloc] initWithKey:killKey ascending:NO];
-
+            
             break;
             
             // Sorting the array by Accuracy for each User
@@ -66,18 +66,28 @@
     NSArray *arraySorted = [arrayOfUsers sortedArrayUsingDescriptors:sortDescriptors];
     PFUser *user = arraySorted[indexPath.row];
     
+    // Sets cell color to indicate the current user, and its ability to be selected
+    if ([user.objectId isEqualToString:[PFUser currentUser].objectId]) {
+        cell.backgroundColor = [UIColor colorWithRed:.37 green:.55 blue:.835 alpha:1];
+        cell.textLabel.textColor = [UIColor whiteColor];
+        NSLog(@"%@", cell.backgroundColor);
+        cell.userInteractionEnabled = NO;
+    } else {
+        cell.backgroundColor = [UIColor whiteColor];
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.userInteractionEnabled = YES;
+    }
+    
     switch (self.sortMode)
     {
             // Sorting the array by Distance for each User
         case sortByDistance:
             cell.textLabel.text = [NSString stringWithFormat:@"%lu. %@ %@m", indexPath.row + 1, user[usernameKey], user[distanceKey]];
-            
             break;
             
             // Sorting the array by Kill/Death for each User
         case sortByKill:
-            cell.textLabel.text = [NSString stringWithFormat:@"%lu. %@ %@/%@", indexPath.row + 1, user[usernameKey] ,user[killKey], user[deathKey]];
-            
+            cell.textLabel.text = [NSString stringWithFormat:@"%lu. %@ %@/%@", indexPath.row + 1, user[usernameKey],user[killKey],user[deathKey]];
             break;
             
             // Sorting the array by Accuracy for each User
