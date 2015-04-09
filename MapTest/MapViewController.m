@@ -181,6 +181,8 @@ static bool kAnimate = true;
     [self setUpDataViewFireButton];
     [self setUpPOVButton];
     
+    [self createDummyTargets];
+    
     self.arrayOfCraters = [NSMutableArray new];
 }
 
@@ -195,6 +197,16 @@ static bool kAnimate = true;
                                                              altitude:0 horizontalAccuracy:25
                                                      verticalAccuracy:25
                                                             timestamp:[NSDate date]];
+    
+    GMSMarker *marker = [[GMSMarker alloc] init];
+    marker.position = dummyLocale1.coordinate;
+    marker.appearAnimation = kGMSMarkerAnimationPop;
+    marker.map = gmMapView;
+    
+    GMSMarker *marker2 = [[GMSMarker alloc] init];
+    marker2.position = dummyLocale2.coordinate;
+    marker2.appearAnimation = kGMSMarkerAnimationPop;
+    marker2.map = gmMapView;
     
 
 }
