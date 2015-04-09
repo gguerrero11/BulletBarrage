@@ -44,19 +44,23 @@ static const NSInteger gravityStatic = 9.8;
 
 // SceneKit Properties
 @property (strong, nonatomic) SCNView *sceneView;
-@property (nonatomic, strong) SCNNode *cubeNode;
-@property (nonatomic, strong) SCNBox *cube;
+@property (nonatomic, strong) SCNNode *pyramidNode;
+@property (nonatomic, strong) SCNPyramid *pyramid;
 @property (nonatomic, strong) SCNBox *ground;
 @property (nonatomic, strong) SCNNode *cameraNode;
-@property (nonatomic, strong) SCNNode *cameraHeadingRotationNode;
+@property (nonatomic, strong) SCNNode *cameraSceneKitHeadingRotationNode;
 @property (nonatomic, strong) SCNNode *cameraPitchRotationNode;
 @property (nonatomic, strong) SCNNode *cameraTargetNode;
 
 // GMS Map
 @property (nonatomic,assign) NSInteger zoomSelection;
+@property (nonatomic,assign) double pitchWithLimit;
+@property (nonatomic,strong) NSMutableArray *arrayOfCraters;
 
 
+// CMDevice motion
 @property (nonatomic,strong) CMAttitude *attitude;
+@property (nonatomic) double deviceYaw;
 
 @end
 
@@ -146,6 +150,7 @@ static const NSInteger gravityStatic = 9.8;
 - (void) viewDidLoad {
     [super viewDidLoad];
     
+    
     [UserController setWeaponForUser:cannon];
     
     [self setUpMotionManager];
@@ -155,6 +160,8 @@ static const NSInteger gravityStatic = 9.8;
     [self setupSceneKitView];
     [self setUpDataViewFireButton];
     [self setUpPOVButton];
+    
+    self.arrayOfCraters = [NSMutableArray new];
     
     // Create Dummy Data
     CLLocation *dummyLocale1 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.764, -111.896)
@@ -173,9 +180,7 @@ static const NSInteger gravityStatic = 9.8;
     [self.mapView addAnnotation:testTarget2];
     
     self.targetCamera = [MKMapCamera cameraLookingAtCenterCoordinate:testTarget1.coordinate fromEyeCoordinate:self.myLocation.coordinate eyeAltitude:10];
-    
-    // Set this in an array for all headings of targets
-    NSLog(@"TARGET %f", self.targetCamera.heading);
+
     
 }
 
@@ -184,40 +189,45 @@ static const NSInteger gravityStatic = 9.8;
     
     if (_motionManager.isGyroAvailable) {
         //tell maanger to start pulling gyroscope info
-        [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
+        
+        [_motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical toQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
+            
             // attitude what its 3d orientation is (pitch, roll, yaw)
             self.attitude = motion.attitude;
-            //            float offsetX = motion.attitude.roll * self.view.frame.size.width;
-            //            float offsetY = motion.attitude.pitch * self.view.frame.size.height;
+            self.deviceYaw = motion.attitude.yaw + 1.55;
             
-            self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[self convertToDegrees:self.attitude.pitch]];
+            self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[self convertToDegrees:self.pitchWithLimit]];
             
-            //[gmMapView animateToBearing:[self convertToDegrees:attitude.yaw]];
-            //[gmMapView animateToViewingAngle:45];
-            //[gmMapView animateToZoom:20];
+            [gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
+            [gmMapView animateToViewingAngle:45];
             //[gmMapView animateToLocation:self.myLocation.coordinate];
             // NSLog(@"%f", gmMapView.camera.viewingAngle);
             
+            // Set pitch limit for map camera
+            if (self.attitude.pitch <= 0){
+                self.pitchWithLimit = 0;
+            } else {
+                self.pitchWithLimit = self.attitude.pitch;
+            }
             self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (gmMapView.camera.viewingAngle) * (M_PI/180) );
-            
+
             self.cameraNode.position = SCNVector3Make(0, -((double)gmMapView.camera.zoom - 22) * 5  ,0);
             //NSLog(@"%f", -((double)gmMapView.camera.zoom - 22) * 5);
             
             // NSLog(@"%f", [self convertToDegrees:attitude.yaw]);
             
-            // Set pitch limit for map camera
-            //            if ([self convertToDegrees:attitude.pitch] > 75){
-            //                self.mapView.camera.pitch = 75;
-            //            } else {
-            //            self.mapView.camera.pitch = [self convertToDegrees:attitude.pitch];
-            //            }
+//            // Set pitch limit for map camera
+//                        if ([self convertToDegrees:self.attitude.pitch] > 75){
+//                            self.mapView.camera.pitch = 75;
+//                        } else {
+//                        self.mapView.camera.pitch = [self convertToDegrees:self.attitude.pitch];
+//                        }
             
+        
             
         }];
-        
     }
 }
-
 
 - (void) setUpLocationManagerAndHeading {
     if (!self.locationManager) {
@@ -248,7 +258,6 @@ static const NSInteger gravityStatic = 9.8;
     
     self.myLocation = self.locationManager.location;
 }
-
 
 - (void) showMainMapView {
     
@@ -309,10 +318,8 @@ static const NSInteger gravityStatic = 9.8;
     self.sceneView.userInteractionEnabled = NO;
     self.sceneView.autoenablesDefaultLighting = YES;
     
-    
     //create a scene
     SCNScene *scene = [SCNScene scene];
-    
     
     //self.sceneView.allowsCameraControl = true;
     
@@ -323,12 +330,12 @@ static const NSInteger gravityStatic = 9.8;
     // Init our nodes
     self.cameraTargetNode = [SCNNode new];
     self.cameraNode = [SCNNode node];
-    self.cameraHeadingRotationNode = [SCNNode node];
+    self.cameraSceneKitHeadingRotationNode = [SCNNode node];
     self.cameraPitchRotationNode = [SCNNode node];
     
     // Setup heading rotation node
-    self.cameraHeadingRotationNode.position = SCNVector3Make(0, 0, 0);
-    [self.cameraHeadingRotationNode addChildNode: self.cameraPitchRotationNode];
+    self.cameraSceneKitHeadingRotationNode.position = SCNVector3Make(0, 0, 0);
+    [self.cameraSceneKitHeadingRotationNode addChildNode: self.cameraPitchRotationNode];
     
     // setup pitch rotation node
     [self.cameraPitchRotationNode addChildNode:self.cameraNode];
@@ -338,11 +345,11 @@ static const NSInteger gravityStatic = 9.8;
     self.cameraNode.rotation = SCNVector4Make(1, 0, 0, 270 * (M_PI / 180));
     self.cameraNode.camera = camera;
     
-    [scene.rootNode addChildNode:self.cameraHeadingRotationNode];
+    [scene.rootNode addChildNode:self.cameraSceneKitHeadingRotationNode];
     
     // Create cube
-    self.cube = [SCNBox boxWithWidth:.7 height:.7 length:.7 chamferRadius:.005];
-    self.cube.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
+    self.pyramid = [SCNPyramid pyramidWithWidth:.2 height:.5 length:.5];
+    self.pyramid.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
     
     // Create ground
     self.ground = [SCNBox boxWithWidth:.24 height:0 length:.24 chamferRadius:0];
@@ -350,14 +357,15 @@ static const NSInteger gravityStatic = 9.8;
     
     //SCNFloor use later
     
-    SCNNode *cubeNode = [SCNNode nodeWithGeometry:self.cube];
-    cubeNode.position = SCNVector3Make(0, .05, 0);
+    SCNNode *pyramidNode = [SCNNode nodeWithGeometry:self.pyramid];
+    pyramidNode.position = SCNVector3Make(0, .03, 0);
+    pyramidNode.eulerAngles = SCNVector3Make(-1.54, 0, 1.5);
     
     SCNNode *groundNode = [SCNNode nodeWithGeometry:self.ground];
     
-    [scene.rootNode addChildNode:cubeNode];
+    [scene.rootNode addChildNode:pyramidNode];
     //[scene.rootNode addChildNode:groundNode];
-    self.cubeNode = cubeNode;
+    self.pyramidNode = pyramidNode;
     
     // Add scene to SceneView
     self.sceneView.scene = scene;
@@ -370,7 +378,7 @@ static const NSInteger gravityStatic = 9.8;
     
     // Set up grey box
     double widthOfStatView = self.view.frame.size.width *0.3;
-    double heightOfStatView = self.view.frame.size.height *0.3;
+    double heightOfStatView = self.view.frame.size.height *0.1;
     UIView *view = [[UIView alloc]initWithFrame:CGRectMake(30, self.view.frame.size.height - (60 + heightOfStatView), widthOfStatView, heightOfStatView)];
     view.backgroundColor = [UIColor grayColor];
     view.alpha = .65;
@@ -386,6 +394,7 @@ static const NSInteger gravityStatic = 9.8;
     // Set up Pitch Label Data
     self.pitchLabelData = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, view.frame.size.width, 50)];
     [view addSubview:self.pitchLabelData];
+    
     self.pitchLabelData.textAlignment = NSTextAlignmentCenter;
     self.pitchLabelData.textColor = [UIColor blackColor];
     
@@ -435,27 +444,30 @@ static const NSInteger gravityStatic = 9.8;
 }
 
 - (double) convertToDegrees:(double)pitch {
-    return pitch * 60;
+    return pitch * (180/M_PI);
 }
 
-- (CGFloat) calculateDistanceFromUserWeapon {
+- (double) calculateDistanceFromUserWeapon {
     Weapon *currentWeapon = [Weapon new];
     NSNumber *velocityOfProjectile = currentWeapon.velocity;
-    CGFloat range = ( pow([velocityOfProjectile doubleValue], 2 ) * sin(2 * self.attitude.pitch) / gravityStatic);
+    
+    
+    double range = ( powl([velocityOfProjectile doubleValue], 2 ) * sinl(2 * self.pitchWithLimit) ) / gravityStatic;
     return range;
 }
 
 - (CLLocationCoordinate2D) calculateHitLocation {
     
     // using laws of cosine/sine to calculate a / b sides of a right triangle based on the hypotenuse (distance of projectile)
-    double meterOffsetLongitude = [self calculateDistanceFromUserWeapon] * cos(self.attitude.yaw);
-    double meterOffsetLatitude = [self calculateDistanceFromUserWeapon] * sin(self.attitude.yaw);
+    // - 1.5 is a hardcoded offset from "true north". North was intially 90 degrees to the left.
+    double meterOffsetLongitude = [self calculateDistanceFromUserWeapon] * sin(-self.deviceYaw);
+    double meterOffsetLatitude = [self calculateDistanceFromUserWeapon] * cos(-self.deviceYaw);
     
     // convert meter offsets to degrees, ("dirty caluclation" of 111,111m = 1 degree)
     double degreeOffsetLongitude = meterOffsetLongitude / 111111;
     double degreeOffsetLatitude = meterOffsetLatitude / 111111;
     
-    NSLog(@"%f", self.attitude.yaw);
+    //NSLog(@"%f", self.attitude.yaw);
     
     return CLLocationCoordinate2DMake(self.myLocation.coordinate.latitude + degreeOffsetLatitude,
                                       self.myLocation.coordinate.longitude + degreeOffsetLongitude);
@@ -468,12 +480,14 @@ static const NSInteger gravityStatic = 9.8;
                                                         longitude:[self calculateHitLocation].longitude];
     
     NSLog(@"%@", hitLocation);
-    GMSMarker *hitMarker = [GMSMarker new];
-    hitMarker.position = hitLocation.coordinate;
-    hitMarker.title = @"Target";
-    hitMarker.snippet = @"HIT";
-    hitMarker.map = gmMapView;
+//    GMSMarker *hitMarker = [GMSMarker new];
+//    hitMarker.position = hitLocation.coordinate;
+//    hitMarker.title = @"Target";
+//    hitMarker.snippet = @"HIT";
+//    hitMarker.map = gmMapView;
     
+    
+    [self addCraterOverlayAtLocation:hitLocation];
     
     
     // Apple Maps
@@ -492,6 +506,26 @@ static const NSInteger gravityStatic = 9.8;
     
 }
 
+- (void) addCraterOverlayAtLocation:(CLLocation *)location {
+    
+    // Sets coordinates for the opposite side corners for the overlay (crater)
+    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(location.coordinate.latitude + 100.0/111111.0, location.coordinate.longitude + 100.0/111111.0);
+    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(location.coordinate.latitude - 100.0/111111.0, location.coordinate.longitude - 100.0/111111.0);
+    
+    GMSCoordinateBounds *overlayBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:southWest
+                                                                              coordinate:northEast];
+
+    
+    GMSGroundOverlay *groundOverlay = [GMSGroundOverlay new];
+    groundOverlay.icon = [UIImage imageNamed:@"craterBigSquare"];
+    groundOverlay.position = location.coordinate;
+    groundOverlay.bounds = overlayBounds;
+    groundOverlay.map = gmMapView;
+    [self.arrayOfCraters addObject:groundOverlay];
+    NSLog(@"%lu", self.arrayOfCraters.count);
+
+}
+
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 0)
         return;
@@ -500,9 +534,12 @@ static const NSInteger gravityStatic = 9.8;
     CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
                                        newHeading.trueHeading : newHeading.magneticHeading);
     
-    self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * (M_PI/180));
-    //self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (self.mapView.camera.pitch) * (M_PI/180) );
+    //self.cameraSceneKitHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * (M_PI/180));
     
+    self.pyramidNode.eulerAngles = SCNVector3Make(-1.54, - self.pitchWithLimit , 1.5 );
+
+    NSLog(@"%f", theHeading);
+    //self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, self.deviceYaw * (M_PI/180));
     
     // Apple Maps
     //    self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60)/17 + 4 ,0);
