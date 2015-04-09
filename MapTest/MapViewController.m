@@ -44,7 +44,7 @@ static const NSInteger gravityStatic = 9.8;
 // Polyline Static
 static bool kAnimate = true;
 
-@interface MapViewController () <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate, GMSMapViewDelegate, GMSMapViewDelegate>
+@interface MapViewController () <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate>
 {
     CMMotionManager *_motionManager;
     GMSMapView *gmMapView;
@@ -55,7 +55,7 @@ static bool kAnimate = true;
     NSArray *_lengths;
     NSArray *_polys;
     double _pos, _step;
-
+    
 }
 
 @property (nonatomic,strong) CLLocation *myLocation;
@@ -180,10 +180,11 @@ static bool kAnimate = true;
     //[self setupSceneKitView];
     [self setUpDataViewFireButton];
     [self setUpPOVButton];
-
     
     self.arrayOfCraters = [NSMutableArray new];
-    
+}
+
+- (void) createDummyTargets {
     // Create Dummy Data
     CLLocation *dummyLocale1 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.764, -111.896)
                                                              altitude:0 horizontalAccuracy:25
@@ -195,14 +196,7 @@ static bool kAnimate = true;
                                                      verticalAccuracy:25
                                                             timestamp:[NSDate date]];
     
-    Target *testTarget1 = [[Target alloc]initWithTargetNumber:@"1" location:dummyLocale1 fromUserLocation:self.myLocation];
-    Target *testTarget2 = [[Target alloc]initWithTargetNumber:@"2" location:dummyLocale2 fromUserLocation:self.myLocation];
-    [self.mapView addAnnotation:testTarget1];
-    [self.mapView addAnnotation:testTarget2];
-    
-    self.targetCamera = [MKMapCamera cameraLookingAtCenterCoordinate:testTarget1.coordinate fromEyeCoordinate:self.myLocation.coordinate eyeAltitude:10];
-    
-    
+
 }
 
 - (void) setUpMotionManager {
@@ -326,8 +320,7 @@ static bool kAnimate = true;
 }
 
 - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
-    
-    
+
     return YES;
 }
 
@@ -497,9 +490,7 @@ static bool kAnimate = true;
     //    [gmMapView clear];
     
     self.hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
-                                                        longitude:[self calculateHitLocation].longitude];
-    
-    
+                                                 longitude:[self calculateHitLocation].longitude];
     // Create crater coordinates
     // Sets coordinates for the opposite side corners for the overlay (crater)
     CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(self.hitLocation.coordinate.latitude + 100.0/111111.0, self.hitLocation.coordinate.longitude + 100.0/111111.0);
@@ -510,7 +501,8 @@ static bool kAnimate = true;
     GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds
                                                                            icon:[UIImage imageNamed:@"craterBigSquare"]];
     groundOverlay.map = gmMapView;
-        [self setUpPolyineColors];
+    [self drawTrajectoryLineToLocation:self.hitLocation];
+ //   [self setUpPolyineColors];
     
     [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
 }
@@ -520,17 +512,33 @@ static bool kAnimate = true;
     overlay = nil;
 }
 
+#pragma mark Polyline methods
 
+- (void) drawTrajectoryLineToLocation:(CLLocation *)destination {
+    GMSMutablePath *path = [GMSMutablePath path];
+    [path addCoordinate:self.myLocation.coordinate];
+    [path addCoordinate:destination.coordinate];
+    
+    GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
+    polyline.strokeColor = [UIColor blueColor];
+    polyline.strokeWidth = 5.f;
+    polyline.map = gmMapView;
+    [self performSelector:@selector(removeGMSPolyline:) withObject:polyline afterDelay:3];
+}
+
+- (void)removeGMSPolyline:(GMSPolyline *)polyline {
+    polyline.map = nil;
+    polyline = nil;
+}
 
 - (void)tick {
     for (GMSPolyline *poly in _polys) {
-        poly.spans =
-        GMSStyleSpansOffset(poly.path, _styles, _lengths, kGMSLengthGeodesic, _pos);
+        poly.spans = GMSStyleSpansOffset(poly.path, _styles, _lengths, kGMSLengthGeodesic, _pos);
     }
     _pos -= _step;
     if (kAnimate) {
         __weak id weakSelf = self;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 10),
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 60),
                        dispatch_get_main_queue(),
                        ^{ [weakSelf tick]; });
     }
@@ -543,7 +551,7 @@ static bool kAnimate = true;
         [path addCoordinate:self.myLocation.coordinate];
         [path addCoordinate:self.hitLocation.coordinate];
         path = [path pathOffsetByLatitude:-30 longitude:0];
-        _lengths = @[@([path lengthOfKind:kGMSLengthGeodesic] / 21)];
+        _lengths = @[@([path lengthOfKind:kGMSLengthGeodesic] / 2)];
         for (int i = 0; i < 1; ++i) {
             GMSPolyline *poly = [[GMSPolyline alloc] init];
             poly.path = [path pathOffsetByLatitude:(i * 1.5) longitude:0];
@@ -556,23 +564,13 @@ static bool kAnimate = true;
     }
 }
 
-- (void)mapView:(GMSMapView *)mapView
-didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
-    [self initLines];
-    [self tick];
-}
-
 - (void) setUpPolyineColors {
-
+    
     CGFloat alpha = 1;
-    UIColor *green = [UIColor colorWithRed:0 green:1 blue: 0 alpha:alpha];
-    UIColor *greenTransp = [UIColor colorWithRed:0 green:1 blue: 0 alpha:0];
     UIColor *red = [UIColor colorWithRed:1 green:0 blue: 0 alpha:alpha];
     UIColor *redTransp = [UIColor colorWithRed:1 green:0 blue: 0 alpha:0];
-    GMSStrokeStyle *grad1 = [GMSStrokeStyle gradientFromColor:green toColor:greenTransp];
     GMSStrokeStyle *grad2 = [GMSStrokeStyle gradientFromColor:redTransp toColor:red];
     _styles = @[
-                grad1,
                 grad2,
                 [GMSStrokeStyle solidColor:[UIColor colorWithWhite:0 alpha:0]],
                 ];
