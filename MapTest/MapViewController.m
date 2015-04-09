@@ -79,6 +79,7 @@ static bool kAnimate = true;
 @property (nonatomic,assign) double pitchWithLimit;
 @property (nonatomic,strong) NSMutableArray *arrayOfCraters;
 @property (nonatomic,strong) CLLocation *hitLocation;
+@property (nonatomic,strong) NSArray *arrayOfMarkers;
 
 // CMDevice motion
 @property (nonatomic,strong) CMAttitude *attitude;
@@ -187,6 +188,8 @@ static bool kAnimate = true;
 }
 
 - (void) createDummyTargets {
+    NSMutableArray *mArrayOfMarkers = [[NSMutableArray alloc]initWithArray:self.arrayOfMarkers];
+    
     // Create Dummy Data
     CLLocation *dummyLocale1 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.76, -111.891)
                                                              altitude:0 horizontalAccuracy:25
@@ -207,9 +210,16 @@ static bool kAnimate = true;
     GMSMarker *marker2 = [[GMSMarker alloc] init];
     marker2.position = dummyLocale2.coordinate;
     marker2.appearAnimation = kGMSMarkerAnimationPop;
-        marker2.title = @"Marker 2";
+    marker2.title = @"Marker 2";
     marker2.map = gmMapView;
-
+    
+    
+    
+    [mArrayOfMarkers addObject:marker];
+    [mArrayOfMarkers addObject:marker2];
+    
+    self.arrayOfMarkers = mArrayOfMarkers;
+    
 }
 
 - (void) setUpMotionManager {
@@ -333,7 +343,7 @@ static bool kAnimate = true;
 }
 
 - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
-
+    
     return NO;
 }
 
@@ -504,6 +514,11 @@ static bool kAnimate = true;
     
     self.hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                  longitude:[self calculateHitLocation].longitude];
+    
+    GMSCircle *damageRadius = [GMSCircle circleWithPosition:self.hitLocation.coordinate radius:100];
+    damageRadius.map = gmMapView;
+    
+    [self hitCheckerAtCircle:damageRadius];
     // Create crater coordinates
     // Sets coordinates for the opposite side corners for the overlay (crater)
     CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(self.hitLocation.coordinate.latitude + 100.0/111111.0, self.hitLocation.coordinate.longitude + 100.0/111111.0);
@@ -515,8 +530,23 @@ static bool kAnimate = true;
                                                                            icon:[UIImage imageNamed:@"craterBigSquare"]];
     groundOverlay.map = gmMapView;
     [self drawTrajectoryLineToLocation:self.hitLocation];
- //   [self setUpPolyineColors];
+    //   [self setUpPolyineColors];
     [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
+    [self performSelector:@selector(removeGMSCircle:) withObject:damageRadius afterDelay:3];
+    
+}
+
+- (void) hitCheckerAtCircle:(GMSCircle *)damageRadius {
+    for (GMSMarker *marker in self.arrayOfMarkers) {
+//        if (marker.position.latitude == damageRadius.coordinate.latitude &&
+//            marker.position.longitude == damageRadius.coordinate.longitude) {
+//            NSLog(@"HIT!"); } else  NSLog(@"MISS!");
+    }
+    
+}
+- (void)removeGMSCircle:(GMSCircle *)circle {
+    circle.map = nil;
+    circle = nil;
 }
 
 - (void)removeGMOverlay:(GMSGroundOverlay *)overlay {
@@ -535,7 +565,7 @@ static bool kAnimate = true;
     polyline.strokeColor = [UIColor colorWithRed:1 green:0.1 blue:.1 alpha:.2];
     polyline.strokeWidth = 5.f;
     polyline.map = gmMapView;
-
+    
     [self performSelector:@selector(removeGMSPolyline:) withObject:polyline afterDelay:3];
 }
 
