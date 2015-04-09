@@ -18,22 +18,44 @@
 #import "WeaponController.h"
 #import "UserController.h"
 
-
-#import <GoogleMaps/GoogleMaps.h>
-
-
 @import SceneKit;
+
+////////////////////////////////////////////////////////// POLYLines
+@interface GMSPolyline (length)
+
+@property(nonatomic, readonly) double length;
+
+@end
+
+@implementation GMSPolyline (length)
+
+- (double)length {
+    GMSLengthKind kind = [self geodesic] ? kGMSLengthGeodesic : kGMSLengthRhumb;
+    return [[self path] lengthOfKind:kind];
+}
+
+@end
+//////////////////////////////////////////////////////////
+
 
 //static const NSInteger handicap = 1;
 static const NSInteger gravityStatic = 9.8;
 
-;
+// Polyline Static
+static bool kAnimate = true;
 
 @interface MapViewController () <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate, GMSMapViewDelegate, GMSMapViewDelegate>
 {
     CMMotionManager *_motionManager;
     GMSMapView *gmMapView;
     GMSCameraPosition *gmCamera;
+    
+    // Polyline properties
+    NSArray *_styles;
+    NSArray *_lengths;
+    NSArray *_polys;
+    double _pos, _step;
+
 }
 
 @property (nonatomic,strong) CLLocation *myLocation;
@@ -56,7 +78,7 @@ static const NSInteger gravityStatic = 9.8;
 @property (nonatomic,assign) NSInteger zoomSelection;
 @property (nonatomic,assign) double pitchWithLimit;
 @property (nonatomic,strong) NSMutableArray *arrayOfCraters;
-
+@property (nonatomic,strong) CLLocation *hitLocation;
 
 // CMDevice motion
 @property (nonatomic,strong) CMAttitude *attitude;
@@ -65,8 +87,6 @@ static const NSInteger gravityStatic = 9.8;
 @end
 
 @implementation MapViewController
-
-
 
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -157,9 +177,10 @@ static const NSInteger gravityStatic = 9.8;
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
     [UserController queryUsersNearCurrentUser:self.locationManager.location.coordinate withinMileRadius:10];
-    [self setupSceneKitView];
+    //[self setupSceneKitView];
     [self setUpDataViewFireButton];
     [self setUpPOVButton];
+
     
     self.arrayOfCraters = [NSMutableArray new];
     
@@ -180,7 +201,7 @@ static const NSInteger gravityStatic = 9.8;
     [self.mapView addAnnotation:testTarget2];
     
     self.targetCamera = [MKMapCamera cameraLookingAtCenterCoordinate:testTarget1.coordinate fromEyeCoordinate:self.myLocation.coordinate eyeAltitude:10];
-
+    
     
 }
 
@@ -210,20 +231,20 @@ static const NSInteger gravityStatic = 9.8;
                 self.pitchWithLimit = self.attitude.pitch;
             }
             self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (gmMapView.camera.viewingAngle) * (M_PI/180) );
-
+            
             self.cameraNode.position = SCNVector3Make(0, -((double)gmMapView.camera.zoom - 22) * 5  ,0);
             //NSLog(@"%f", -((double)gmMapView.camera.zoom - 22) * 5);
             
             // NSLog(@"%f", [self convertToDegrees:attitude.yaw]);
             
-//            // Set pitch limit for map camera
-//                        if ([self convertToDegrees:self.attitude.pitch] > 75){
-//                            self.mapView.camera.pitch = 75;
-//                        } else {
-//                        self.mapView.camera.pitch = [self convertToDegrees:self.attitude.pitch];
-//                        }
+            //            // Set pitch limit for map camera
+            //                        if ([self convertToDegrees:self.attitude.pitch] > 75){
+            //                            self.mapView.camera.pitch = 75;
+            //                        } else {
+            //                        self.mapView.camera.pitch = [self convertToDegrees:self.attitude.pitch];
+            //                        }
             
-        
+            
             
         }];
     }
@@ -438,10 +459,10 @@ static const NSInteger gravityStatic = 9.8;
             [gmMapView animateToZoom:14];
             self.zoomSelection = 0;
             break;
-            
     }
-    
 }
+
+#pragma mark Firing/Projectile methods
 
 - (double) convertToDegrees:(double)pitch {
     return pitch * (180/M_PI);
@@ -450,7 +471,6 @@ static const NSInteger gravityStatic = 9.8;
 - (double) calculateDistanceFromUserWeapon {
     Weapon *currentWeapon = [Weapon new];
     NSNumber *velocityOfProjectile = currentWeapon.velocity;
-    
     
     double range = ( powl([velocityOfProjectile doubleValue], 2 ) * sinl(2 * self.pitchWithLimit) ) / gravityStatic;
     return range;
@@ -474,80 +494,104 @@ static const NSInteger gravityStatic = 9.8;
 }
 
 - (void) fireButtonPressed:(id)sender {
-    [gmMapView clear];
+    //    [gmMapView clear];
     
-    CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
+    self.hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                         longitude:[self calculateHitLocation].longitude];
     
-    NSLog(@"%@", hitLocation);
-//    GMSMarker *hitMarker = [GMSMarker new];
-//    hitMarker.position = hitLocation.coordinate;
-//    hitMarker.title = @"Target";
-//    hitMarker.snippet = @"HIT";
-//    hitMarker.map = gmMapView;
     
-    
-    [self addCraterOverlayAtLocation:hitLocation];
-    
-    
-    // Apple Maps
-    //    Target *hitTarget = [[Target alloc]initWithTargetNumber:@"Hit position" location:hitLocation fromUserLocation:self.myLocation];
-    //    [self.mapView addAnnotation:hitTarget];
-    //
-    //    //NSLog(@"%f", self.mapView.camera.heading);
-    //    //NSLog(@"TARGET %f",targetCamera.heading);
-    //    if ( self.mapView.camera.heading > self.targetCamera.heading - handicap &&
-    //        self.mapView.camera.heading < self.targetCamera.heading + handicap) {
-    //
-    //        NSLog(@"BOOM! HIT!");
-    //    } else {
-    //        NSLog(@"You missed! ");
-    //    }
-    
-}
-
-- (void) addCraterOverlayAtLocation:(CLLocation *)location {
-    
+    // Create crater coordinates
     // Sets coordinates for the opposite side corners for the overlay (crater)
-    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(location.coordinate.latitude + 100.0/111111.0, location.coordinate.longitude + 100.0/111111.0);
-    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(location.coordinate.latitude - 100.0/111111.0, location.coordinate.longitude - 100.0/111111.0);
+    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(self.hitLocation.coordinate.latitude + 100.0/111111.0, self.hitLocation.coordinate.longitude + 100.0/111111.0);
+    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(self.hitLocation.coordinate.latitude - 100.0/111111.0, self.hitLocation.coordinate.longitude - 100.0/111111.0);
     
     GMSCoordinateBounds *overlayBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:southWest
                                                                               coordinate:northEast];
-
-    
-    GMSGroundOverlay *groundOverlay = [GMSGroundOverlay new];
-    groundOverlay.icon = [UIImage imageNamed:@"craterBigSquare"];
-    groundOverlay.position = location.coordinate;
-    groundOverlay.bounds = overlayBounds;
+    GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds
+                                                                           icon:[UIImage imageNamed:@"craterBigSquare"]];
     groundOverlay.map = gmMapView;
-    [self.arrayOfCraters addObject:groundOverlay];
-    NSLog(@"%lu", self.arrayOfCraters.count);
-
+        [self setUpPolyineColors];
+    
+    [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
 }
 
+- (void)removeGMOverlay:(GMSGroundOverlay *)overlay {
+    overlay.map = nil;
+    overlay = nil;
+}
+
+
+
+- (void)tick {
+    for (GMSPolyline *poly in _polys) {
+        poly.spans =
+        GMSStyleSpansOffset(poly.path, _styles, _lengths, kGMSLengthGeodesic, _pos);
+    }
+    _pos -= _step;
+    if (kAnimate) {
+        __weak id weakSelf = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC / 10),
+                       dispatch_get_main_queue(),
+                       ^{ [weakSelf tick]; });
+    }
+}
+
+- (void)initLines {
+    if (!_polys) {
+        NSMutableArray *polys = [NSMutableArray array];
+        GMSMutablePath *path = [GMSMutablePath path];
+        [path addCoordinate:self.myLocation.coordinate];
+        [path addCoordinate:self.hitLocation.coordinate];
+        path = [path pathOffsetByLatitude:-30 longitude:0];
+        _lengths = @[@([path lengthOfKind:kGMSLengthGeodesic] / 21)];
+        for (int i = 0; i < 1; ++i) {
+            GMSPolyline *poly = [[GMSPolyline alloc] init];
+            poly.path = [path pathOffsetByLatitude:(i * 1.5) longitude:0];
+            poly.strokeWidth = 8;
+            poly.geodesic = YES;
+            poly.map = gmMapView;
+            [polys addObject:poly];
+        }
+        _polys = polys;
+    }
+}
+
+- (void)mapView:(GMSMapView *)mapView
+didTapAtCoordinate:(CLLocationCoordinate2D)coordinate {
+    [self initLines];
+    [self tick];
+}
+
+- (void) setUpPolyineColors {
+
+    CGFloat alpha = 1;
+    UIColor *green = [UIColor colorWithRed:0 green:1 blue: 0 alpha:alpha];
+    UIColor *greenTransp = [UIColor colorWithRed:0 green:1 blue: 0 alpha:0];
+    UIColor *red = [UIColor colorWithRed:1 green:0 blue: 0 alpha:alpha];
+    UIColor *redTransp = [UIColor colorWithRed:1 green:0 blue: 0 alpha:0];
+    GMSStrokeStyle *grad1 = [GMSStrokeStyle gradientFromColor:green toColor:greenTransp];
+    GMSStrokeStyle *grad2 = [GMSStrokeStyle gradientFromColor:redTransp toColor:red];
+    _styles = @[
+                grad1,
+                grad2,
+                [GMSStrokeStyle solidColor:[UIColor colorWithWhite:0 alpha:0]],
+                ];
+    _step = 50000;
+    [self initLines];
+    [self tick];
+}
+
+
+
+
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
-    if (newHeading.headingAccuracy < 0)
-        return;
+    if (newHeading.headingAccuracy < 0) return;
     
     // Use the true heading if it is valid.
     CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
                                        newHeading.trueHeading : newHeading.magneticHeading);
-    
     //self.cameraSceneKitHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * (M_PI/180));
-    
     self.pyramidNode.eulerAngles = SCNVector3Make(-1.54, - self.pitchWithLimit , 1.5 );
-
-    NSLog(@"%f", theHeading);
-    //self.cameraHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, self.deviceYaw * (M_PI/180));
-    
-    // Apple Maps
-    //    self.cameraNode.position = SCNVector3Make(0, (self.mapView.camera.altitude/60)/17 + 4 ,0);
-    //    [self.mapView setUserTrackingMode:MKUserTrackingModeNone];
-    //    self.mapView.camera.heading = theHeading;
-    //    self.mapView.camera.altitude = 93;
-    //    self.mapView.camera.pitch = 78;
-    //NSLog(@"%f", self.mapView.camera.heading);
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {

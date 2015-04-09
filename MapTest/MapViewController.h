@@ -10,8 +10,9 @@
 #import <MapKit/MapKit.h>
 #import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
+#import <GoogleMaps/GoogleMaps.h>
 
-@interface MapViewController : UIViewController <MKMapViewDelegate, CLLocationManagerDelegate>
+@interface MapViewController : UIViewController <MKMapViewDelegate, CLLocationManagerDelegate, GMSMapViewDelegate>
 
 //@property (weak, nonatomic) IBOutlet MKMapView *mapView;
 
