@@ -213,8 +213,6 @@ static bool kAnimate = true;
     marker2.title = @"Marker 2";
     marker2.map = gmMapView;
     
-    
-    
     [mArrayOfMarkers addObject:marker];
     [mArrayOfMarkers addObject:marker2];
     
@@ -236,8 +234,10 @@ static bool kAnimate = true;
             
             self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[self convertToDegrees:self.pitchWithLimit]];
             
-            [gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
-            [gmMapView animateToViewingAngle:45];
+            
+//[gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
+//[gmMapView animateToViewingAngle:45];
+            
             //[gmMapView animateToLocation:self.myLocation.coordinate];
             // NSLog(@"%f", gmMapView.camera.viewingAngle);
             
@@ -247,10 +247,11 @@ static bool kAnimate = true;
             } else {
                 self.pitchWithLimit = self.attitude.pitch;
             }
-            self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (gmMapView.camera.viewingAngle) * (M_PI/180) );
             
+            self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (gmMapView.camera.viewingAngle) * (M_PI/180) );
             self.cameraNode.position = SCNVector3Make(0, -((double)gmMapView.camera.zoom - 22) * 5  ,0);
-            //NSLog(@"%f", -((double)gmMapView.camera.zoom - 22) * 5);
+            
+            // NSLog(@"%f", -((double)gmMapView.camera.zoom - 22) * 5);
             
             // NSLog(@"%f", [self convertToDegrees:attitude.yaw]);
             
@@ -281,14 +282,14 @@ static bool kAnimate = true;
     }
     
     // Start location services to get the true heading.
-    self.locationManager.distanceFilter = 1000;
+    self.locationManager.distanceFilter = 200;
     self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
     [self.locationManager startUpdatingLocation];
     
     // Start heading updates.
     if([CLLocationManager headingAvailable] == YES){
         NSLog(@"Heading is available");
-        self.locationManager.headingFilter = 0.001;
+        self.locationManager.headingFilter = 3;
         [self.locationManager startUpdatingHeading];
     } else {
         NSLog(@"Heading isn’t available");
@@ -301,7 +302,8 @@ static bool kAnimate = true;
     
     
     gmCamera = [GMSCameraPosition cameraWithTarget:self.myLocation.coordinate zoom:15 bearing:32 viewingAngle:17];
-    //    gmCamera = [GMSCameraPosition cameraWithLatitude:40.11 longitude:-111.01 zoom:6];
+
+    
     
     gmMapView = [GMSMapView mapWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height + 250) camera:gmCamera];
     gmMapView.myLocationEnabled = YES;
@@ -513,10 +515,7 @@ static bool kAnimate = true;
     //    [gmMapView clear];
     
     CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
-                                                 longitude:[self calculateHitLocation].longitude];
-    
-    GMSCircle *damageRadius = [GMSCircle circleWithPosition:hitLocation.coordinate radius:100];
-    damageRadius.map = gmMapView;
+                                                         longitude:[self calculateHitLocation].longitude];
     
     [self hitCheckerAtLocation:hitLocation];
     // Create crater coordinates
@@ -532,28 +531,26 @@ static bool kAnimate = true;
     [self drawTrajectoryLineToLocation:hitLocation];
     //   [self setUpPolyineColors];
     [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
-    [self performSelector:@selector(removeGMSCircle:) withObject:damageRadius afterDelay:3];
     
-}
-
-- (void) distanceFromHitToMarkerFromHitLocation:(CLLocation *)hitLocation toTarget:(CLLocation *)targetLocation {
-    [hitLocation distanceFromLocation:targetLocation];
     
 }
 
 - (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
     for (GMSMarker *marker in self.arrayOfMarkers) {
-        
-        
-    
-//        if (marker.position.latitude == damageRadius.coordinate.latitude &&
-//            marker.position.longitude == damageRadius.coordinate.longitude) {
-//            NSLog(@"HIT!"); } else  NSLog(@"MISS!");
+        CLLocationCoordinate2D positionOfMarker = marker.position;
+        CLLocation *locationOfMarker = [[CLLocation alloc]initWithCoordinate:positionOfMarker altitude:0 horizontalAccuracy:0 verticalAccuracy:0 timestamp:[NSDate date]];
+        if ([locationOfMarker distanceFromLocation:hitLocation] < 100) {
+            NSLog(@"HIT!");
+            UILabel *hitLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 40, self.view.frame.size.width, 100)];
+            [self.view addSubview:hitLabel];
+            hitLabel.text = @"HIT!";
+            hitLabel.textAlignment = NSTextAlignmentCenter;
+            hitLabel.textColor = [UIColor redColor];
+            hitLabel.font = [UIFont boldSystemFontOfSize:50];
+            
+        }
+        else  NSLog(@"MISS!");
     }
-}
-- (void)removeGMSCircle:(GMSCircle *)circle {
-    circle.map = nil;
-    circle = nil;
 }
 
 - (void)removeGMOverlay:(GMSGroundOverlay *)overlay {
@@ -599,7 +596,7 @@ static bool kAnimate = true;
         NSMutableArray *polys = [NSMutableArray array];
         GMSMutablePath *path = [GMSMutablePath path];
         [path addCoordinate:self.myLocation.coordinate];
-        [path addCoordinate:self.hitLocation.coordinate];
+        //        [path addCoordinate:self.hitLocation.coordinate];
         path = [path pathOffsetByLatitude:-30 longitude:0];
         _lengths = @[@([path lengthOfKind:kGMSLengthGeodesic] / 2)];
         for (int i = 0; i < 1; ++i) {
@@ -633,7 +630,10 @@ static bool kAnimate = true;
 
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
-    if (newHeading.headingAccuracy < 0) return;
+    if (newHeading.headingAccuracy < 10) return;
+    
+    [gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
+        [gmMapView animateToViewingAngle:45];
     
     // Use the true heading if it is valid.
     CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
