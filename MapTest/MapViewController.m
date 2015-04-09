@@ -78,7 +78,7 @@ static bool kAnimate = true;
 @property (nonatomic,assign) NSInteger zoomSelection;
 @property (nonatomic,assign) double pitchWithLimit;
 @property (nonatomic,strong) NSMutableArray *arrayOfCraters;
-@property (nonatomic,strong) CLLocation *hitLocation;
+//@property (nonatomic,strong) CLLocation *hitLocation;
 @property (nonatomic,strong) NSArray *arrayOfMarkers;
 
 // CMDevice motion
@@ -512,37 +512,44 @@ static bool kAnimate = true;
 - (void) fireButtonPressed:(id)sender {
     //    [gmMapView clear];
     
-    self.hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
+    CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                  longitude:[self calculateHitLocation].longitude];
     
-    GMSCircle *damageRadius = [GMSCircle circleWithPosition:self.hitLocation.coordinate radius:100];
+    GMSCircle *damageRadius = [GMSCircle circleWithPosition:hitLocation.coordinate radius:100];
     damageRadius.map = gmMapView;
     
-    [self hitCheckerAtCircle:damageRadius];
+    [self hitCheckerAtLocation:hitLocation];
     // Create crater coordinates
     // Sets coordinates for the opposite side corners for the overlay (crater)
-    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(self.hitLocation.coordinate.latitude + 100.0/111111.0, self.hitLocation.coordinate.longitude + 100.0/111111.0);
-    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(self.hitLocation.coordinate.latitude - 100.0/111111.0, self.hitLocation.coordinate.longitude - 100.0/111111.0);
+    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(hitLocation.coordinate.latitude + 100.0/111111.0, hitLocation.coordinate.longitude + 100.0/111111.0);
+    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(hitLocation.coordinate.latitude - 100.0/111111.0, hitLocation.coordinate.longitude - 100.0/111111.0);
     
     GMSCoordinateBounds *overlayBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:southWest
                                                                               coordinate:northEast];
     GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds
                                                                            icon:[UIImage imageNamed:@"craterBigSquare"]];
     groundOverlay.map = gmMapView;
-    [self drawTrajectoryLineToLocation:self.hitLocation];
+    [self drawTrajectoryLineToLocation:hitLocation];
     //   [self setUpPolyineColors];
     [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
     [self performSelector:@selector(removeGMSCircle:) withObject:damageRadius afterDelay:3];
     
 }
 
-- (void) hitCheckerAtCircle:(GMSCircle *)damageRadius {
+- (void) distanceFromHitToMarkerFromHitLocation:(CLLocation *)hitLocation toTarget:(CLLocation *)targetLocation {
+    [hitLocation distanceFromLocation:targetLocation];
+    
+}
+
+- (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
     for (GMSMarker *marker in self.arrayOfMarkers) {
+        
+        
+    
 //        if (marker.position.latitude == damageRadius.coordinate.latitude &&
 //            marker.position.longitude == damageRadius.coordinate.longitude) {
 //            NSLog(@"HIT!"); } else  NSLog(@"MISS!");
     }
-    
 }
 - (void)removeGMSCircle:(GMSCircle *)circle {
     circle.map = nil;
