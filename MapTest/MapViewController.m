@@ -188,12 +188,12 @@ static bool kAnimate = true;
 
 - (void) createDummyTargets {
     // Create Dummy Data
-    CLLocation *dummyLocale1 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.764, -111.896)
+    CLLocation *dummyLocale1 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.76, -111.891)
                                                              altitude:0 horizontalAccuracy:25
                                                      verticalAccuracy:25
                                                             timestamp:[NSDate date]];
     
-    CLLocation *dummyLocale2 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.8, -111.9)
+    CLLocation *dummyLocale2 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.77, -111.899)
                                                              altitude:0 horizontalAccuracy:25
                                                      verticalAccuracy:25
                                                             timestamp:[NSDate date]];
@@ -201,13 +201,14 @@ static bool kAnimate = true;
     GMSMarker *marker = [[GMSMarker alloc] init];
     marker.position = dummyLocale1.coordinate;
     marker.appearAnimation = kGMSMarkerAnimationPop;
+    marker.title = @"Marker 1";
     marker.map = gmMapView;
     
     GMSMarker *marker2 = [[GMSMarker alloc] init];
     marker2.position = dummyLocale2.coordinate;
     marker2.appearAnimation = kGMSMarkerAnimationPop;
+        marker2.title = @"Marker 2";
     marker2.map = gmMapView;
-    
 
 }
 
@@ -333,7 +334,7 @@ static bool kAnimate = true;
 
 - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
 
-    return YES;
+    return NO;
 }
 
 #pragma mark SceneKit methods
@@ -515,7 +516,6 @@ static bool kAnimate = true;
     groundOverlay.map = gmMapView;
     [self drawTrajectoryLineToLocation:self.hitLocation];
  //   [self setUpPolyineColors];
-    
     [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
 }
 
@@ -532,9 +532,10 @@ static bool kAnimate = true;
     [path addCoordinate:destination.coordinate];
     
     GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
-    polyline.strokeColor = [UIColor blueColor];
+    polyline.strokeColor = [UIColor colorWithRed:1 green:0.1 blue:.1 alpha:.2];
     polyline.strokeWidth = 5.f;
     polyline.map = gmMapView;
+
     [self performSelector:@selector(removeGMSPolyline:) withObject:polyline afterDelay:3];
 }
 
