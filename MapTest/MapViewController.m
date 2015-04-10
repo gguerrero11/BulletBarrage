@@ -274,7 +274,15 @@ static bool kAnimate = true;
      [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
         if (geoPoint) {
             [PFUser currentUser][userLocationkey] = geoPoint;
-            NSLog(@"Initial User location saved to Parse");
+            
+            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (succeeded) {
+                    NSLog(@"Initial User location saved to Parse");
+                } else {
+                    NSLog(@"Error: %@", error);
+                }
+            }];
+            
         } else NSLog(@"Cannot find user!");
      }];
     
