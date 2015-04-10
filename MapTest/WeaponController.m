@@ -10,6 +10,17 @@
 
 @implementation WeaponController
 
++ (WeaponController *) sharedInstance {
+    static WeaponController *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [WeaponController new];
+    });
+    return sharedInstance;
+}
+
+
+
 + (Weapon *) setWeapon:(NSString *)weaponString {
     Weapon *weapon = [Weapon new];
     if ([weaponString isEqualToString:cannon]) {

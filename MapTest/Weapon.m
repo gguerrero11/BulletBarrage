@@ -14,8 +14,12 @@
     return @100;
 }
 
-- (NSNumber *) damage {
-    return @30;
+- (NSInteger) damage {
+    return 30;
+}
+
+- (NSInteger) radiusOfDamage {
+    return 100;
 }
 
 @end

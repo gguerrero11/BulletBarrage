@@ -13,8 +13,12 @@ static NSString * const cannon = @"cannon";
 
 @interface WeaponController : NSObject
 
-
++ (WeaponController *) sharedInstance;
 
 + (Weapon *) setWeapon:(NSString *)weapon;
+
+@property (nonatomic,strong) NSNumber *velocity;
+@property (nonatomic,assign) NSInteger damage;
+@property (nonatomic,assign) NSInteger radiusOfDamage;
 
 @end

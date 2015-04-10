@@ -43,6 +43,7 @@
 //static const NSInteger handicap = 1;
 static const NSInteger gravityStatic = 9.8;
 
+
 // Polyline Static
 static bool kAnimate = true;
 
@@ -517,61 +518,66 @@ static bool kAnimate = true;
             //NSLog(@"%f", doubleShotsHit);
             [PFUser currentUser][shotsHitKey] = [NSNumber numberWithDouble:doubleShotsHit];
             
-            // Create HIT label with animation
-            UILabel *hitLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 40, self.view.frame.size.width, 100)];
-            [self.view addSubview:hitLabel];
-            hitLabel.text = @"HIT!";
-            hitLabel.textAlignment = NSTextAlignmentCenter;
-            hitLabel.textColor = [UIColor redColor];
-            hitLabel.font = [UIFont boldSystemFontOfSize:50];
-            
-            // animates the HIT label
-            CGAffineTransform scaleTransformHIT = CGAffineTransformMakeScale(.94, .94);
-            [UIView animateWithDuration:0.5 animations:^{
-                hitLabel.alpha = 0.0;
-                hitLabel.center = CGPointMake(hitLabel.center.x, hitLabel.center.y - 14);
-                hitLabel.transform = scaleTransformHIT;
-                
-            } completion:^(BOOL finished) {
-                [hitLabel removeFromSuperview];
-            }];
-            
-            // checks if its the longest distance hit, if it is, saves to Parse
-            NSNumber *currentLongestDistance = [PFUser currentUser][longestDistanceKey];
-            NSLog(@"dist from Parse: %@", currentLongestDistance);
-            if (marker.distance > [currentLongestDistance doubleValue]) {
-                NSNumber *newDistance = [NSNumber numberWithDouble:marker.distance];
-                [PFUser currentUser][longestDistanceKey] = newDistance;
-                NSLog(@"new distance: %@", newDistance);
-
-                // Create New Record label with animation
-                UILabel *newRecordLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 120, self.view.frame.size.width, 100)];
-                [self.view addSubview:newRecordLabel];
-                newRecordLabel.text = @"NEW DISTANCE RECORD!";
-                newRecordLabel.textAlignment = NSTextAlignmentCenter;
-                newRecordLabel.textColor = [UIColor redColor];
-                newRecordLabel.font = [UIFont boldSystemFontOfSize:25];
-                
-                // animates the new record label
-                CGAffineTransform scaleTransformNEWRECORD = CGAffineTransformMakeScale(.94, .94);
-                [UIView animateWithDuration:2.0 animations:^{
-                    newRecordLabel.alpha = 0.0;
-                    newRecordLabel.center = CGPointMake(newRecordLabel.center.x, newRecordLabel.center.y - 14);
-                    newRecordLabel.transform = scaleTransformNEWRECORD;
-                    
-                } completion:^(BOOL finished) {
-                    [newRecordLabel removeFromSuperview];
-                }];
-
-                
-            }
+            [self createAnimateHitLabel];
+            [self longestDistanceRecordCheckerFromMarker:marker];
             
         }
 
     }
 }
 
-- (void)removeGMOverlay:(GMSGroundOverlay *)overlay {
+- (void) createAnimateHitLabel {
+    // Create HIT label with animation
+    UILabel *hitLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 40, self.view.frame.size.width, 100)];
+    [self.view addSubview:hitLabel];
+    hitLabel.text = @"HIT!";
+    hitLabel.textAlignment = NSTextAlignmentCenter;
+    hitLabel.textColor = [UIColor redColor];
+    hitLabel.font = [UIFont boldSystemFontOfSize:50];
+    
+    // animates the HIT label
+    CGAffineTransform scaleTransformHIT = CGAffineTransformMakeScale(.94, .94);
+    [UIView animateWithDuration:0.5 animations:^{
+        hitLabel.alpha = 0.0;
+        hitLabel.center = CGPointMake(hitLabel.center.x, hitLabel.center.y - 14);
+        hitLabel.transform = scaleTransformHIT;
+        
+    } completion:^(BOOL finished) {
+        [hitLabel removeFromSuperview];
+    }];
+}
+
+- (void) longestDistanceRecordCheckerFromMarker:(GMSMarkerWithUser *)marker {
+    // checks if its the longest distance hit, if it is, saves to Parse
+    NSNumber *currentLongestDistance = [PFUser currentUser][longestDistanceKey];
+    NSLog(@"dist from Parse: %@", currentLongestDistance);
+    if (marker.distance > [currentLongestDistance doubleValue]) {
+        NSNumber *newDistance = [NSNumber numberWithDouble:marker.distance];
+        [PFUser currentUser][longestDistanceKey] = newDistance;
+        NSLog(@"new distance: %@", newDistance);
+        
+        // Create New Record label with animation
+        UILabel *newRecordLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 120, self.view.frame.size.width, 100)];
+        [self.view addSubview:newRecordLabel];
+        newRecordLabel.text = @"NEW DISTANCE RECORD!";
+        newRecordLabel.textAlignment = NSTextAlignmentCenter;
+        newRecordLabel.textColor = [UIColor redColor];
+        newRecordLabel.font = [UIFont boldSystemFontOfSize:25];
+        
+        // animates the new record label
+        CGAffineTransform scaleTransformNEWRECORD = CGAffineTransformMakeScale(.94, .94);
+        [UIView animateWithDuration:2.0 animations:^{
+            newRecordLabel.alpha = 0.0;
+            newRecordLabel.center = CGPointMake(newRecordLabel.center.x, newRecordLabel.center.y - 14);
+            newRecordLabel.transform = scaleTransformNEWRECORD;
+            
+        } completion:^(BOOL finished) {
+            [newRecordLabel removeFromSuperview];
+        }];
+    }
+}
+
+- (void) removeGMOverlay:(GMSGroundOverlay *)overlay {
     overlay.map = nil;
     overlay = nil;
 }
@@ -592,12 +598,12 @@ static bool kAnimate = true;
     [self performSelector:@selector(removeGMSPolyline:) withObject:polyline afterDelay:3];
 }
 
-- (void)removeGMSPolyline:(GMSPolyline *)polyline {
+- (void) removeGMSPolyline:(GMSPolyline *)polyline {
     polyline.map = nil;
     polyline = nil;
 }
 
-- (void)tick {
+- (void) tick {
     for (GMSPolyline *poly in _polys) {
         poly.spans = GMSStyleSpansOffset(poly.path, _styles, _lengths, kGMSLengthGeodesic, _pos);
     }
@@ -610,7 +616,7 @@ static bool kAnimate = true;
     }
 }
 
-- (void)initLines {
+- (void) initLines {
     if (!_polys) {
         NSMutableArray *polys = [NSMutableArray array];
         GMSMutablePath *path = [GMSMutablePath path];
