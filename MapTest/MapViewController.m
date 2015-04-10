@@ -346,7 +346,7 @@ static bool kAnimate = true;
 
 - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
     
-    return NO;
+    return YES;
 }
 
 #pragma mark SceneKit methods
