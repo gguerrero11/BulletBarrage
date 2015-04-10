@@ -10,11 +10,15 @@
 #import <MapKit/MapKit.h>
 #import "Weapon.h"
 
+static NSString * const userLocationkey = @"userLocation";
+static NSString * const weaponNameKey = @"weaponSelected";
+static NSString * const usernameKey = @"username";
 
 
 @interface UserController : NSObject
 
 @property (nonatomic,strong) NSArray *arrayOfUsers;
+@property (nonatomic,strong) NSArray *arrayOfMarkers;
 
 + (UserController *) sharedInstance;
 

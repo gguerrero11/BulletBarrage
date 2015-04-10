@@ -11,8 +11,8 @@
 #import <MapKit/MapKit.h>
 #import "WeaponController.h"
 
-static NSString *userLocationkey = @"userLocation";
-static NSString * const weaponNameKey = @"weaponSelected";
+#import <GoogleMaps/GoogleMaps.h>
+#import "GMSMarkerWithUser.h"
 
 @implementation UserController
 
@@ -27,27 +27,50 @@ static NSString * const weaponNameKey = @"weaponSelected";
 
 + (void) queryUsersNearCurrentUser:(CLLocationCoordinate2D)coordinates
                   withinMileRadius:(double)radiusFromLocationInMiles{
-
+    
     // Parse query calls.
     PFQuery *queryForUsers = [PFUser query];
-    
-//    PFGeoPoint *geoPoint = [PFGeoPoint geoPointWithLatitude:coordinates.latitude
-//                                                  longitude:coordinates.longitude];
     
     [queryForUsers findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (error) {
             NSLog(@"%@", error);
         }
         else {
-
+            
             [UserController sharedInstance].arrayOfUsers = objects;
             
-            //NSLog(@"Videos Near Location: %@",[UserController sharedInstance].arrayOfUsers);
+            NSLog(@"Users Near Location: %lu",[UserController sharedInstance].arrayOfUsers.count);
             
             [[NSNotificationCenter defaultCenter] postNotificationName:@"updateTable" object:nil];
         }
     }];
     
+}
+
+- (NSArray *)arrayOfMarkers {
+    NSMutableArray *mArray = [NSMutableArray new];
+    
+    for (PFUser *user in [UserController sharedInstance].arrayOfUsers) {
+        
+        // will exclude the currentUser in the array
+        if (user != [PFUser currentUser]) {
+            
+            GMSMarkerWithUser *marker = [[GMSMarkerWithUser alloc]initWithUser:user];
+            marker.position = [self convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
+            [mArray addObject:marker];
+        }
+    }
+    
+    return mArray;
+}
+
+-(CLLocationCoordinate2D)convertPFGeoPointToLocationCoordinate2D:(PFGeoPoint *)geoPoint {
+    
+    CLLocationCoordinate2D coordinates;
+    coordinates.latitude = geoPoint.latitude;
+    coordinates.longitude = geoPoint.longitude;
+    
+    return coordinates;
 }
 
 + (Weapon *) setWeaponForUser:(NSString *)weaponString {

@@ -78,8 +78,6 @@ static bool kAnimate = true;
 @property (nonatomic,assign) NSInteger zoomSelection;
 @property (nonatomic,assign) double pitchWithLimit;
 @property (nonatomic,strong) NSMutableArray *arrayOfCraters;
-//@property (nonatomic,strong) CLLocation *hitLocation;
-@property (nonatomic,strong) NSArray *arrayOfMarkers;
 
 // CMDevice motion
 @property (nonatomic,strong) CMAttitude *attitude;
@@ -182,13 +180,13 @@ static bool kAnimate = true;
     [self setUpDataViewFireButton];
     [self setUpPOVButton];
     
-    [self createDummyTargets];
+    [self createTargets];
     
     self.arrayOfCraters = [NSMutableArray new];
 }
 
-- (void) createDummyTargets {
-    NSMutableArray *mArrayOfMarkers = [[NSMutableArray alloc]initWithArray:self.arrayOfMarkers];
+- (void) createTargets {
+    NSMutableArray *mArrayOfMarkers = [[NSMutableArray alloc]initWithArray:[UserController sharedInstance].arrayOfMarkers];
     
     // Create Dummy Data
     CLLocation *dummyLocale1 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.76, -111.891)
@@ -216,7 +214,7 @@ static bool kAnimate = true;
     [mArrayOfMarkers addObject:marker];
     [mArrayOfMarkers addObject:marker2];
     
-    self.arrayOfMarkers = mArrayOfMarkers;
+    [UserController sharedInstance].arrayOfMarkers = mArrayOfMarkers;
     
 }
 
@@ -400,7 +398,7 @@ static bool kAnimate = true;
     pyramidNode.position = SCNVector3Make(0, .03, 0);
     pyramidNode.eulerAngles = SCNVector3Make(-1.54, 0, 1.5);
     
-    SCNNode *groundNode = [SCNNode nodeWithGeometry:self.ground];
+//    SCNNode *groundNode = [SCNNode nodeWithGeometry:self.ground];
     
     [scene.rootNode addChildNode:pyramidNode];
     //[scene.rootNode addChildNode:groundNode];
@@ -481,7 +479,6 @@ static bool kAnimate = true;
 }
 
 #pragma mark Firing/Projectile methods
-
 - (double) convertToDegrees:(double)pitch {
     return pitch * (180/M_PI);
 }
@@ -540,7 +537,7 @@ static bool kAnimate = true;
     [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
     
     
-    for (GMSMarker *marker in self.arrayOfMarkers) {
+    for (GMSMarker *marker in [UserController sharedInstance].arrayOfMarkers) {
         CLLocationCoordinate2D positionOfMarker = marker.position;
         CLLocation *locationOfMarker = [[CLLocation alloc]initWithCoordinate:positionOfMarker altitude:0 horizontalAccuracy:0 verticalAccuracy:0 timestamp:[NSDate date]];
         if ([locationOfMarker distanceFromLocation:hitLocation] < 100) {
@@ -574,8 +571,8 @@ static bool kAnimate = true;
     overlay = nil;
 }
 
-#pragma mark Polyline methods
 
+#pragma mark Polyline methods
 - (void) drawTrajectoryLineToLocation:(CLLocation *)destination {
     GMSMutablePath *path = [GMSMutablePath path];
     [path addCoordinate:self.myLocation.coordinate];
@@ -650,8 +647,8 @@ static bool kAnimate = true;
     [gmMapView animateToViewingAngle:45];
     
     // Use the true heading if it is valid.
-    CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
-                                       newHeading.trueHeading : newHeading.magneticHeading);
+//    CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
+//                                       newHeading.trueHeading : newHeading.magneticHeading);
     //self.cameraSceneKitHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * (M_PI/180));
     self.pyramidNode.eulerAngles = SCNVector3Make(-1.54, - self.pitchWithLimit , 1.5 );
 }

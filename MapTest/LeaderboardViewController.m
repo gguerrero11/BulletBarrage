@@ -80,7 +80,7 @@ static double padding = 15;
 
 - (void) updateSort:(id)sender {
     UISegmentedControl *segControl = sender;
-    self.dataSource.sortMode = segControl.selectedSegmentIndex;
+    self.dataSource.sortMode = (SortMode)segControl.selectedSegmentIndex;
     [self.tableView reloadData];
 }
 
