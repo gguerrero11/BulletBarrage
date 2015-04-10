@@ -52,12 +52,14 @@
     for (PFUser *user in [UserController sharedInstance].arrayOfUsers) {
         
         // will exclude the currentUser in the array
-        if (user != [PFUser currentUser]) {
+        // NOTE: must use isEqualToString (string), or else it will compare pointers than the actual objectId!
+        if (![user.objectId isEqualToString:[PFUser currentUser].objectId]) {
             
             GMSMarkerWithUser *marker = [[GMSMarkerWithUser alloc]initWithUser:user];
             marker.position = [UserController convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
             [mArray addObject:marker];
-        }
+        } else
+        { NSLog(@"Found Billy!"); }
     }
     
     return mArray;

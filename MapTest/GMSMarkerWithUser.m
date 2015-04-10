@@ -14,7 +14,7 @@
 // synthesizes the properties from its superclass so we can use it in the subclass
 @synthesize title = _title;
 @synthesize snippet = _snippet;
-@synthesize appearAnimation = _appearAnimation;
+
 
 - (id)initWithUser:(PFUser *) user {
     self = [super init];
@@ -22,6 +22,7 @@
         _user = user;
         _title = user[usernameKey];
         _snippet = _distanceString;
+        
         self.position = [UserController convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
         
     }

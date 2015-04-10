@@ -70,7 +70,6 @@
     if ([user.objectId isEqualToString:[PFUser currentUser].objectId]) {
         cell.backgroundColor = [UIColor colorWithRed:.47 green:.65 blue:.935 alpha:1];
         cell.textLabel.textColor = [UIColor whiteColor];
-        NSLog(@"%@", cell.backgroundColor);
         cell.userInteractionEnabled = NO;
     } else {
         cell.backgroundColor = [UIColor whiteColor];

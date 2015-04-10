@@ -172,7 +172,6 @@ static bool kAnimate = true;
     //[self.loadCircle removeFromSuperview];
 }
 
-
 - (void) viewDidLoad {
     [super viewDidLoad];
 
@@ -192,7 +191,9 @@ static bool kAnimate = true;
 - (void) createTargets {
     
     for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
+        marker.appearAnimation = YES;
         marker.map = gmMapView;
+     
     }
 }
 
@@ -274,14 +275,14 @@ static bool kAnimate = true;
      [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
         if (geoPoint) {
             [PFUser currentUser][userLocationkey] = geoPoint;
-            
-            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (succeeded) {
-                    NSLog(@"Initial User location saved to Parse");
-                } else {
-                    NSLog(@"Error: %@", error);
-                }
-            }];
+#warning TURN THIS BACK ON BEFORE SUBMITTING!
+//            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+//                if (succeeded) {
+//                    NSLog(@"Initial User location saved to Parse");
+//                } else {
+//                    NSLog(@"Error: %@", error);
+//                }
+//            }];
             
         } else NSLog(@"Cannot find user!");
      }];
@@ -304,10 +305,12 @@ static bool kAnimate = true;
 
 - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
     
-    return YES;
+    return NO;
 }
 
+
 #pragma mark SceneKit methods
+
 - (void) setupSceneKitView {
     // Init the scene and default lighting
     self.sceneView = [[SCNView alloc]initWithFrame:CGRectMake(0,0, self.view.frame.size.width, self.view.frame.size.height + 250)];
@@ -438,7 +441,9 @@ static bool kAnimate = true;
     }
 }
 
+
 #pragma mark Firing/Projectile methods
+
 - (double) convertToDegrees:(double)pitch {
     return pitch * (180/M_PI);
 }
@@ -473,7 +478,7 @@ static bool kAnimate = true;
     // Adds +1 to the "shotsFired" on Parse
     NSNumber *shotsFired = [PFUser currentUser][shotsFiredKey];
     double doubleShotsFired = [shotsFired integerValue] + 1;
-    NSLog(@"%f", doubleShotsFired);
+    //NSLog(@"%f", doubleShotsFired);
     [PFUser currentUser][shotsFiredKey] = [NSNumber numberWithDouble:doubleShotsFired];
     
     CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
@@ -509,7 +514,7 @@ static bool kAnimate = true;
             // Adds +1 to the "shotsHit" on Parse
             NSNumber *shotsHit = [PFUser currentUser][shotsHitKey];
             double doubleShotsHit = [shotsHit integerValue] + 1;
-            NSLog(@"%f", doubleShotsHit);
+            //NSLog(@"%f", doubleShotsHit);
             [PFUser currentUser][shotsHitKey] = [NSNumber numberWithDouble:doubleShotsHit];
             
             // Create HIT label with animation
@@ -542,6 +547,7 @@ static bool kAnimate = true;
 
 
 #pragma mark Polyline methods
+
 - (void) drawTrajectoryLineToLocation:(CLLocation *)destination {
     GMSMutablePath *path = [GMSMutablePath path];
     [path addCoordinate:self.myLocation.coordinate];
