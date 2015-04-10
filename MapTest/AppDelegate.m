@@ -95,6 +95,7 @@
             NSLog(@"User Saved");
         } else {
             NSLog(@"%@", error);
+            [[PFUser currentUser] saveEventually];
         }
     }];
 }

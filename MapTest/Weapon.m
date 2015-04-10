@@ -14,4 +14,8 @@
     return @100;
 }
 
+- (NSNumber *) damage {
+    return @30;
+}
+
 @end

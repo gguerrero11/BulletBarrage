@@ -543,13 +543,6 @@ static bool kAnimate = true;
                 NSNumber *newDistance = [NSNumber numberWithDouble:marker.distance];
                 [PFUser currentUser][longestDistanceKey] = newDistance;
                 NSLog(@"new distance: %@", newDistance);
-                [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                    if (succeeded) {
-                        NSLog(@"User Saved");
-                    } else {
-                        NSLog(@"%@", error);
-                    }
-                }];
 
                 // Create New Record label with animation
                 UILabel *newRecordLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 120, self.view.frame.size.width, 100)];
