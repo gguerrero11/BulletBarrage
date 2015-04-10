@@ -58,8 +58,7 @@
             GMSMarkerWithUser *marker = [[GMSMarkerWithUser alloc]initWithUser:user];
             marker.position = [UserController convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
             [mArray addObject:marker];
-        } else
-        { NSLog(@"Found Billy!"); }
+        }
     }
     
     return mArray;

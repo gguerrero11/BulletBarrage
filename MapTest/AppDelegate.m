@@ -38,13 +38,18 @@
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarAnimationSlide;
     [UIApplication sharedApplication].statusBarHidden = YES;
     
+    // Google Maps API
     [GMSServices provideAPIKey:@"AIzaSyCS6OjomXIt4W-tlts-J7tG55sPJTK_sA4"];
     
+    // Parse API
+    //[Parse enableLocalDatastore];
     [Parse setApplicationId:@"7ueGpbdEj9VRrPEEjiE81T98AZ7WMDiI3xEwVpnx"
                   clientKey:@"OJgDQPnkJz6i2bsZWYomMLeuKAUzh2n5SOcn0Ciu"];
     
     // [Optional] Track statistics around application opens.
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+    
+    
     
     MapViewController *mapView = [MapViewController new];
     mapView.tabBarItem.title = @"Select Target";

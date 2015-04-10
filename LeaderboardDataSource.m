@@ -78,12 +78,14 @@
     }
     
     NSNumber *accuracy;
+    NSNumber *distance;
     
     switch (self.sortMode)
     {
             // Sorting the array by Distance for each User
         case sortByDistance:
-            cell.textLabel.text = [NSString stringWithFormat:@"%lu. %@ %@m", indexPath.row + 1, user[usernameKey], user[distanceKey]];
+            distance = user[distanceKey];
+            cell.textLabel.text = [NSString stringWithFormat:@"%lu. %@ %.1fm", indexPath.row + 1, user[usernameKey], [distance floatValue]];
             break;
             
             // Sorting the array by Kill/Death for each User
@@ -95,9 +97,7 @@
         case sortByAccuracy:
             
             accuracy = user[accuracyKey];
-            float accuracyFloat = [accuracy floatValue];
-
-            cell.textLabel.text = [NSString stringWithFormat:@"%lu. %@ %.1f%%", indexPath.row + 1, user[usernameKey], accuracyFloat];
+            cell.textLabel.text = [NSString stringWithFormat:@"%lu. %@ %.1f%%", indexPath.row + 1, user[usernameKey], [accuracy floatValue]];
             break;
     }
     

@@ -303,7 +303,7 @@ static bool kAnimate = true;
     [self.view addSubview:gmMapView];
 }
 
-- (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
+- (BOOL)mapView:(GMSMarkerWithUser *)mapView didTapMarker:(GMSMarkerWithUser *)marker {
     
     return NO;
 }
@@ -505,8 +505,8 @@ static bool kAnimate = true;
     groundOverlay.map = gmMapView;
     [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
     
-    
-    for (GMSMarker *marker in [UserController sharedInstance].arrayOfMarkers) {
+    // Goes through each marker in the array and checks if that marker's position is within 100 (hardcoded) meters of the hitlocation
+    for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
         CLLocationCoordinate2D positionOfMarker = marker.position;
         CLLocation *locationOfMarker = [[CLLocation alloc]initWithCoordinate:positionOfMarker altitude:0 horizontalAccuracy:0 verticalAccuracy:0 timestamp:[NSDate date]];
         if ([locationOfMarker distanceFromLocation:hitLocation] < 100) {
@@ -525,15 +525,53 @@ static bool kAnimate = true;
             hitLabel.textColor = [UIColor redColor];
             hitLabel.font = [UIFont boldSystemFontOfSize:50];
             
-            CGAffineTransform scaleTransform = CGAffineTransformMakeScale(.94, .94);
+            // animates the HIT label
+            CGAffineTransform scaleTransformHIT = CGAffineTransformMakeScale(.94, .94);
             [UIView animateWithDuration:0.5 animations:^{
                 hitLabel.alpha = 0.0;
                 hitLabel.center = CGPointMake(hitLabel.center.x, hitLabel.center.y - 14);
-                hitLabel.transform = scaleTransform;
+                hitLabel.transform = scaleTransformHIT;
                 
             } completion:^(BOOL finished) {
                 [hitLabel removeFromSuperview];
             }];
+            
+            // checks if its the longest distance hit, if it is, saves to Parse
+            NSNumber *currentLongestDistance = [PFUser currentUser][longestDistanceKey];
+            NSLog(@"dist from Parse: %@", currentLongestDistance);
+            if (marker.distance > [currentLongestDistance doubleValue]) {
+                NSNumber *newDistance = [NSNumber numberWithDouble:marker.distance];
+                [PFUser currentUser][longestDistanceKey] = newDistance;
+                NSLog(@"new distance: %@", newDistance);
+                [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    if (succeeded) {
+                        NSLog(@"User Saved");
+                    } else {
+                        NSLog(@"%@", error);
+                    }
+                }];
+
+                // Create New Record label with animation
+                UILabel *newRecordLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 120, self.view.frame.size.width, 100)];
+                [self.view addSubview:newRecordLabel];
+                newRecordLabel.text = @"NEW DISTANCE RECORD!";
+                newRecordLabel.textAlignment = NSTextAlignmentCenter;
+                newRecordLabel.textColor = [UIColor redColor];
+                newRecordLabel.font = [UIFont boldSystemFontOfSize:25];
+                
+                // animates the new record label
+                CGAffineTransform scaleTransformNEWRECORD = CGAffineTransformMakeScale(.94, .94);
+                [UIView animateWithDuration:2.0 animations:^{
+                    newRecordLabel.alpha = 0.0;
+                    newRecordLabel.center = CGPointMake(newRecordLabel.center.x, newRecordLabel.center.y - 14);
+                    newRecordLabel.transform = scaleTransformNEWRECORD;
+                    
+                } completion:^(BOOL finished) {
+                    [newRecordLabel removeFromSuperview];
+                }];
+
+                
+            }
             
         }
 
