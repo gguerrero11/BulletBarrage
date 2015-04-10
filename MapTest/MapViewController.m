@@ -235,8 +235,8 @@ static bool kAnimate = true;
             self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[self convertToDegrees:self.pitchWithLimit]];
             
             
-//[gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
-//[gmMapView animateToViewingAngle:45];
+            //[gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
+            //[gmMapView animateToViewingAngle:45];
             
             //[gmMapView animateToLocation:self.myLocation.coordinate];
             // NSLog(@"%f", gmMapView.camera.viewingAngle);
@@ -302,7 +302,7 @@ static bool kAnimate = true;
     
     
     gmCamera = [GMSCameraPosition cameraWithTarget:self.myLocation.coordinate zoom:15 bearing:32 viewingAngle:17];
-
+    
     
     
     gmMapView = [GMSMapView mapWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height + 250) camera:gmCamera];
@@ -517,7 +517,16 @@ static bool kAnimate = true;
     CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                          longitude:[self calculateHitLocation].longitude];
     
-    [self hitCheckerAtLocation:hitLocation];
+    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:3];
+
+    
+    [self drawTrajectoryLineToLocation:hitLocation];
+    //   [self setUpPolyineColors];
+    
+}
+
+- (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
+    
     // Create crater coordinates
     // Sets coordinates for the opposite side corners for the overlay (crater)
     CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(hitLocation.coordinate.latitude + 100.0/111111.0, hitLocation.coordinate.longitude + 100.0/111111.0);
@@ -528,25 +537,32 @@ static bool kAnimate = true;
     GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds
                                                                            icon:[UIImage imageNamed:@"craterBigSquare"]];
     groundOverlay.map = gmMapView;
-    [self drawTrajectoryLineToLocation:hitLocation];
-    //   [self setUpPolyineColors];
     [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
     
     
-}
-
-- (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
     for (GMSMarker *marker in self.arrayOfMarkers) {
         CLLocationCoordinate2D positionOfMarker = marker.position;
         CLLocation *locationOfMarker = [[CLLocation alloc]initWithCoordinate:positionOfMarker altitude:0 horizontalAccuracy:0 verticalAccuracy:0 timestamp:[NSDate date]];
         if ([locationOfMarker distanceFromLocation:hitLocation] < 100) {
             NSLog(@"HIT!");
+            
+            // Create HIT label
             UILabel *hitLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 40, self.view.frame.size.width, 100)];
             [self.view addSubview:hitLabel];
             hitLabel.text = @"HIT!";
             hitLabel.textAlignment = NSTextAlignmentCenter;
             hitLabel.textColor = [UIColor redColor];
             hitLabel.font = [UIFont boldSystemFontOfSize:50];
+            
+            CGAffineTransform scaleTransform = CGAffineTransformMakeScale(.94, .94);
+            [UIView animateWithDuration:0.5 animations:^{
+                hitLabel.alpha = 0.0;
+                hitLabel.center = CGPointMake(hitLabel.center.x, hitLabel.center.y - 14);
+                hitLabel.transform = scaleTransform;
+                
+            } completion:^(BOOL finished) {
+                [hitLabel removeFromSuperview];
+            }];
             
         }
         else  NSLog(@"MISS!");
@@ -627,13 +643,11 @@ static bool kAnimate = true;
 }
 
 
-
-
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 10) return;
     
     [gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
-        [gmMapView animateToViewingAngle:45];
+    [gmMapView animateToViewingAngle:45];
     
     // Use the true heading if it is valid.
     CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
