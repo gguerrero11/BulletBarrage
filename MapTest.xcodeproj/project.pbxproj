@@ -52,7 +52,6 @@
 		49B9DBCC1ACDD519003EA46E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49B9DBCA1ACDD519003EA46E /* LaunchScreen.xib */; };
 		49B9DBD81ACDD519003EA46E /* MapTestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DBD71ACDD519003EA46E /* MapTestTests.m */; };
 		49B9DBEB1ACDDB2A003EA46E /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DBEA1ACDDB2A003EA46E /* MapViewController.m */; };
-		49B9DBEE1ACDDB3E003EA46E /* Target.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DBED1ACDDB3E003EA46E /* Target.m */; };
 		49B9DC321ACF2A9A003EA46E /* LeaderboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DC311ACF2A9A003EA46E /* LeaderboardViewController.m */; };
 		49B9DC381ACF2BEA003EA46E /* LeaderboardDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DC371ACF2BEA003EA46E /* LeaderboardDataSource.m */; };
 		49B9DC3B1ACF2D94003EA46E /* ProfileviewControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DC3A1ACF2D94003EA46E /* ProfileviewControllerViewController.m */; };
@@ -134,8 +133,6 @@
 		49B9DBD71ACDD519003EA46E /* MapTestTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MapTestTests.m; sourceTree = "<group>"; };
 		49B9DBE91ACDDB2A003EA46E /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
 		49B9DBEA1ACDDB2A003EA46E /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
-		49B9DBEC1ACDDB3E003EA46E /* Target.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Target.h; sourceTree = "<group>"; };
-		49B9DBED1ACDDB3E003EA46E /* Target.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Target.m; sourceTree = "<group>"; };
 		49B9DC301ACF2A9A003EA46E /* LeaderboardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeaderboardViewController.h; sourceTree = "<group>"; };
 		49B9DC311ACF2A9A003EA46E /* LeaderboardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeaderboardViewController.m; sourceTree = "<group>"; };
 		49B9DC361ACF2BEA003EA46E /* LeaderboardDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LeaderboardDataSource.h; path = ../LeaderboardDataSource.h; sourceTree = "<group>"; };
@@ -276,8 +273,6 @@
 				4996BA661AD82B15002D5663 /* User.m */,
 				49603D6F1AD20ADF00AB3E50 /* UserController.h */,
 				49603D701AD20ADF00AB3E50 /* UserController.m */,
-				4996BA6B1AD82F68002D5663 /* GMSMarkerWithUser.h */,
-				4996BA6C1AD82F68002D5663 /* GMSMarkerWithUser.m */,
 				49603D6E1AD1023500AB3E50 /* Login */,
 				49B9DC3C1ACF37BB003EA46E /* MapView */,
 				49B9DC3D1ACF37C6003EA46E /* LeaderBoard */,
@@ -321,8 +316,8 @@
 			children = (
 				49B9DBE91ACDDB2A003EA46E /* MapViewController.h */,
 				49B9DBEA1ACDDB2A003EA46E /* MapViewController.m */,
-				49B9DBEC1ACDDB3E003EA46E /* Target.h */,
-				49B9DBED1ACDDB3E003EA46E /* Target.m */,
+				4996BA6B1AD82F68002D5663 /* GMSMarkerWithUser.h */,
+				4996BA6C1AD82F68002D5663 /* GMSMarkerWithUser.m */,
 				49835E151AD39C050058917B /* GoogleMapAPI.h */,
 				496857401AD59946000CE114 /* Weapons */,
 			);
@@ -479,7 +474,6 @@
 				49603D6C1AD1022300AB3E50 /* CustomLoginViewController.m in Sources */,
 				4996BA671AD82B15002D5663 /* User.m in Sources */,
 				493583DF1AD5B173007A46EC /* WeaponController.m in Sources */,
-				49B9DBEE1ACDDB3E003EA46E /* Target.m in Sources */,
 				4996BA6D1AD82F68002D5663 /* GMSMarkerWithUser.m in Sources */,
 				49B9DBBE1ACDD519003EA46E /* main.m in Sources */,
 			);

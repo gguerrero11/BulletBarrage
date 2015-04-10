@@ -7,7 +7,7 @@
 //
 
 #import "MapViewController.h"
-#import "Target.h"
+
 #import <CoreMotion/CoreMotion.h>
 #import "CustomLoginViewController.h"
 #import "CustomSignUpViewController.h"
@@ -17,6 +17,8 @@
 #import "Weapon.h"
 #import "WeaponController.h"
 #import "UserController.h"
+
+#import "GMSMarkerWithUser.h"
 
 @import SceneKit;
 
@@ -165,13 +167,17 @@ static bool kAnimate = true;
     NSLog(@"User dismissed the signUpViewController");
 }
 
+- (void) registerForNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createTargets) name:@"queryDone" object:nil];
+    //[self.loadCircle removeFromSuperview];
+}
+
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-    
-    
+
+    [self registerForNotifications];
     [UserController setWeaponForUser:cannon];
-    
     [self setUpMotionManager];
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
@@ -180,42 +186,14 @@ static bool kAnimate = true;
     [self setUpDataViewFireButton];
     [self setUpPOVButton];
     
-    [self createTargets];
-    
     self.arrayOfCraters = [NSMutableArray new];
 }
 
 - (void) createTargets {
-    NSMutableArray *mArrayOfMarkers = [[NSMutableArray alloc]initWithArray:[UserController sharedInstance].arrayOfMarkers];
     
-    // Create Dummy Data
-    CLLocation *dummyLocale1 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.76, -111.891)
-                                                             altitude:0 horizontalAccuracy:25
-                                                     verticalAccuracy:25
-                                                            timestamp:[NSDate date]];
-    
-    CLLocation *dummyLocale2 = [[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(40.77, -111.899)
-                                                             altitude:0 horizontalAccuracy:25
-                                                     verticalAccuracy:25
-                                                            timestamp:[NSDate date]];
-    
-    GMSMarker *marker = [[GMSMarker alloc] init];
-    marker.position = dummyLocale1.coordinate;
-    marker.appearAnimation = kGMSMarkerAnimationPop;
-    marker.title = @"Marker 1";
-    marker.map = gmMapView;
-    
-    GMSMarker *marker2 = [[GMSMarker alloc] init];
-    marker2.position = dummyLocale2.coordinate;
-    marker2.appearAnimation = kGMSMarkerAnimationPop;
-    marker2.title = @"Marker 2";
-    marker2.map = gmMapView;
-    
-    [mArrayOfMarkers addObject:marker];
-    [mArrayOfMarkers addObject:marker2];
-    
-    [UserController sharedInstance].arrayOfMarkers = mArrayOfMarkers;
-    
+    for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
+        marker.map = gmMapView;
+    }
 }
 
 - (void) setUpMotionManager {
@@ -261,7 +239,6 @@ static bool kAnimate = true;
             //                        }
             
             
-            
         }];
     }
 }
@@ -298,10 +275,7 @@ static bool kAnimate = true;
 
 - (void) showMainMapView {
     
-    
     gmCamera = [GMSCameraPosition cameraWithTarget:self.myLocation.coordinate zoom:15 bearing:32 viewingAngle:17];
-    
-    
     
     gmMapView = [GMSMapView mapWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height + 250) camera:gmCamera];
     gmMapView.myLocationEnabled = YES;
@@ -309,37 +283,6 @@ static bool kAnimate = true;
     gmMapView.delegate = self;
     
     [self.view addSubview:gmMapView];
-    
-    GMSMarker *marker = [GMSMarker new];
-    marker.position = CLLocationCoordinate2DMake(40.12, -111.1);
-    marker.title = @"Target";
-    marker.snippet = @"HIT";
-    marker.map = gmMapView;
-    
-    // Apple Maps
-    //    // create scroll view
-    //    UIScrollView *scrollView = [[UIScrollView alloc]initWithFrame:self.view.frame];
-    //    [self.view addSubview:scrollView];
-    //
-    //    // attach the mapview to the scroll view so we can move the center for the map visually lower on the screen
-    //    self.mapView = [[MKMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 950)];
-    //    self.mapView.backgroundColor = [UIColor redColor];
-    //    self.mapView.mapType = MKMapTypeStandard;
-    //    self.mapView.delegate = self;
-    //    self.mapView.rotateEnabled = NO;
-    //    self.mapView.scrollEnabled = NO;
-    //    self.mapView.zoomEnabled = NO;
-    //    self.mapView.showsPointsOfInterest = NO;
-    //    self.mapView.showsBuildings = NO;
-    //    self.mapView.showsUserLocation = YES; // Must be YES in order for the MKMapView protocol to fire.
-    //    //[self.mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
-    //    [scrollView addSubview:self.mapView];
-    //
-    //
-    //    MKCoordinateSpan span = MKCoordinateSpanMake(0.14, 0.14);
-    //    MKCoordinateRegion region = MKCoordinateRegionMake(self.myLocation.coordinate, span);
-    //
-    //    [self.mapView setRegion:region animated:YES];
 }
 
 - (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
@@ -509,14 +452,18 @@ static bool kAnimate = true;
 }
 
 - (void) fireButtonPressed:(id)sender {
-    //    [gmMapView clear];
+
+    // Adds +1 to the "shotsFired" on Parse
+    NSNumber *shotsFired = [PFUser currentUser][shotsFiredKey];
+    double doubleShotsFired = [shotsFired integerValue] + 1;
+    NSLog(@"%f", doubleShotsFired);
+    [PFUser currentUser][shotsFiredKey] = [NSNumber numberWithDouble:doubleShotsFired];
     
     CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                          longitude:[self calculateHitLocation].longitude];
     
     [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:3];
 
-    
     [self drawTrajectoryLineToLocation:hitLocation];
     //   [self setUpPolyineColors];
     
@@ -541,9 +488,14 @@ static bool kAnimate = true;
         CLLocationCoordinate2D positionOfMarker = marker.position;
         CLLocation *locationOfMarker = [[CLLocation alloc]initWithCoordinate:positionOfMarker altitude:0 horizontalAccuracy:0 verticalAccuracy:0 timestamp:[NSDate date]];
         if ([locationOfMarker distanceFromLocation:hitLocation] < 100) {
-            NSLog(@"HIT!");
             
-            // Create HIT label
+            // Adds +1 to the "shotsHit" on Parse
+            NSNumber *shotsHit = [PFUser currentUser][shotsHitKey];
+            double doubleShotsHit = [shotsHit integerValue] + 1;
+            NSLog(@"%f", doubleShotsHit);
+            [PFUser currentUser][shotsHitKey] = [NSNumber numberWithDouble:doubleShotsHit];
+            
+            // Create HIT label with animation
             UILabel *hitLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 40, self.view.frame.size.width, 100)];
             [self.view addSubview:hitLabel];
             hitLabel.text = @"HIT!";
@@ -562,7 +514,7 @@ static bool kAnimate = true;
             }];
             
         }
-        else  NSLog(@"MISS!");
+
     }
 }
 

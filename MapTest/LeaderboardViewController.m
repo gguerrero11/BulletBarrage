@@ -33,7 +33,7 @@ static double padding = 15;
 @implementation LeaderboardViewController
 
 - (void) registerForNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"updateTable" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"queryDone" object:nil];
     //[self.loadCircle removeFromSuperview];
 }
 

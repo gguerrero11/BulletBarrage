@@ -7,7 +7,6 @@
 //
 
 #import "UserController.h"
-#import <Parse/Parse.h>
 #import <MapKit/MapKit.h>
 #import "WeaponController.h"
 
@@ -41,7 +40,7 @@
             
             NSLog(@"Users Near Location: %lu",[UserController sharedInstance].arrayOfUsers.count);
             
-            [[NSNotificationCenter defaultCenter] postNotificationName:@"updateTable" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"queryDone" object:nil];
         }
     }];
     
@@ -56,7 +55,7 @@
         if (user != [PFUser currentUser]) {
             
             GMSMarkerWithUser *marker = [[GMSMarkerWithUser alloc]initWithUser:user];
-            marker.position = [self convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
+            marker.position = [UserController convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
             [mArray addObject:marker];
         }
     }
@@ -64,7 +63,7 @@
     return mArray;
 }
 
--(CLLocationCoordinate2D)convertPFGeoPointToLocationCoordinate2D:(PFGeoPoint *)geoPoint {
++ (CLLocationCoordinate2D)convertPFGeoPointToLocationCoordinate2D:(PFGeoPoint *)geoPoint {
     
     CLLocationCoordinate2D coordinates;
     coordinates.latitude = geoPoint.latitude;
@@ -74,7 +73,7 @@
 }
 
 + (Weapon *) setWeaponForUser:(NSString *)weaponString {
-    [PFUser currentUser][weaponNameKey] = weaponString;
+    [PFUser currentUser][weaponSelectedKey] = weaponString;
     [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             NSLog(@"User Saved");
@@ -86,6 +85,8 @@
     Weapon *weapon = [WeaponController setWeapon:weaponString];
     return weapon;
 }
+
+
 
 
 

@@ -78,6 +78,8 @@
         cell.userInteractionEnabled = YES;
     }
     
+    NSNumber *accuracy;
+    
     switch (self.sortMode)
     {
             // Sorting the array by Distance for each User
@@ -92,7 +94,11 @@
             
             // Sorting the array by Accuracy for each User
         case sortByAccuracy:
-            cell.textLabel.text = [NSString stringWithFormat:@"%lu. %@ %@%%", indexPath.row + 1, user[usernameKey], user[accuracyKey]];
+            
+            accuracy = user[accuracyKey];
+            float accuracyFloat = [accuracy floatValue];
+
+            cell.textLabel.text = [NSString stringWithFormat:@"%lu. %@ %.1f%%", indexPath.row + 1, user[usernameKey], accuracyFloat];
             break;
     }
     

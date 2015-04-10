@@ -9,10 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
 #import "Weapon.h"
+#import <Parse/Parse.h>
+#import "LeaderboardDataSource.h"
 
 static NSString * const userLocationkey = @"userLocation";
-static NSString * const weaponNameKey = @"weaponSelected";
-static NSString * const usernameKey = @"username";
+static NSString * const weaponSelectedKey = @"weaponSelected";
+static NSString * const shotsHitKey = @"shotsHit";
+static NSString * const shotsFiredKey = @"shotsFired";
+static NSString * const accuracyKey = @"accuracy";
 
 
 @interface UserController : NSObject
@@ -26,6 +30,8 @@ static NSString * const usernameKey = @"username";
                   withinMileRadius:(double)radiusFromLocationInMiles;
 
 + (Weapon *) setWeaponForUser:(NSString *)weaponString;
+
++ (CLLocationCoordinate2D)convertPFGeoPointToLocationCoordinate2D:(PFGeoPoint *)geoPoint;
 
 
 

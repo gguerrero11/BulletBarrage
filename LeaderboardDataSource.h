@@ -22,7 +22,6 @@ static NSString * const usernameKey = @"username";
 static NSString * const distanceKey = @"longestDistance";
 static NSString * const deathKey = @"deaths";
 static NSString * const killKey = @"kills";
-static NSString * const accuracyKey = @"accuracy";
 static NSString * const objectIdKey = @"objectId";
 
 @interface LeaderboardDataSource : NSObject  <UITableViewDataSource>

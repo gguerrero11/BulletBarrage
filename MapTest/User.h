@@ -10,7 +10,13 @@
 
 
 #import <Foundation/Foundation.h>
+#import <CoreLocation/CoreLocation.h>
 
 @interface User : NSObject
+
+@property (nonatomic, assign) CLLocationCoordinate2D position;
+@property (nonatomic, strong) NSString *weaponSelected;
+@property (nonatomic, assign) NSInteger shotsFired;
+
 
 @end
