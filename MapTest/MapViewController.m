@@ -270,6 +270,15 @@ static bool kAnimate = true;
         NSLog(@"Heading isn’t available");
     }
     
+    // Saves location to Parse
+     [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
+        if (geoPoint) {
+            [PFUser currentUser][userLocationkey] = geoPoint;
+            NSLog(@"Initial User location saved to Parse");
+        } else NSLog(@"Cannot find user!");
+     }];
+    
+    
     self.myLocation = self.locationManager.location;
 }
 
@@ -606,7 +615,7 @@ static bool kAnimate = true;
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    self.mapView.showsUserLocation = NO;
+
     CLLocation *lastLocation = [locations lastObject];
     
     CLLocationAccuracy accuracy = [lastLocation horizontalAccuracy];
