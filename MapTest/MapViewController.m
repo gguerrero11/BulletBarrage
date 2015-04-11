@@ -86,6 +86,9 @@ static bool kAnimate = true;
 @property (nonatomic,strong) CMAttitude *attitude;
 @property (nonatomic) double deviceYaw;
 
+// User items
+@property (nonatomic,strong) Weapon *currentWeapon;
+
 @end
 
 @implementation MapViewController
@@ -199,6 +202,7 @@ static bool kAnimate = true;
     [self setUpPOVButton];
     
     self.arrayOfCraters = [NSMutableArray new];
+    self.currentWeapon = [Weapon new];
 }
 
 - (void) createTargets {
@@ -461,11 +465,15 @@ static bool kAnimate = true;
 }
 
 - (double) calculateDistanceFromUserWeapon {
-    Weapon *currentWeapon = [Weapon new];
-    NSNumber *velocityOfProjectile = currentWeapon.velocity;
     
-    double range = ( powl([velocityOfProjectile doubleValue], 2 ) * sinl(2 * self.pitchWithLimit) ) / gravityStatic;
+    // formula to calculate the distance the projectile will travel
+    double range = ( powl([self.currentWeapon.velocity doubleValue], 2 ) * sinl(2 * self.pitchWithLimit) ) / gravityStatic;
     return range;
+}
+
+- (double) calculateProjectileTravelTime {
+    double time = [self calculateDistanceFromUserWeapon] / [self.currentWeapon.velocity doubleValue] * cosh(self.pitchWithLimit);
+    return time;
 }
 
 - (CLLocationCoordinate2D) calculateHitLocation {
@@ -493,10 +501,10 @@ static bool kAnimate = true;
     CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                          longitude:[self calculateHitLocation].longitude];
     
-    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:3];
+    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:[self calculateProjectileTravelTime]];
     
     [self drawTrajectoryLineToLocation:hitLocation];
-    //   [self setUpPolyineColors];
+    //[self setUpPolyineColorsToLocation:hitLocation];
     
 }
 
@@ -643,7 +651,7 @@ static bool kAnimate = true;
     polyline.strokeWidth = 5.f;
     polyline.map = gmMapView;
     
-    [self performSelector:@selector(removeGMSPolyline:) withObject:polyline afterDelay:3];
+    [self performSelector:@selector(removeGMSPolyline:) withObject:polyline afterDelay:[self calculateProjectileTravelTime]];
 }
 
 - (void) removeGMSPolyline:(GMSPolyline *)polyline {
@@ -664,15 +672,15 @@ static bool kAnimate = true;
     }
 }
 
-- (void) initLines {
+- (void) initLinesToLocation:(CLLocation *)hitLocation {
     if (!_polys) {
         NSMutableArray *polys = [NSMutableArray array];
         GMSMutablePath *path = [GMSMutablePath path];
         [path addCoordinate:self.myLocation.coordinate];
-        //        [path addCoordinate:self.hitLocation.coordinate];
+        [path addCoordinate:hitLocation.coordinate];
         path = [path pathOffsetByLatitude:-30 longitude:0];
         _lengths = @[@([path lengthOfKind:kGMSLengthGeodesic] / 2)];
-        for (int i = 0; i < 1; ++i) {
+        for (int i = 0; i < 2; ++i) {
             GMSPolyline *poly = [[GMSPolyline alloc] init];
             poly.path = [path pathOffsetByLatitude:(i * 1.5) longitude:0];
             poly.strokeWidth = 8;
@@ -684,7 +692,7 @@ static bool kAnimate = true;
     }
 }
 
-- (void) setUpPolyineColors {
+- (void) setUpPolyineColorsToLocation:(CLLocation *)hitLocation {
     
     CGFloat alpha = 1;
     UIColor *red = [UIColor colorWithRed:1 green:0 blue: 0 alpha:alpha];
@@ -695,7 +703,7 @@ static bool kAnimate = true;
                 [GMSStrokeStyle solidColor:[UIColor colorWithWhite:0 alpha:0]],
                 ];
     _step = 50000;
-    [self initLines];
+    [self initLinesToLocation:hitLocation];
     [self tick];
 }
 
