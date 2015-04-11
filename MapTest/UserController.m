@@ -87,6 +87,19 @@
     return weapon;
 }
 
++ (void) saveUserToParse:(PFUser *)user {
+    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            NSLog(@"User Saved");
+        } else {
+            NSLog(@"%@", error);
+            [[PFUser currentUser] saveEventually];
+        }
+    }];
+
+}
+
+
 
 
 

@@ -18,7 +18,6 @@
 @property (nonatomic) double distance;
 @property (nonatomic, assign) CLLocationCoordinate2D position;
 
-
 - (id)initWithUser:(PFUser *) user;
 
 

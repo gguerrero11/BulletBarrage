@@ -155,6 +155,16 @@ static bool kAnimate = true;
 
 // Sent to the delegate when a PFUser is signed up.
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
+    
+    [PFUser currentUser][healthKey] = [NSNumber numberWithDouble:100.0];
+    [PFUser currentUser][killKey] = [NSNumber numberWithDouble:0.0];
+    [PFUser currentUser][deathKey] = [NSNumber numberWithDouble:0.0];
+    [PFUser currentUser][accuracyKey] = [NSNumber numberWithDouble:0.0];
+    [PFUser currentUser][shotsFiredKey] = [NSNumber numberWithDouble:0.0];
+    [PFUser currentUser][shotsHitKey] = [NSNumber numberWithDouble:0.0];
+    [PFUser currentUser][longestDistanceKey] = [NSNumber numberWithDouble:0.0];
+    [PFUser currentUser][weaponSelectedKey] = cannon;
+    
     [self dismissViewControllerAnimated:YES completion:nil]; // Dismiss the PFSignUpViewController
 }
 
@@ -167,6 +177,8 @@ static bool kAnimate = true;
 - (void)signUpViewControllerDidCancelSignUp:(PFSignUpViewController *)signUpController {
     NSLog(@"User dismissed the signUpViewController");
 }
+
+
 
 - (void) registerForNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createTargets) name:@"queryDone" object:nil];
@@ -194,7 +206,6 @@ static bool kAnimate = true;
     for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
         marker.appearAnimation = YES;
         marker.map = gmMapView;
-        
     }
 }
 
@@ -477,10 +488,7 @@ static bool kAnimate = true;
 - (void) fireButtonPressed:(id)sender {
     
     // Adds +1 to the "shotsFired" on Parse
-    NSNumber *shotsFired = [PFUser currentUser][shotsFiredKey];
-    double doubleShotsFired = [shotsFired integerValue] + 1;
-    //NSLog(@"%f", doubleShotsFired);
-    [PFUser currentUser][shotsFiredKey] = [NSNumber numberWithDouble:doubleShotsFired];
+    [[PFUser currentUser] incrementKey:shotsFiredKey];
     
     CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                          longitude:[self calculateHitLocation].longitude];
@@ -509,16 +517,16 @@ static bool kAnimate = true;
     // Goes through each marker in the array and checks if that marker's position is within the radius of the weapon damage (meters) of the hitlocation
     for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
         PFUser *userAtMarker = marker.user;
-        marker.map = nil;
+        
         CLLocationCoordinate2D positionOfMarker = marker.position;
         CLLocation *locationOfMarker = [[CLLocation alloc]initWithCoordinate:positionOfMarker altitude:0 horizontalAccuracy:0 verticalAccuracy:0 timestamp:[NSDate date]];
         if ([locationOfMarker distanceFromLocation:hitLocation] < [WeaponController sharedInstance].radiusOfDamage) {
             
-            NSNumber *healthForTarget = userAtMarker[healthOfTarget];
+            NSNumber *healthForTarget = userAtMarker[healthKey];
             double health = [healthForTarget doubleValue];
             
-            // If the distance less than 45% away
-            if ([locationOfMarker distanceFromLocation:hitLocation] < [WeaponController sharedInstance].radiusOfDamage * 0.45 ) {
+            // If the distance less than 35% away
+            if ([locationOfMarker distanceFromLocation:hitLocation] < [WeaponController sharedInstance].radiusOfDamage * 0.35 ) {
                 // do full damage
                 health -= [WeaponController sharedInstance].damage;
                 NSLog(@"FULL DAMAGE. Health: %f", health);
@@ -529,18 +537,24 @@ static bool kAnimate = true;
             }
             
             // checks if health is below 0, if it is, remove the marker
-            userAtMarker[healthOfTarget] = [NSNumber numberWithDouble:health];
+            userAtMarker[healthKey] = [NSNumber numberWithDouble:health];
             if (health <= 0 ) {
+                NSLog(@"DEAD!");
+                
+                // increment kill for currentUser and saves to Parse
+                [[PFUser currentUser] incrementKey:killKey];
+                [UserController saveUserToParse:[PFUser currentUser]];
+                
+                // increment death for userAtMarker saves to Parse
+                [userAtMarker incrementKey:deathKey];
+                [UserController saveUserToParse:userAtMarker];
+                
+                
+                // this SHOULD remove marker... subclassing issue
                 [self removeGMSMarker:marker];
             }
-            
-            
-            
             // Adds +1 to the "shotsHit" on Parse
-            NSNumber *shotsHit = [PFUser currentUser][shotsHitKey];
-            double doubleShotsHit = [shotsHit integerValue] + 1;
-            //NSLog(@"%f", doubleShotsHit);
-            [PFUser currentUser][shotsHitKey] = [NSNumber numberWithDouble:doubleShotsHit];
+            [[PFUser currentUser] incrementKey:shotsHitKey];
             
             [self createAnimateHitLabel];
             [self longestDistanceRecordCheckerFromMarker:marker];
@@ -549,7 +563,6 @@ static bool kAnimate = true;
         
     }
 }
-
 
 - (void) createAnimateHitLabel {
     // Create HIT label with animation
@@ -608,8 +621,13 @@ static bool kAnimate = true;
 }
 
 - (void) removeGMSMarker:(GMSMarkerWithUser *)marker {
+    
+    NSMutableArray *mArrayOfMarkers = [[NSMutableArray alloc]initWithArray:[UserController sharedInstance].arrayOfMarkers];
     marker.map = nil;
     marker = nil;
+    [mArrayOfMarkers removeObject:marker];
+    [UserController sharedInstance].arrayOfMarkers = mArrayOfMarkers;
+    NSLog(@"%lu", [UserController sharedInstance].arrayOfMarkers.count);
 }
 
 
@@ -680,6 +698,7 @@ static bool kAnimate = true;
     [self initLines];
     [self tick];
 }
+
 
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {

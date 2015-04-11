@@ -90,14 +90,7 @@
     NSNumber *accuracyObject = [NSNumber numberWithDouble:accuracy * 100];
     [PFUser currentUser][accuracyKey] = accuracyObject;
     
-    [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            NSLog(@"User Saved");
-        } else {
-            NSLog(@"%@", error);
-            [[PFUser currentUser] saveEventually];
-        }
-    }];
+    [UserController saveUserToParse:[PFUser currentUser]];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {

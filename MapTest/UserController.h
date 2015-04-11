@@ -18,7 +18,8 @@ static NSString * const shotsHitKey = @"shotsHit";
 static NSString * const shotsFiredKey = @"shotsFired";
 static NSString * const accuracyKey = @"accuracy";
 static NSString * const longestDistanceKey = @"longestDistance";
-static NSString * const healthOfTarget = @"health";
+static NSString * const healthKey = @"health";
+
 
 
 @interface UserController : NSObject
@@ -34,6 +35,8 @@ static NSString * const healthOfTarget = @"health";
 + (Weapon *) setWeaponForUser:(NSString *)weaponString;
 
 + (CLLocationCoordinate2D)convertPFGeoPointToLocationCoordinate2D:(PFGeoPoint *)geoPoint;
+
++ (void) saveUserToParse:(PFUser *)user;
 
 
 

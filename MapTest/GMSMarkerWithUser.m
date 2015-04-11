@@ -16,6 +16,7 @@
 @synthesize snippet = _snippet;
 
 
+
 - (id)initWithUser:(PFUser *) user {
     self = [super init];
     if (self) {
