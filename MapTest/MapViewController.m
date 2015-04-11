@@ -175,7 +175,7 @@ static bool kAnimate = true;
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-
+    
     [self registerForNotifications];
     [UserController setWeaponForUser:cannon];
     [self setUpMotionManager];
@@ -194,7 +194,7 @@ static bool kAnimate = true;
     for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
         marker.appearAnimation = YES;
         marker.map = gmMapView;
-     
+        
     }
 }
 
@@ -273,20 +273,20 @@ static bool kAnimate = true;
     }
     
     // Saves location to Parse
-     [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
+    [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
         if (geoPoint) {
             [PFUser currentUser][userLocationkey] = geoPoint;
 #warning TURN THIS BACK ON BEFORE SUBMITTING!
-//            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-//                if (succeeded) {
-//                    NSLog(@"Initial User location saved to Parse");
-//                } else {
-//                    NSLog(@"Error: %@", error);
-//                }
-//            }];
+            //            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            //                if (succeeded) {
+            //                    NSLog(@"Initial User location saved to Parse");
+            //                } else {
+            //                    NSLog(@"Error: %@", error);
+            //                }
+            //            }];
             
         } else NSLog(@"Cannot find user!");
-     }];
+    }];
     
     
     self.myLocation = self.locationManager.location;
@@ -362,7 +362,7 @@ static bool kAnimate = true;
     pyramidNode.position = SCNVector3Make(0, .03, 0);
     pyramidNode.eulerAngles = SCNVector3Make(-1.54, 0, 1.5);
     
-//    SCNNode *groundNode = [SCNNode nodeWithGeometry:self.ground];
+    //    SCNNode *groundNode = [SCNNode nodeWithGeometry:self.ground];
     
     [scene.rootNode addChildNode:pyramidNode];
     //[scene.rootNode addChildNode:groundNode];
@@ -475,7 +475,7 @@ static bool kAnimate = true;
 }
 
 - (void) fireButtonPressed:(id)sender {
-
+    
     // Adds +1 to the "shotsFired" on Parse
     NSNumber *shotsFired = [PFUser currentUser][shotsFiredKey];
     double doubleShotsFired = [shotsFired integerValue] + 1;
@@ -486,7 +486,7 @@ static bool kAnimate = true;
                                                          longitude:[self calculateHitLocation].longitude];
     
     [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:3];
-
+    
     [self drawTrajectoryLineToLocation:hitLocation];
     //   [self setUpPolyineColors];
     
@@ -506,11 +506,35 @@ static bool kAnimate = true;
     groundOverlay.map = gmMapView;
     [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
     
-    // Goes through each marker in the array and checks if that marker's position is within 100 (hardcoded) meters of the hitlocation
+    // Goes through each marker in the array and checks if that marker's position is within the radius of the weapon damage (meters) of the hitlocation
     for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
+        PFUser *userAtMarker = marker.user;
+        marker.map = nil;
         CLLocationCoordinate2D positionOfMarker = marker.position;
         CLLocation *locationOfMarker = [[CLLocation alloc]initWithCoordinate:positionOfMarker altitude:0 horizontalAccuracy:0 verticalAccuracy:0 timestamp:[NSDate date]];
-        if ([locationOfMarker distanceFromLocation:hitLocation] < 100) {
+        if ([locationOfMarker distanceFromLocation:hitLocation] < [WeaponController sharedInstance].radiusOfDamage) {
+            
+            NSNumber *healthForTarget = userAtMarker[healthOfTarget];
+            double health = [healthForTarget doubleValue];
+            
+            // If the distance less than 45% away
+            if ([locationOfMarker distanceFromLocation:hitLocation] < [WeaponController sharedInstance].radiusOfDamage * 0.45 ) {
+                // do full damage
+                health -= [WeaponController sharedInstance].damage;
+                NSLog(@"FULL DAMAGE. Health: %f", health);
+            } else {
+                // otherwise do damage relative to is distance
+                health -= [WeaponController sharedInstance].damage * ([locationOfMarker distanceFromLocation:hitLocation] / [WeaponController sharedInstance].radiusOfDamage);
+                NSLog(@"did %f%% DAMAGE. Health: %f", [WeaponController sharedInstance].damage * ([locationOfMarker distanceFromLocation:hitLocation] / [WeaponController sharedInstance].radiusOfDamage), health);
+            }
+            
+            // checks if health is below 0, if it is, remove the marker
+            userAtMarker[healthOfTarget] = [NSNumber numberWithDouble:health];
+            if (health <= 0 ) {
+                [self removeGMSMarker:marker];
+            }
+            
+            
             
             // Adds +1 to the "shotsHit" on Parse
             NSNumber *shotsHit = [PFUser currentUser][shotsHitKey];
@@ -522,9 +546,10 @@ static bool kAnimate = true;
             [self longestDistanceRecordCheckerFromMarker:marker];
             
         }
-
+        
     }
 }
+
 
 - (void) createAnimateHitLabel {
     // Create HIT label with animation
@@ -550,11 +575,11 @@ static bool kAnimate = true;
 - (void) longestDistanceRecordCheckerFromMarker:(GMSMarkerWithUser *)marker {
     // checks if its the longest distance hit, if it is, saves to Parse
     NSNumber *currentLongestDistance = [PFUser currentUser][longestDistanceKey];
-    NSLog(@"dist from Parse: %@", currentLongestDistance);
+    //NSLog(@"dist from Parse: %@", currentLongestDistance);
     if (marker.distance > [currentLongestDistance doubleValue]) {
         NSNumber *newDistance = [NSNumber numberWithDouble:marker.distance];
         [PFUser currentUser][longestDistanceKey] = newDistance;
-        NSLog(@"new distance: %@", newDistance);
+        //NSLog(@"new distance: %@", newDistance);
         
         // Create New Record label with animation
         UILabel *newRecordLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 120, self.view.frame.size.width, 100)];
@@ -580,6 +605,11 @@ static bool kAnimate = true;
 - (void) removeGMOverlay:(GMSGroundOverlay *)overlay {
     overlay.map = nil;
     overlay = nil;
+}
+
+- (void) removeGMSMarker:(GMSMarkerWithUser *)marker {
+    marker.map = nil;
+    marker = nil;
 }
 
 
@@ -659,14 +689,14 @@ static bool kAnimate = true;
     [gmMapView animateToViewingAngle:45];
     
     // Use the true heading if it is valid.
-//    CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
-//                                       newHeading.trueHeading : newHeading.magneticHeading);
+    //    CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
+    //                                       newHeading.trueHeading : newHeading.magneticHeading);
     //self.cameraSceneKitHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * (M_PI/180));
     self.pyramidNode.eulerAngles = SCNVector3Make(-1.54, - self.pitchWithLimit , 1.5 );
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-
+    
     CLLocation *lastLocation = [locations lastObject];
     
     CLLocationAccuracy accuracy = [lastLocation horizontalAccuracy];

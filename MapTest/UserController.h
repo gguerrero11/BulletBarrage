@@ -18,6 +18,7 @@ static NSString * const shotsHitKey = @"shotsHit";
 static NSString * const shotsFiredKey = @"shotsFired";
 static NSString * const accuracyKey = @"accuracy";
 static NSString * const longestDistanceKey = @"longestDistance";
+static NSString * const healthOfTarget = @"health";
 
 
 @interface UserController : NSObject

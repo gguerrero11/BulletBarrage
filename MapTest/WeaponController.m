@@ -24,9 +24,11 @@
 + (Weapon *) setWeapon:(NSString *)weaponString {
     Weapon *weapon = [Weapon new];
     if ([weaponString isEqualToString:cannon]) {
-        weapon.velocity = @30;
+        [WeaponController sharedInstance].velocity = weapon.velocity;
+        [WeaponController sharedInstance].damage = weapon.damage;
+        [WeaponController sharedInstance].radiusOfDamage = weapon.radiusOfDamage;
     }
-    return weapon;
+    return  weapon;
 }
 
 @end
