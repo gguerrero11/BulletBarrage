@@ -13,7 +13,11 @@
 static NSString * const bombExplosion = @"bombExplosion";
 static NSString * const missleImpact = @"missleImpact";
 
-@interface SoundController : NSObject
+@interface SoundController : NSObject {
+    NSMutableArray *mArrayOfAudioPlayers;
+}
+
+@property (strong,nonatomic) NSMutableArray *mArrayOfAudioPlayers;
 
 + (SoundController *) sharedInstance;
 
@@ -21,9 +25,5 @@ static NSString * const missleImpact = @"missleImpact";
 - (void)recordAudioToURL:(NSURL *)url withLength:(CGFloat)length;
 
 - (void)playSoundEffect:(NSString *)string;
-
-- (void)playAudioFileAtURL:(NSURL *)url;
-- (void)playLastRecordedFile;
-
 
 @end

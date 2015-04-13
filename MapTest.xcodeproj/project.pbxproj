@@ -63,6 +63,7 @@
 		49C3A5D11ADC35D6007C8309 /* cannon.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49C3A5D01ADC35D6007C8309 /* cannon.caf */; };
 		49C3A5D41ADC3DC1007C8309 /* bombExplosion.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49C3A5D21ADC3DC1007C8309 /* bombExplosion.caf */; };
 		49C3A5D51ADC3DC1007C8309 /* missleImpact.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49C3A5D31ADC3DC1007C8309 /* missleImpact.caf */; };
+		49C3A5DB1ADC4ADC007C8309 /* GMSMarker+addUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C3A5DA1ADC4ADC007C8309 /* GMSMarker+addUser.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -158,6 +159,8 @@
 		49C3A5D01ADC35D6007C8309 /* cannon.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = cannon.caf; sourceTree = "<group>"; };
 		49C3A5D21ADC3DC1007C8309 /* bombExplosion.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = bombExplosion.caf; sourceTree = "<group>"; };
 		49C3A5D31ADC3DC1007C8309 /* missleImpact.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = missleImpact.caf; sourceTree = "<group>"; };
+		49C3A5D91ADC4ADC007C8309 /* GMSMarker+addUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GMSMarker+addUser.h"; sourceTree = "<group>"; };
+		49C3A5DA1ADC4ADC007C8309 /* GMSMarker+addUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GMSMarker+addUser.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -343,6 +346,8 @@
 				4996BA711AD8CF34002D5663 /* CountdownTimerViewController.h */,
 				4996BA721AD8CF34002D5663 /* CountdownTimerViewController.m */,
 				49835E151AD39C050058917B /* GoogleMapAPI.h */,
+				49C3A5D91ADC4ADC007C8309 /* GMSMarker+addUser.h */,
+				49C3A5DA1ADC4ADC007C8309 /* GMSMarker+addUser.m */,
 				496857401AD59946000CE114 /* Weapons */,
 			);
 			name = MapView;
@@ -484,6 +489,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49C3A5DB1ADC4ADC007C8309 /* GMSMarker+addUser.m in Sources */,
 				49835E111AD32FA10058917B /* LeaderBoardController.m in Sources */,
 				49835E141AD34F400058917B /* LeaderboardCellTableViewCell.m in Sources */,
 				49603D6D1AD1022300AB3E50 /* CustomSignUpViewController.m in Sources */,

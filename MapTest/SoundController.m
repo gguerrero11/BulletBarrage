@@ -10,8 +10,6 @@
 
 @interface SoundController() <AVAudioPlayerDelegate>
 
-@property (strong,nonatomic) NSMutableArray *mArrayOfAudioPlayers;
-
 @property (strong, nonatomic) AVAudioPlayer *player;
 @property (strong, nonatomic) AVAudioRecorder *recorder;
 
@@ -21,12 +19,21 @@
 
 @implementation SoundController
 
+- (id) init {
+    self = [super init];
+    if (self) {
+        mArrayOfAudioPlayers = [NSMutableArray new];
+    }
+    return self;
+}
+
 + (SoundController *) sharedInstance {
     static SoundController *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sharedInstance = [SoundController new];
     });
+    
     return sharedInstance;
 }
 
@@ -85,21 +92,17 @@
     AVAudioPlayer *player = [[AVAudioPlayer alloc]initWithContentsOfURL:urlForSFX error:nil];
     player.numberOfLoops = 0;
     [player play];
-    [self.mArrayOfAudioPlayers addObject:player];
+    [mArrayOfAudioPlayers addObject:player];
     
 //    [SoundController sharedInstance].player = [[AVAudioPlayer alloc]initWithContentsOfURL:urlForSFX error:nil];
 //    [SoundController sharedInstance].player.numberOfLoops = 0;
 //    [[SoundController sharedInstance].player play];
+//        [self.mArrayOfAudioPlayers addObject:[SoundController sharedInstance].player];
 }
 
 // removes the player once its done playing its sound file.
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
     [self.mArrayOfAudioPlayers removeObject:player];
-}
-
-
-- (void)playLastRecordedFile {
-    [self playAudioFileAtURL:self.lastRecordedFile];
 }
 
 @end

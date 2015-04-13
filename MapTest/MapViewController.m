@@ -790,7 +790,7 @@ static bool kAnimate = true;
     if (newHeading.headingAccuracy < 10) return;
     
     [gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
-    [gmMapView animateToViewingAngle:45];
+    //[gmMapView animateToViewingAngle:45];
     
     // Use the true heading if it is valid.
     CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
