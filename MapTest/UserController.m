@@ -73,18 +73,9 @@
     return coordinates;
 }
 
-+ (Weapon *) setWeaponForUser:(NSString *)weaponString {
+- (void) setWeaponForUser:(NSString *)weaponString {
     [PFUser currentUser][weaponSelectedKey] = weaponString;
-    [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        if (succeeded) {
-            NSLog(@"User Saved");
-        } else {
-            NSLog(@"%@", error);
-        }
-    }];
-    
-    Weapon *weapon = [WeaponController setWeapon:weaponString];
-    return weapon;
+    self.currentWeapon = [[WeaponController sharedInstance] getWeapon:weaponString];
 }
 
 + (void) saveUserToParse:(PFUser *)user {

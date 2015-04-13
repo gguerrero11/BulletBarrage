@@ -14,7 +14,7 @@ static NSString * const velocityKey = @"velocity";
 
 @interface Weapon : NSObject
 
-@property (nonatomic) NSNumber *velocity;
+@property (nonatomic) NSInteger velocity;
 @property (nonatomic) NSInteger damage;
 @property (nonatomic) NSInteger radiusOfDamage;
 

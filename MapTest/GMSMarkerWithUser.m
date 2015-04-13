@@ -9,11 +9,14 @@
 #import "GMSMarkerWithUser.h"
 #import "UserController.h"
 
+
 @implementation GMSMarkerWithUser
 
 // synthesizes the properties from its superclass so we can use it in the subclass
 @synthesize title = _title;
 @synthesize snippet = _snippet;
+//@synthesize map = _newmap;
+@synthesize wooh;
 
 
 
@@ -21,10 +24,11 @@
     self = [super init];
     if (self) {
         self.position = [UserController convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
-        
+
         _user = user;
         _title = user[usernameKey];
         _snippet = [NSString stringWithFormat:@"%.0fm",[self calculateDistanceString]];
+    
         
     }
     return self;

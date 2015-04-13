@@ -10,16 +10,4 @@
 
 @implementation Weapon
 
-- (NSNumber *) velocity {
-    return @100;
-}
-
-- (NSInteger) damage {
-    return 30;
-}
-
-- (NSInteger) radiusOfDamage {
-    return 100;
-}
-
 @end

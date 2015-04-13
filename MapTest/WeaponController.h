@@ -10,15 +10,13 @@
 #import "Weapon.h"
 
 static NSString * const cannon = @"cannon";
+static NSString * const missle = @"missle";
+static NSString * const nuke = @"nuke";
 
 @interface WeaponController : NSObject
 
 + (WeaponController *) sharedInstance;
 
-+ (Weapon *) setWeapon:(NSString *)weapon;
-
-@property (nonatomic,strong) NSNumber *velocity;
-@property (nonatomic,assign) NSInteger damage;
-@property (nonatomic,assign) NSInteger radiusOfDamage;
+- (Weapon *) getWeapon:(NSString *)weaponString;
 
 @end

@@ -17,6 +17,8 @@
 @property (nonatomic) CLLocation *userLocation;
 @property (nonatomic) double distance;
 @property (nonatomic, assign) CLLocationCoordinate2D position;
+@property (nonatomic, weak) GMSMapView *map;
+@property (nonatomic, strong) NSString *wooh;
 
 - (id)initWithUser:(PFUser *) user;
 

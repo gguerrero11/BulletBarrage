@@ -65,6 +65,7 @@ static bool kAnimate = true;
 @property (nonatomic,strong) CLLocation *myLocation;
 @property (nonatomic,strong) MKMapCamera *targetCamera;
 @property (strong, nonatomic) UIButton *fireButton;
+@property (strong, nonatomic) UIButton *zoomButton;
 @property (nonatomic,strong) MKPolyline *polyline;
 @property (nonatomic, strong) UILabel *pitchLabelData;
 
@@ -85,6 +86,7 @@ static bool kAnimate = true;
 @property (nonatomic,assign) double pitchWithLimit;
 @property (nonatomic,strong) NSMutableArray *arrayOfCraters;
 @property (nonatomic,strong) CountdownTimerViewController *timer;
+
 
 // CMDevice motion
 @property (nonatomic,strong) CMAttitude *attitude;
@@ -196,7 +198,7 @@ static bool kAnimate = true;
     [super viewDidLoad];
     
     [self registerForNotifications];
-    [UserController setWeaponForUser:cannon];
+    [[UserController sharedInstance] setWeaponForUser:cannon];
     [self setUpMotionManager];
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
@@ -212,9 +214,23 @@ static bool kAnimate = true;
 - (void) createTargets {
     
     for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
+        
         marker.appearAnimation = YES;
         marker.map = gmMapView;
+        marker.wooh = @"TEST";
+        
     }
+    
+    for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
+        
+        NSLog(@"%@", marker.map);
+                NSLog(@"%@", marker.wooh);
+
+    }
+
+    
+    
+    
 }
 
 - (void) setUpMotionManager {
@@ -316,7 +332,7 @@ static bool kAnimate = true;
 - (void) showMainMapView {
     
     gmCamera = [GMSCameraPosition cameraWithTarget:self.myLocation.coordinate zoom:15 bearing:32 viewingAngle:17];
-    
+
     gmMapView = [GMSMapView mapWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height + 250) camera:gmCamera];
     gmMapView.myLocationEnabled = YES;
     gmMapView.settings.scrollGestures = NO;
@@ -327,7 +343,7 @@ static bool kAnimate = true;
 
 - (BOOL)mapView:(GMSMarkerWithUser *)mapView didTapMarker:(GMSMarkerWithUser *)marker {
     
-    return NO;
+    return YES;
 }
 
 
@@ -435,35 +451,55 @@ static bool kAnimate = true;
 }
 
 - (void) setUpPOVButton {
-    UIButton *zoom = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    zoom.layer.cornerRadius = 25;
-    zoom.frame = CGRectMake(self.view.frame.size.width - 65, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height - 80, 50, 50);
+    self.zoomButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [self.zoomButton setTitle:@"100" forState:UIControlStateNormal];
+    self.zoomButton.layer.cornerRadius = 25;
+    self.zoomButton.frame = CGRectMake(self.view.frame.size.width - 65, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height - 80, 50, 50);
+    [self.zoomButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    self.zoomButton.tintColor = [UIColor whiteColor];
+    self.zoomButton.backgroundColor = [UIColor blueColor];
+    [self.view addSubview:self.zoomButton];
+    [self.zoomButton addTarget:self action:@selector(changeZoom) forControlEvents:UIControlEventTouchUpInside];
+    
     UIImageView *homeIcon = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"homelocation"]];
-    homeIcon.frame = CGRectMake(zoom.frame.size.width / 2 - zoom.frame.size.width * 0.75 / 2, zoom.frame.size.height / 2 - zoom.frame.size.height * 0.75 / 2 , zoom.frame.size.width * 0.75, zoom.frame.size.height * 0.75);
-    [zoom addSubview:homeIcon];
-    zoom.tintColor = [UIColor whiteColor];
-    zoom.backgroundColor = [UIColor blueColor];
-    [self.view addSubview:zoom];
-    [zoom addTarget:self action:@selector(changeZoom) forControlEvents:UIControlEventTouchUpInside];
+    homeIcon.frame = CGRectMake(self.zoomButton.frame.size.width / 2 - self.zoomButton.frame.size.width * 0.75 / 2, self.zoomButton.frame.size.height / 2 - self.zoomButton.frame.size.height * 0.75 / 2 , self.zoomButton.frame.size.width * 0.75, self.zoomButton.frame.size.height * 0.75);
+    [self.zoomButton addSubview:homeIcon];
     
 }
 
 - (void) changeZoom {
     
     switch (self.zoomSelection) {
+//        case 0:
+//            [gmMapView animateToZoom:18];
+//            self.zoomSelection = 1;
+//            break;
+//        case 1:
+//            [gmMapView animateToZoom:17];
+//            self.zoomSelection = 2;
+//            break;
+//        case 2:
+//            [gmMapView animateToZoom:14];
+//            self.zoomSelection = 0;
+//            break;
+            
         case 0:
-            [gmMapView animateToZoom:18];
-            self.zoomSelection = 1;
+            [self.zoomButton setTitle:@"100" forState:UIControlStateNormal];
+            self.currentWeapon.velocity = 100;
+                        self.zoomSelection = 1;
             break;
         case 1:
-            [gmMapView animateToZoom:17];
-            self.zoomSelection = 2;
+            [self.zoomButton setTitle:@"250" forState:UIControlStateNormal];
+            self.currentWeapon.velocity = 250;
+                        self.zoomSelection = 2;
             break;
         case 2:
-            [gmMapView animateToZoom:14];
-            self.zoomSelection = 0;
+            [self.zoomButton setTitle:@"500" forState:UIControlStateNormal];
+            self.currentWeapon.velocity = 500;
+                        self.zoomSelection = 0;
             break;
     }
+    NSLog(@"%lu", self.currentWeapon.velocity);
 }
 
 
@@ -476,12 +512,12 @@ static bool kAnimate = true;
 - (double) calculateDistanceFromUserWeapon {
     
     // formula to calculate the distance the projectile will travel
-    double range = ( powl([self.currentWeapon.velocity doubleValue], 2 ) * sinl(2 * self.pitchWithLimit) ) / gravityStatic;
+    double range = ( powl(self.currentWeapon.velocity, 2 ) * sinl(2 * self.pitchWithLimit) ) / gravityStatic;
     return range;
 }
 
 - (double) calculateProjectileTravelTime {
-    double time = [self calculateDistanceFromUserWeapon] / [self.currentWeapon.velocity doubleValue] * cosh(self.pitchWithLimit);
+    double time = [self calculateDistanceFromUserWeapon] / self.currentWeapon.velocity * cosh(self.pitchWithLimit);
     return time;
 }
 
@@ -520,8 +556,8 @@ static bool kAnimate = true;
     CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                          longitude:[self calculateHitLocation].longitude];
     
-    //    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:[self calculateProjectileTravelTime]];
-    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:3];
+        [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:[self calculateProjectileTravelTime]];
+    //[self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:3];
     
     [self drawTrajectoryLineToLocation:hitLocation];
     //[self setUpPolyineColorsToLocation:hitLocation];
@@ -540,28 +576,30 @@ static bool kAnimate = true;
     GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds
                                                                            icon:[UIImage imageNamed:@"craterBigSquare"]];
     groundOverlay.map = gmMapView;
+    
     [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
     
     // Goes through each marker in the array and checks if that marker's position is within the radius of the weapon damage (meters) of the hitlocation
     for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
+
         PFUser *userAtMarker = marker.user;
         
         CLLocationCoordinate2D positionOfMarker = marker.position;
         CLLocation *locationOfMarker = [[CLLocation alloc]initWithCoordinate:positionOfMarker altitude:0 horizontalAccuracy:0 verticalAccuracy:0 timestamp:[NSDate date]];
-        if ([locationOfMarker distanceFromLocation:hitLocation] < [WeaponController sharedInstance].radiusOfDamage) {
+        if ([locationOfMarker distanceFromLocation:hitLocation] < [UserController sharedInstance].currentWeapon.radiusOfDamage) {
             
             NSNumber *healthForTarget = userAtMarker[healthKey];
             double health = [healthForTarget doubleValue];
             
             // If the distance less than 35% away
-            if ([locationOfMarker distanceFromLocation:hitLocation] < [WeaponController sharedInstance].radiusOfDamage * 0.35 ) {
+            if ([locationOfMarker distanceFromLocation:hitLocation] < [UserController sharedInstance].currentWeapon.radiusOfDamage * 0.35 ) {
                 // do full damage
-                health -= [WeaponController sharedInstance].damage;
+                health -= [UserController sharedInstance].currentWeapon.damage;
                 NSLog(@"FULL DAMAGE. Health: %f", health);
             } else {
                 // otherwise do damage relative to is distance
-                health -= [WeaponController sharedInstance].damage * ([locationOfMarker distanceFromLocation:hitLocation] / [WeaponController sharedInstance].radiusOfDamage);
-                NSLog(@"did %f%% DAMAGE. Health: %f", [WeaponController sharedInstance].damage * ([locationOfMarker distanceFromLocation:hitLocation] / [WeaponController sharedInstance].radiusOfDamage), health);
+                health -= [UserController sharedInstance].currentWeapon.damage * ([locationOfMarker distanceFromLocation:hitLocation] / [UserController sharedInstance].currentWeapon.radiusOfDamage);
+                NSLog(@"did %f%% DAMAGE. Health: %f", [UserController sharedInstance].currentWeapon.damage * ([locationOfMarker distanceFromLocation:hitLocation] / [UserController sharedInstance].currentWeapon.radiusOfDamage), health);
             }
             
             // checks if health is below 0, if it is, remove the marker

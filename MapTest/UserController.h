@@ -26,13 +26,15 @@ static NSString * const healthKey = @"health";
 
 @property (nonatomic,strong) NSArray *arrayOfUsers;
 @property (nonatomic,strong) NSArray *arrayOfMarkers;
+@property (nonatomic,strong) Weapon *currentWeapon;
+
 
 + (UserController *) sharedInstance;
 
 + (void) queryUsersNearCurrentUser:(CLLocationCoordinate2D)coordinates
                   withinMileRadius:(double)radiusFromLocationInMiles;
 
-+ (Weapon *) setWeaponForUser:(NSString *)weaponString;
+- (void) setWeaponForUser:(NSString *)weaponString;
 
 + (CLLocationCoordinate2D)convertPFGeoPointToLocationCoordinate2D:(PFGeoPoint *)geoPoint;
 
