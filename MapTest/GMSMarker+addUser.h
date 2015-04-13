@@ -11,8 +11,8 @@
 
 @interface GMSMarker (addUser)
 
-@property (nonatomic, strong) PFUser *user;
+@property (nonatomic, retain) PFUser *user;
+@property (nonatomic) double distance;
 
-+ (GMSMarker *)addUser:(PFUser *)user;
 
 @end

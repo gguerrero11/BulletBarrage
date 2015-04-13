@@ -80,12 +80,12 @@ static bool kAnimate = true;
 @property (nonatomic, strong) SCNNode *cameraSKHeadingRotationNode;
 @property (nonatomic, strong) SCNNode *cameraSKPitchRotationNode;
 
-
 // GMS Map
 @property (nonatomic, assign) NSInteger zoomSelection;
 @property (nonatomic, assign) double pitchWithLimit;
 @property (nonatomic, strong) NSMutableArray *arrayOfCraters;
 @property (nonatomic, strong) CountdownTimerViewController *timer;
+@property (nonatomic, strong) NSMutableArray *mArrayMarkersForMap;
 
 @property (nonatomic, strong) Weapon *projectile;
 
@@ -214,15 +214,20 @@ static bool kAnimate = true;
 
 - (void) createTargets {
     
-    for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
-        
-        marker.appearAnimation = YES;
-        marker.map = self.gmMapView;
-    }
+    self.mArrayMarkersForMap = [NSMutableArray new];
     
-    for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
-        [marker removePin];
+    for (PFUser *user in [UserController sharedInstance].arrayOfUsers) {
         
+        // will exclude the currentUser in the array
+        // NOTE: must use isEqualToString (string), or else it will compare pointers than the actual objectId!
+        if (![user.objectId isEqualToString:[PFUser currentUser].objectId]) {
+            
+            GMSMarker *marker = [GMSMarker new];
+            marker.user = user;
+            marker.map = self.gmMapView;
+            marker.position = [UserController convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
+            [self.mArrayMarkersForMap addObject:marker];
+        }
     }
 }
 
@@ -334,7 +339,7 @@ static bool kAnimate = true;
     [self.view addSubview:self.gmMapView];
 }
 
-- (BOOL)mapView:(GMSMarkerWithUser *)mapView didTapMarker:(GMSMarkerWithUser *)marker {
+- (BOOL)mapView:(GMSMarker *)mapView didTapMarker:(GMSMarker *)marker {
     
     return YES;
 }
@@ -536,7 +541,7 @@ static bool kAnimate = true;
     [self addChildViewController:timer];
     [timer didMoveToParentViewController:self];
     self.timer = timer;
-    [self.view addSubview:timer.view];
+    //[self.view addSubview:timer.view];
     
 }
 
@@ -590,7 +595,7 @@ static bool kAnimate = true;
     [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
     
     // Goes through each marker in the array and checks if that marker's position is within the radius of the weapon damage (meters) of the hitlocation
-    for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
+    for (GMSMarker *marker in self.mArrayMarkersForMap) {
         
         PFUser *userAtMarker = marker.user;
         
@@ -626,14 +631,14 @@ static bool kAnimate = true;
                 //                [UserController saveUserToParse:userAtMarker];
                 
                 
-                // this SHOULD remove marker... subclassing issue
+                [self longestDistanceRecordCheckerFromMarker:marker];
                 [self removeGMSMarker:marker];
             }
             // Adds +1 to the "shotsHit" on Parse
             [[PFUser currentUser] incrementKey:shotsHitKey];
             
             [self createAnimateHitLabel];
-            [self longestDistanceRecordCheckerFromMarker:marker];
+            
             
         }
         
@@ -663,14 +668,13 @@ static bool kAnimate = true;
     }];
 }
 
-- (void) longestDistanceRecordCheckerFromMarker:(GMSMarkerWithUser *)marker {
+- (void) longestDistanceRecordCheckerFromMarker:(GMSMarker *)marker {
     // checks if its the longest distance hit, if it is, saves to Parse
     NSNumber *currentLongestDistance = [PFUser currentUser][longestDistanceKey];
-    //NSLog(@"dist from Parse: %@", currentLongestDistance);
+    
     if (marker.distance > [currentLongestDistance doubleValue]) {
         NSNumber *newDistance = [NSNumber numberWithDouble:marker.distance];
         [PFUser currentUser][longestDistanceKey] = newDistance;
-        //NSLog(@"new distance: %@", newDistance);
         
         // Create New Record label with animation
         UILabel *newRecordLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 120, self.view.frame.size.width, 100)];
@@ -698,14 +702,15 @@ static bool kAnimate = true;
     overlay = nil;
 }
 
-- (void) removeGMSMarker:(GMSMarkerWithUser *)marker {
-    
-    NSMutableArray *mArrayOfMarkers = [[NSMutableArray alloc]initWithArray:[UserController sharedInstance].arrayOfMarkers];
+- (void) removeGMSMarker:(GMSMarker *)marker {
+
     marker.map = nil;
-    marker = nil;
-    [mArrayOfMarkers removeObject:marker];
-    [UserController sharedInstance].arrayOfMarkers = mArrayOfMarkers;
-    NSLog(@"%lu", [UserController sharedInstance].arrayOfMarkers.count);
+    [self.mArrayMarkersForMap removeObject:marker];
+    NSLog(@"%@", self.mArrayMarkersForMap);
+    [UserController sharedInstance].arrayOfMarkers = self.mArrayMarkersForMap;
+    NSLog(@"%@", [UserController sharedInstance].arrayOfMarkers );
+    [self.gmMapView clear];
+
 }
 
 

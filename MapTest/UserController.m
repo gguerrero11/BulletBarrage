@@ -13,6 +13,8 @@
 #import <GoogleMaps/GoogleMaps.h>
 #import "GMSMarkerWithUser.h"
 
+#import "GMSMarker+addUser.h"
+
 @implementation UserController
 
 + (UserController *) sharedInstance {
@@ -47,6 +49,7 @@
 }
 
 - (NSArray *)arrayOfMarkers {
+    
     NSMutableArray *mArray = [NSMutableArray new];
     
     for (PFUser *user in [UserController sharedInstance].arrayOfUsers) {
@@ -55,7 +58,9 @@
         // NOTE: must use isEqualToString (string), or else it will compare pointers than the actual objectId!
         if (![user.objectId isEqualToString:[PFUser currentUser].objectId]) {
             
-            GMSMarkerWithUser *marker = [[GMSMarkerWithUser alloc]initWithUser:user];
+            GMSMarker *marker = [GMSMarker new];
+            marker.user = user;
+
             marker.position = [UserController convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
             [mArray addObject:marker];
         }

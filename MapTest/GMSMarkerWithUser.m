@@ -45,9 +45,5 @@
     return self.distance;
 }
 
-- (void) removePin {
-    NSLog(@"%@", self.map);
-    self.map = nil;
-}
 
 @end
