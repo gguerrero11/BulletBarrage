@@ -8,7 +8,7 @@
 
 #import "SoundController.h"
 
-@interface SoundController()
+@interface SoundController() <AVAudioPlayerDelegate>
 
 @property (strong,nonatomic) NSMutableArray *mArrayOfAudioPlayers;
 
@@ -79,26 +79,23 @@
 }
 
 - (void)playSoundEffect:(NSString *)string {
+
     NSURL *urlForSFX = [[NSBundle mainBundle] URLForResource:string withExtension:@"caf"];
     
-    [SoundController sharedInstance].player = [[AVAudioPlayer alloc]initWithContentsOfURL:urlForSFX error:nil];
-    [SoundController sharedInstance].player.numberOfLoops = 0;
-    [[SoundController sharedInstance].player play];
-}
-
-
-- (void)playAudioFileAtURL:(NSURL *)url {
-    
-    AVAudioPlayer *player = [[AVAudioPlayer alloc]initWithContentsOfURL:url error:nil];
+    AVAudioPlayer *player = [[AVAudioPlayer alloc]initWithContentsOfURL:urlForSFX error:nil];
     player.numberOfLoops = 0;
-    
     [player play];
+    [self.mArrayOfAudioPlayers addObject:player];
     
-    //    self.player = [[AVAudioPlayer alloc]initWithContentsOfURL:url error:nil];
-    //    self.player.numberOfLoops = 0;
-    //    [self.player play];
+//    [SoundController sharedInstance].player = [[AVAudioPlayer alloc]initWithContentsOfURL:urlForSFX error:nil];
+//    [SoundController sharedInstance].player.numberOfLoops = 0;
+//    [[SoundController sharedInstance].player play];
 }
 
+// removes the player once its done playing its sound file.
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    [self.mArrayOfAudioPlayers removeObject:player];
+}
 
 
 - (void)playLastRecordedFile {
