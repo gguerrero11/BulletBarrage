@@ -13,6 +13,7 @@
 #import "CustomSignUpViewController.h"
 #import <Parse/Parse.h>
 #import "UserController.h"
+#import "CountdownTimerViewController.h"
 
 #import "Weapon.h"
 #import "WeaponController.h"
@@ -81,6 +82,7 @@ static bool kAnimate = true;
 @property (nonatomic,assign) NSInteger zoomSelection;
 @property (nonatomic,assign) double pitchWithLimit;
 @property (nonatomic,strong) NSMutableArray *arrayOfCraters;
+@property (nonatomic,strong) CountdownTimerViewController *timer;
 
 // CMDevice motion
 @property (nonatomic,strong) CMAttitude *attitude;
@@ -185,7 +187,7 @@ static bool kAnimate = true;
 
 - (void) registerForNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createTargets) name:@"queryDone" object:nil];
-    //[self.loadCircle removeFromSuperview];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeTimer) name:@"queryDone" object:nil];
 }
 
 - (void) viewDidLoad {
@@ -493,10 +495,20 @@ static bool kAnimate = true;
                                       self.myLocation.coordinate.longitude + degreeOffsetLongitude);
 }
 
+- (void) removeTimer {
+    [self.timer removeFromParentViewController];
+
+}
+
 - (void) fireButtonPressed:(id)sender {
     
     // Adds +1 to the "shotsFired" on Parse
     [[PFUser currentUser] incrementKey:shotsFiredKey];
+    
+    self.timer = [[CountdownTimerViewController alloc]initWithSeconds:[self calculateProjectileTravelTime]];
+    [self addChildViewController:self.timer];
+    [self.timer didMoveToParentViewController:self];
+    [self.view addSubview:self.timer.view];
     
     CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                          longitude:[self calculateHitLocation].longitude];

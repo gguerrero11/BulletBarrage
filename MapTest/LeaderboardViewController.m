@@ -34,6 +34,7 @@ static double padding = 15;
 
 - (void) registerForNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"queryDone" object:nil];
+
     //[self.loadCircle removeFromSuperview];
 }
 

@@ -46,6 +46,7 @@
 		4996BA671AD82B15002D5663 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 4996BA661AD82B15002D5663 /* User.m */; };
 		4996BA6D1AD82F68002D5663 /* GMSMarkerWithUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4996BA6C1AD82F68002D5663 /* GMSMarkerWithUser.m */; };
 		4996BA701AD88F05002D5663 /* HitChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 4996BA6F1AD88F05002D5663 /* HitChecker.m */; };
+		4996BA731AD8CF34002D5663 /* CountdownTimerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4996BA721AD8CF34002D5663 /* CountdownTimerViewController.m */; };
 		49B9DBBE1ACDD519003EA46E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DBBD1ACDD519003EA46E /* main.m */; };
 		49B9DBC11ACDD519003EA46E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DBC01ACDD519003EA46E /* AppDelegate.m */; };
 		49B9DBC71ACDD519003EA46E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 49B9DBC51ACDD519003EA46E /* Main.storyboard */; };
@@ -123,6 +124,8 @@
 		4996BA6C1AD82F68002D5663 /* GMSMarkerWithUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GMSMarkerWithUser.m; sourceTree = "<group>"; };
 		4996BA6E1AD88F04002D5663 /* HitChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HitChecker.h; sourceTree = "<group>"; };
 		4996BA6F1AD88F05002D5663 /* HitChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HitChecker.m; sourceTree = "<group>"; };
+		4996BA711AD8CF34002D5663 /* CountdownTimerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountdownTimerViewController.h; sourceTree = "<group>"; };
+		4996BA721AD8CF34002D5663 /* CountdownTimerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CountdownTimerViewController.m; sourceTree = "<group>"; };
 		49B9DBB81ACDD518003EA46E /* MapTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MapTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49B9DBBC1ACDD519003EA46E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		49B9DBBD1ACDD519003EA46E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -323,6 +326,8 @@
 				4996BA6F1AD88F05002D5663 /* HitChecker.m */,
 				4996BA6B1AD82F68002D5663 /* GMSMarkerWithUser.h */,
 				4996BA6C1AD82F68002D5663 /* GMSMarkerWithUser.m */,
+				4996BA711AD8CF34002D5663 /* CountdownTimerViewController.h */,
+				4996BA721AD8CF34002D5663 /* CountdownTimerViewController.m */,
 				49835E151AD39C050058917B /* GoogleMapAPI.h */,
 				496857401AD59946000CE114 /* Weapons */,
 			);
@@ -477,6 +482,7 @@
 				4968573F1AD5993E000CE114 /* Weapon.m in Sources */,
 				4996BA701AD88F05002D5663 /* HitChecker.m in Sources */,
 				49B9DC441ACF4952003EA46E /* ProfileTableViewCell.m in Sources */,
+				4996BA731AD8CF34002D5663 /* CountdownTimerViewController.m in Sources */,
 				49603D6C1AD1022300AB3E50 /* CustomLoginViewController.m in Sources */,
 				4996BA671AD82B15002D5663 /* User.m in Sources */,
 				493583DF1AD5B173007A46EC /* WeaponController.m in Sources */,
