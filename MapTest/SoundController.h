@@ -17,7 +17,7 @@ static NSString * const missleImpact = @"missleImpact";
     NSMutableArray *mArrayOfAudioPlayers;
 }
 
-@property (strong,nonatomic) NSMutableArray *mArrayOfAudioPlayers;
+//@property (strong,nonatomic) NSMutableArray *mArrayOfAudioPlayers;
 
 + (SoundController *) sharedInstance;
 

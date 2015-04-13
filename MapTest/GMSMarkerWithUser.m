@@ -15,8 +15,6 @@
 // synthesizes the properties from its superclass so we can use it in the subclass
 @synthesize title = _title;
 @synthesize snippet = _snippet;
-//@synthesize map = _newmap;
-@synthesize wooh;
 
 
 
@@ -28,7 +26,6 @@
         _user = user;
         _title = user[usernameKey];
         _snippet = [NSString stringWithFormat:@"%.0fm",[self calculateDistanceString]];
-    
         
     }
     return self;
@@ -46,6 +43,11 @@
     self.distance = [otherUserLocation distanceFromLocation:currentUserLocation];
     
     return self.distance;
+}
+
+- (void) removePin {
+    NSLog(@"%@", self.map);
+    self.map = nil;
 }
 
 @end

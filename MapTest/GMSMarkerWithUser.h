@@ -17,10 +17,11 @@
 @property (nonatomic) CLLocation *userLocation;
 @property (nonatomic) double distance;
 @property (nonatomic, assign) CLLocationCoordinate2D position;
-@property (nonatomic, weak) GMSMapView *map;
-@property (nonatomic, strong) NSString *wooh;
+@property (nonatomic, strong) NSString *string;
 
 - (id)initWithUser:(PFUser *) user;
+
+- (void) removePin;
 
 
 @end

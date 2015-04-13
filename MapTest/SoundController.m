@@ -102,7 +102,7 @@
 
 // removes the player once its done playing its sound file.
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
-    [self.mArrayOfAudioPlayers removeObject:player];
+    [mArrayOfAudioPlayers removeObject:player];
 }
 
 @end

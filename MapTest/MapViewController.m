@@ -19,6 +19,7 @@
 #import "UserController.h"
 #import "GMSMarkerWithUser.h"
 #import "SoundController.h"
+#import "GMSMarker+addUser.h"
 
 @import SceneKit;
 
@@ -50,7 +51,6 @@ static bool kAnimate = true;
 @interface MapViewController () <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate>
 {
     CMMotionManager *_motionManager;
-    GMSMapView *gmMapView;
     GMSCameraPosition *gmCamera;
     
     // Polyline properties
@@ -61,15 +61,16 @@ static bool kAnimate = true;
     
 }
 
-@property (nonatomic,strong) CLLocation *myLocation;
-@property (nonatomic,strong) MKMapCamera *targetCamera;
-@property (strong, nonatomic) UIButton *fireButton;
-@property (strong, nonatomic) UIButton *zoomButton;
-@property (nonatomic,strong) MKPolyline *polyline;
+@property (nonatomic, strong) GMSMapView *gmMapView;
+@property (nonatomic, strong) CLLocation *myLocation;
+@property (nonatomic, strong) MKMapCamera *targetCamera;
+@property (nonatomic, strong) UIButton *fireButton;
+@property (nonatomic, strong) UIButton *zoomButton;
+@property (nonatomic, strong) MKPolyline *polyline;
 @property (nonatomic, strong) UILabel *pitchLabelData;
 
 // SceneKit Properties
-@property (strong, nonatomic) SCNView *sceneView;
+@property (nonatomic, strong) SCNView *sceneView;
 @property (nonatomic, strong) SCNNode *cannonBarrelNode;
 @property (nonatomic, strong) SCNNode *barrelPivotNode;
 @property (nonatomic, strong) SCNNode *placementNode;
@@ -81,15 +82,15 @@ static bool kAnimate = true;
 
 
 // GMS Map
-@property (nonatomic,assign) NSInteger zoomSelection;
-@property (nonatomic,assign) double pitchWithLimit;
-@property (nonatomic,strong) NSMutableArray *arrayOfCraters;
-@property (nonatomic,strong) CountdownTimerViewController *timer;
+@property (nonatomic, assign) NSInteger zoomSelection;
+@property (nonatomic, assign) double pitchWithLimit;
+@property (nonatomic, strong) NSMutableArray *arrayOfCraters;
+@property (nonatomic, strong) CountdownTimerViewController *timer;
 
-@property (nonatomic,strong) Weapon *projectile;
+@property (nonatomic, strong) Weapon *projectile;
 
 // CMDevice motion
-@property (nonatomic,strong) CMAttitude *attitude;
+@property (nonatomic, strong) CMAttitude *attitude;
 @property (nonatomic) double deviceYaw;
 
 // Sound Effects
@@ -216,21 +217,13 @@ static bool kAnimate = true;
     for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
         
         marker.appearAnimation = YES;
-        marker.map = gmMapView;
-        marker.wooh = @"TEST";
-        
+        marker.map = self.gmMapView;
     }
     
     for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
-        
-        NSLog(@"%@", marker.map);
-        NSLog(@"%@", marker.wooh);
+        [marker removePin];
         
     }
-    
-    
-    
-    
 }
 
 - (void) setUpMotionManager {
@@ -260,8 +253,8 @@ static bool kAnimate = true;
                 self.pitchWithLimit = self.attitude.pitch;
             }
             
-            self.cameraSKPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (gmMapView.camera.viewingAngle) * (M_PI/180) );
-            self.cameraSKPositionNode.position = SCNVector3Make(0, -((double)gmMapView.camera.zoom - 22) * 5  ,0);
+            self.cameraSKPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (self.gmMapView.camera.viewingAngle) * (M_PI/180) );
+            self.cameraSKPositionNode.position = SCNVector3Make(0, -((double)self.gmMapView.camera.zoom - 22) * 5  ,0);
             
             
             //            self.pyramidNode.eulerAngles = SCNVector3Make(self.deviceYaw, 0, 1.5 );
@@ -333,12 +326,12 @@ static bool kAnimate = true;
     
     gmCamera = [GMSCameraPosition cameraWithTarget:self.myLocation.coordinate zoom:15 bearing:32 viewingAngle:17];
     
-    gmMapView = [GMSMapView mapWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height + 250) camera:gmCamera];
-    gmMapView.myLocationEnabled = YES;
-    gmMapView.settings.scrollGestures = NO;
-    gmMapView.delegate = self;
+    self.gmMapView = [GMSMapView mapWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height + 250) camera:gmCamera];
+    self.gmMapView.myLocationEnabled = YES;
+    self.gmMapView.settings.scrollGestures = NO;
+    self.gmMapView.delegate = self;
     
-    [self.view addSubview:gmMapView];
+    [self.view addSubview:self.gmMapView];
 }
 
 - (BOOL)mapView:(GMSMarkerWithUser *)mapView didTapMarker:(GMSMarkerWithUser *)marker {
@@ -537,12 +530,23 @@ static bool kAnimate = true;
                                       self.myLocation.coordinate.longitude + degreeOffsetLongitude);
 }
 
-- (void) removeTimer {
-    [self.timer removeFromParentViewController];
+- (void) createTimer {
+    CountdownTimerViewController *timer = [[CountdownTimerViewController alloc]initWithSeconds:[self calculateProjectileTravelTime]];
+    NSLog(@"%@", timer);
+    [self addChildViewController:timer];
+    [timer didMoveToParentViewController:self];
+    self.timer = timer;
+    [self.view addSubview:timer.view];
     
 }
 
+- (void) removeTimer {
+    [self.timer removeFromParentViewController];
+}
+
 - (void) fireButtonPressed:(id)sender {
+    
+    [self createTimer];
     
     [[SoundController sharedInstance] playSoundEffect:cannon];
     //NSURL *urlForCannon = [[NSBundle mainBundle] URLForResource:cannon withExtension:@"caf"];
@@ -555,11 +559,6 @@ static bool kAnimate = true;
     
     // Adds +1 to the "shotsFired" on Parse
     [[PFUser currentUser] incrementKey:shotsFiredKey];
-    
-    self.timer = [[CountdownTimerViewController alloc]initWithSeconds:[self calculateProjectileTravelTime]];
-    [self addChildViewController:self.timer];
-    [self.timer didMoveToParentViewController:self];
-    //[self.view addSubview:self.timer.view];
     
     CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                          longitude:[self calculateHitLocation].longitude];
@@ -586,7 +585,7 @@ static bool kAnimate = true;
                                                                               coordinate:northEast];
     GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds
                                                                            icon:[UIImage imageNamed:@"craterBigSquare"]];
-    groundOverlay.map = gmMapView;
+    groundOverlay.map = self.gmMapView;
     
     [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
     
@@ -720,7 +719,7 @@ static bool kAnimate = true;
     GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
     polyline.strokeColor = [UIColor colorWithRed:1 green:0.1 blue:.1 alpha:.2];
     polyline.strokeWidth = 5.f;
-    polyline.map = gmMapView;
+    polyline.map = self.gmMapView;
     
     [self performSelector:@selector(removeGMSPolyline:) withObject:polyline afterDelay:[self calculateProjectileTravelTime]];
 }
@@ -756,7 +755,7 @@ static bool kAnimate = true;
             poly.path = [path pathOffsetByLatitude:(i * 1.5) longitude:0];
             poly.strokeWidth = 8;
             poly.geodesic = YES;
-            poly.map = gmMapView;
+            poly.map = self.gmMapView;
             [polys addObject:poly];
         }
         _polys = polys;
@@ -789,7 +788,7 @@ static bool kAnimate = true;
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 10) return;
     
-    [gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
+    [self.gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
     //[gmMapView animateToViewingAngle:45];
     
     // Use the true heading if it is valid.
