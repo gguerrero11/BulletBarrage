@@ -70,9 +70,10 @@ static bool kAnimate = true;
 
 // SceneKit Properties
 @property (strong, nonatomic) SCNView *sceneView;
-@property (nonatomic, strong) SCNNode *pyramidNode;
+@property (nonatomic, strong) SCNNode *cannonBarrelNode;
+@property (nonatomic, strong) SCNNode *barrelPivotNode;
 @property (nonatomic, strong) SCNNode *placementNode;
-@property (nonatomic, strong) SCNPyramid *pyramid;
+@property (nonatomic, strong) SCNBox *cannonBarrel;
 @property (nonatomic, strong) SCNPyramid *placement;
 @property (nonatomic, strong) SCNNode *cameraSKPositionNode;
 @property (nonatomic, strong) SCNNode *cameraSKHeadingRotationNode;
@@ -243,10 +244,11 @@ static bool kAnimate = true;
                 self.pitchWithLimit = self.attitude.pitch;
             }
             
-            
             self.cameraSKPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (gmMapView.camera.viewingAngle) * (M_PI/180) );
             self.cameraSKPositionNode.position = SCNVector3Make(0, -((double)gmMapView.camera.zoom - 22) * 5  ,0);
-            //self.pyramidNode.eulerAngles = SCNVector3Make(-1.54, - self.pitchWithLimit , 1.5 );
+            
+            
+            //            self.pyramidNode.eulerAngles = SCNVector3Make(self.deviceYaw, 0, 1.5 );
             
             // NSLog(@"%f", -((double)gmMapView.camera.zoom - 22) * 5);
             
@@ -367,8 +369,8 @@ static bool kAnimate = true;
     [scene.rootNode addChildNode:self.cameraSKHeadingRotationNode];
     
     // Create pyramid
-    self.pyramid = [SCNPyramid pyramidWithWidth:.1 height:.5 length:.1];
-    self.pyramid.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
+    self.cannonBarrel = [SCNBox boxWithWidth:.05 height:.05 length:.5 chamferRadius:0];
+    self.cannonBarrel.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
     
     // Create cube
     self.placement = [SCNPyramid pyramidWithWidth:.3 height:.3 length:.3];
@@ -376,17 +378,18 @@ static bool kAnimate = true;
     
     //SCNFloor use later
     
-    SCNNode *pyramidNode = [SCNNode nodeWithGeometry:self.pyramid];
-    pyramidNode.position = SCNVector3Make(0, .13, 0);
-    pyramidNode.eulerAngles = SCNVector3Make(-1.54, 0, 1.5);
+    SCNNode *cannonBarrel = [SCNNode nodeWithGeometry:self.cannonBarrel];
+    cannonBarrel.pivot = SCNMatrix4MakeTranslation(0, 0, .3);
+    cannonBarrel.position = SCNVector3Make(0, .1, 0);
     
     SCNNode *placementNode = [SCNNode nodeWithGeometry:self.placement];
     placementNode.position = SCNVector3Make(0, .03, 0);
-
     
-    [placementNode addChildNode:pyramidNode];
+
+    [placementNode addChildNode:cannonBarrel];
     [scene.rootNode addChildNode:placementNode];
-    self.pyramidNode = pyramidNode;
+    
+    self.cannonBarrelNode = cannonBarrel;
     self.placementNode = placementNode;
     
     // Add scene to SceneView
@@ -728,6 +731,8 @@ static bool kAnimate = true;
 
 - (void)mapView:(GMSMapView *)mapView didChangeCameraPosition:(GMSCameraPosition *)position {
     self.cameraSKHeadingRotationNode.eulerAngles = SCNVector3Make(0, -(position.bearing * M_PI / 180), 0);
+    self.cannonBarrelNode.eulerAngles = SCNVector3Make(self.pitchWithLimit, self.deviceYaw, 0 );
+
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
@@ -741,7 +746,6 @@ static bool kAnimate = true;
                                        newHeading.trueHeading : newHeading.magneticHeading);
     //    self.cameraSKHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, gmMapView.camera.bearing * (M_PI / 180));
     
-    NSLog(@"%f", gmMapView.camera.bearing);
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
