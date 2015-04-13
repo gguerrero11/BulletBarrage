@@ -14,12 +14,11 @@
 #import <Parse/Parse.h>
 #import "UserController.h"
 #import "CountdownTimerViewController.h"
-
 #import "Weapon.h"
 #import "WeaponController.h"
 #import "UserController.h"
-
 #import "GMSMarkerWithUser.h"
+#import "SoundController.h"
 
 @import SceneKit;
 
@@ -87,10 +86,14 @@ static bool kAnimate = true;
 @property (nonatomic,strong) NSMutableArray *arrayOfCraters;
 @property (nonatomic,strong) CountdownTimerViewController *timer;
 
+@property (nonatomic,strong) Weapon *projectile;
 
 // CMDevice motion
 @property (nonatomic,strong) CMAttitude *attitude;
 @property (nonatomic) double deviceYaw;
+
+// Sound Effects
+@property (nonatomic,strong) SoundController *soundController;
 
 @end
 
@@ -205,7 +208,7 @@ static bool kAnimate = true;
     [self setUpPOVButton];
     
     self.arrayOfCraters = [NSMutableArray new];
-
+    
 }
 
 - (void) createTargets {
@@ -221,10 +224,10 @@ static bool kAnimate = true;
     for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
         
         NSLog(@"%@", marker.map);
-                NSLog(@"%@", marker.wooh);
-
+        NSLog(@"%@", marker.wooh);
+        
     }
-
+    
     
     
     
@@ -329,7 +332,7 @@ static bool kAnimate = true;
 - (void) showMainMapView {
     
     gmCamera = [GMSCameraPosition cameraWithTarget:self.myLocation.coordinate zoom:15 bearing:32 viewingAngle:17];
-
+    
     gmMapView = [GMSMapView mapWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height + 250) camera:gmCamera];
     gmMapView.myLocationEnabled = YES;
     gmMapView.settings.scrollGestures = NO;
@@ -398,7 +401,7 @@ static bool kAnimate = true;
     SCNNode *placementNode = [SCNNode nodeWithGeometry:self.placement];
     placementNode.position = SCNVector3Make(0, .03, 0);
     
-
+    
     [placementNode addChildNode:cannonBarrel];
     [scene.rootNode addChildNode:placementNode];
     
@@ -467,33 +470,33 @@ static bool kAnimate = true;
 - (void) changeZoom {
     
     switch (self.zoomSelection) {
-//        case 0:
-//            [gmMapView animateToZoom:18];
-//            self.zoomSelection = 1;
-//            break;
-//        case 1:
-//            [gmMapView animateToZoom:17];
-//            self.zoomSelection = 2;
-//            break;
-//        case 2:
-//            [gmMapView animateToZoom:14];
-//            self.zoomSelection = 0;
-//            break;
+            //        case 0:
+            //            [gmMapView animateToZoom:18];
+            //            self.zoomSelection = 1;
+            //            break;
+            //        case 1:
+            //            [gmMapView animateToZoom:17];
+            //            self.zoomSelection = 2;
+            //            break;
+            //        case 2:
+            //            [gmMapView animateToZoom:14];
+            //            self.zoomSelection = 0;
+            //            break;
             
         case 0:
             [self.zoomButton setTitle:@"100" forState:UIControlStateNormal];
             [[UserController sharedInstance] setWeaponForUser:cannon];
-                        self.zoomSelection = 1;
+            self.zoomSelection = 1;
             break;
         case 1:
             [self.zoomButton setTitle:@"250" forState:UIControlStateNormal];
             [[UserController sharedInstance] setWeaponForUser:missle];
-                        self.zoomSelection = 2;
+            self.zoomSelection = 2;
             break;
         case 2:
             [self.zoomButton setTitle:@"500" forState:UIControlStateNormal];
             [[UserController sharedInstance] setWeaponForUser:nuke];
-                        self.zoomSelection = 0;
+            self.zoomSelection = 0;
             break;
     }
 }
@@ -541,6 +544,15 @@ static bool kAnimate = true;
 
 - (void) fireButtonPressed:(id)sender {
     
+    [[SoundController sharedInstance] playSoundEffect:cannon];
+    //NSURL *urlForCannon = [[NSBundle mainBundle] URLForResource:cannon withExtension:@"caf"];
+    //[self.soundController playAudioFileAtURL:urlForCannon];
+    
+    
+    // we need to create a separate projecile weapon instance, so when the user changes weapon mid-flight, it doesn't change that weapon also
+    self.projectile = [Weapon new];
+    self.projectile = [UserController sharedInstance].currentWeapon;
+    
     // Adds +1 to the "shotsFired" on Parse
     [[PFUser currentUser] incrementKey:shotsFiredKey];
     
@@ -552,7 +564,7 @@ static bool kAnimate = true;
     CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                          longitude:[self calculateHitLocation].longitude];
     
-        [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:[self calculateProjectileTravelTime]];
+    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:[self calculateProjectileTravelTime]];
     //[self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:3];
     
     [self drawTrajectoryLineToLocation:hitLocation];
@@ -562,10 +574,13 @@ static bool kAnimate = true;
 
 - (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
     
+    // Play bombExplosion sound
+    [[SoundController sharedInstance] playSoundEffect:bombExplosion];
+    
     // Create crater coordinates
     // Sets coordinates for the opposite side corners for the overlay (crater)
-    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(hitLocation.coordinate.latitude + 100.0/111111.0, hitLocation.coordinate.longitude + 100.0/111111.0);
-    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(hitLocation.coordinate.latitude - 100.0/111111.0, hitLocation.coordinate.longitude - 100.0/111111.0);
+    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(hitLocation.coordinate.latitude + self.projectile.sizeOfCrater / 111111.0, hitLocation.coordinate.longitude + self.projectile.sizeOfCrater /111111.0);
+    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(hitLocation.coordinate.latitude - self.projectile.sizeOfCrater /111111.0, hitLocation.coordinate.longitude - self.projectile.sizeOfCrater /111111.0);
     
     GMSCoordinateBounds *overlayBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:southWest
                                                                               coordinate:northEast];
@@ -577,25 +592,25 @@ static bool kAnimate = true;
     
     // Goes through each marker in the array and checks if that marker's position is within the radius of the weapon damage (meters) of the hitlocation
     for (GMSMarkerWithUser *marker in [UserController sharedInstance].arrayOfMarkers) {
-
+        
         PFUser *userAtMarker = marker.user;
         
         CLLocationCoordinate2D positionOfMarker = marker.position;
         CLLocation *locationOfMarker = [[CLLocation alloc]initWithCoordinate:positionOfMarker altitude:0 horizontalAccuracy:0 verticalAccuracy:0 timestamp:[NSDate date]];
-        if ([locationOfMarker distanceFromLocation:hitLocation] < [UserController sharedInstance].currentWeapon.radiusOfDamage) {
+        if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage) {
             
             NSNumber *healthForTarget = userAtMarker[healthKey];
             double health = [healthForTarget doubleValue];
             
             // If the distance less than 35% away
-            if ([locationOfMarker distanceFromLocation:hitLocation] < [UserController sharedInstance].currentWeapon.radiusOfDamage * 0.35 ) {
+            if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage * 0.35 ) {
                 // do full damage
-                health -= [UserController sharedInstance].currentWeapon.damage;
+                health -= self.projectile.damage;
                 NSLog(@"FULL DAMAGE. Health: %f", health);
             } else {
                 // otherwise do damage relative to is distance
-                health -= [UserController sharedInstance].currentWeapon.damage * ([locationOfMarker distanceFromLocation:hitLocation] / [UserController sharedInstance].currentWeapon.radiusOfDamage);
-                NSLog(@"did %f%% DAMAGE. Health: %f", [UserController sharedInstance].currentWeapon.damage * ([locationOfMarker distanceFromLocation:hitLocation] / [UserController sharedInstance].currentWeapon.radiusOfDamage), health);
+                health -= self.projectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.projectile.radiusOfDamage);
+                NSLog(@"did %f%% DAMAGE. Health: %f", self.projectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.projectile.radiusOfDamage), health);
             }
             
             // checks if health is below 0, if it is, remove the marker
@@ -605,11 +620,11 @@ static bool kAnimate = true;
                 
                 // increment kill for currentUser and saves to Parse
                 [[PFUser currentUser] incrementKey:killKey];
-                [UserController saveUserToParse:[PFUser currentUser]];
+                //[UserController saveUserToParse:[PFUser currentUser]];
                 
-                // increment death for userAtMarker saves to Parse
-                [userAtMarker incrementKey:deathKey];
-                [UserController saveUserToParse:userAtMarker];
+                //                // increment death for userAtMarker saves to Parse
+                //                [userAtMarker incrementKey:deathKey];
+                //                [UserController saveUserToParse:userAtMarker];
                 
                 
                 // this SHOULD remove marker... subclassing issue
@@ -625,6 +640,8 @@ static bool kAnimate = true;
         
     }
 }
+
+
 
 - (void) createAnimateHitLabel {
     // Create HIT label with animation
@@ -766,7 +783,7 @@ static bool kAnimate = true;
 - (void)mapView:(GMSMapView *)mapView didChangeCameraPosition:(GMSCameraPosition *)position {
     self.cameraSKHeadingRotationNode.eulerAngles = SCNVector3Make(0, -(position.bearing * M_PI / 180), 0);
     self.cannonBarrelNode.eulerAngles = SCNVector3Make(self.pitchWithLimit, self.deviceYaw, 0 );
-
+    
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {

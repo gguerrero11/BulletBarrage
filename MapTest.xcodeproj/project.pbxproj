@@ -59,6 +59,10 @@
 		49B9DC3B1ACF2D94003EA46E /* ProfileviewControllerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DC3A1ACF2D94003EA46E /* ProfileviewControllerViewController.m */; };
 		49B9DC411ACF394E003EA46E /* ProfileViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DC401ACF394E003EA46E /* ProfileViewDataSource.m */; };
 		49B9DC441ACF4952003EA46E /* ProfileTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DC431ACF4952003EA46E /* ProfileTableViewCell.m */; };
+		49C3A5CF1ADC2F9E007C8309 /* SoundController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C3A5CE1ADC2F9E007C8309 /* SoundController.m */; };
+		49C3A5D11ADC35D6007C8309 /* cannon.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49C3A5D01ADC35D6007C8309 /* cannon.caf */; };
+		49C3A5D41ADC3DC1007C8309 /* bombExplosion.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49C3A5D21ADC3DC1007C8309 /* bombExplosion.caf */; };
+		49C3A5D51ADC3DC1007C8309 /* missleImpact.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49C3A5D31ADC3DC1007C8309 /* missleImpact.caf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -149,6 +153,11 @@
 		49B9DC401ACF394E003EA46E /* ProfileViewDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileViewDataSource.m; sourceTree = "<group>"; };
 		49B9DC421ACF4952003EA46E /* ProfileTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileTableViewCell.h; sourceTree = "<group>"; };
 		49B9DC431ACF4952003EA46E /* ProfileTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProfileTableViewCell.m; sourceTree = "<group>"; };
+		49C3A5CD1ADC2F9E007C8309 /* SoundController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundController.h; sourceTree = "<group>"; };
+		49C3A5CE1ADC2F9E007C8309 /* SoundController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundController.m; sourceTree = "<group>"; };
+		49C3A5D01ADC35D6007C8309 /* cannon.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = cannon.caf; sourceTree = "<group>"; };
+		49C3A5D21ADC3DC1007C8309 /* bombExplosion.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = bombExplosion.caf; sourceTree = "<group>"; };
+		49C3A5D31ADC3DC1007C8309 /* missleImpact.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = missleImpact.caf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -273,6 +282,8 @@
 		49B9DBBA1ACDD518003EA46E /* MapTest */ = {
 			isa = PBXGroup;
 			children = (
+				49C3A5CD1ADC2F9E007C8309 /* SoundController.h */,
+				49C3A5CE1ADC2F9E007C8309 /* SoundController.m */,
 				49B9DBBF1ACDD519003EA46E /* AppDelegate.h */,
 				49B9DBC01ACDD519003EA46E /* AppDelegate.m */,
 				4996BA651AD82B15002D5663 /* User.h */,
@@ -284,6 +295,9 @@
 				49B9DC3D1ACF37C6003EA46E /* LeaderBoard */,
 				49B9DC3E1ACF37D1003EA46E /* Profile */,
 				49B9DBC51ACDD519003EA46E /* Main.storyboard */,
+				49C3A5D21ADC3DC1007C8309 /* bombExplosion.caf */,
+				49C3A5D31ADC3DC1007C8309 /* missleImpact.caf */,
+				49C3A5D01ADC35D6007C8309 /* cannon.caf */,
 				49B9DBC81ACDD519003EA46E /* Images.xcassets */,
 				49B9DBCA1ACDD519003EA46E /* LaunchScreen.xib */,
 				49B9DBBB1ACDD519003EA46E /* Supporting Files */,
@@ -446,9 +460,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				49C3A5D51ADC3DC1007C8309 /* missleImpact.caf in Resources */,
 				49B9DBC71ACDD519003EA46E /* Main.storyboard in Resources */,
 				49B9DBCC1ACDD519003EA46E /* LaunchScreen.xib in Resources */,
 				49B9DBC91ACDD519003EA46E /* Images.xcassets in Resources */,
+				49C3A5D11ADC35D6007C8309 /* cannon.caf in Resources */,
+				49C3A5D41ADC3DC1007C8309 /* bombExplosion.caf in Resources */,
 				49835E191AD39CE40058917B /* GoogleMaps.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -481,6 +498,7 @@
 				49B9DBC11ACDD519003EA46E /* AppDelegate.m in Sources */,
 				4968573F1AD5993E000CE114 /* Weapon.m in Sources */,
 				4996BA701AD88F05002D5663 /* HitChecker.m in Sources */,
+				49C3A5CF1ADC2F9E007C8309 /* SoundController.m in Sources */,
 				49B9DC441ACF4952003EA46E /* ProfileTableViewCell.m in Sources */,
 				4996BA731AD8CF34002D5663 /* CountdownTimerViewController.m in Sources */,
 				49603D6C1AD1022300AB3E50 /* CustomLoginViewController.m in Sources */,
