@@ -605,39 +605,39 @@ static bool kAnimate = true;
             
             NSNumber *healthForTarget = userAtMarker[healthKey];
             double health = [healthForTarget doubleValue];
-            
-            // If the distance less than 35% away
-            if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage * 0.35 ) {
-                // do full damage
-                health -= self.projectile.damage;
-                NSLog(@"FULL DAMAGE. Health: %f", health);
-            } else {
-                // otherwise do damage relative to is distance
-                health -= self.projectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.projectile.radiusOfDamage);
-                NSLog(@"did %f%% DAMAGE. Health: %f", self.projectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.projectile.radiusOfDamage), health);
+            if (health > 0 ) {
+                // If the distance less than 35% away
+                if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage * 0.35 ) {
+                    // do full damage
+                    health -= self.projectile.damage;
+                    NSLog(@"FULL DAMAGE. Health: %f", health);
+                } else {
+                    // otherwise do damage relative to is distance
+                    health -= self.projectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.projectile.radiusOfDamage);
+                    NSLog(@"did %f%% DAMAGE. Health: %f", self.projectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.projectile.radiusOfDamage), health);
+                }
+                
+                // checks if health is below 0, if it is, remove the marker
+                userAtMarker[healthKey] = [NSNumber numberWithDouble:health];
+                if (health <= 0 ) {
+                    NSLog(@"DEAD!");
+                    
+                    // increment kill for currentUser and saves to Parse
+                    [[PFUser currentUser] incrementKey:killKey];
+                    //[UserController saveUserToParse:[PFUser currentUser]];
+                    
+                    //                // increment death for userAtMarker saves to Parse
+                    //                [userAtMarker incrementKey:deathKey];
+                    //                [UserController saveUserToParse:userAtMarker];
+                    
+                    
+                    [self longestDistanceRecordCheckerFromMarker:marker];
+                    [self removeGMSMarker:marker];
+                } else [self createAnimateHitLabel];
+                // Adds +1 to the "shotsHit" on Parse
+                [[PFUser currentUser] incrementKey:shotsHitKey];
             }
             
-            // checks if health is below 0, if it is, remove the marker
-            userAtMarker[healthKey] = [NSNumber numberWithDouble:health];
-            if (health <= 0 ) {
-                NSLog(@"DEAD!");
-                
-                // increment kill for currentUser and saves to Parse
-                [[PFUser currentUser] incrementKey:killKey];
-                //[UserController saveUserToParse:[PFUser currentUser]];
-                
-                //                // increment death for userAtMarker saves to Parse
-                //                [userAtMarker incrementKey:deathKey];
-                //                [UserController saveUserToParse:userAtMarker];
-                
-                
-                [self longestDistanceRecordCheckerFromMarker:marker];
-                [self removeGMSMarker:marker];
-            }
-            // Adds +1 to the "shotsHit" on Parse
-            [[PFUser currentUser] incrementKey:shotsHitKey];
-            
-            [self createAnimateHitLabel];
             
             
         }
@@ -703,14 +703,7 @@ static bool kAnimate = true;
 }
 
 - (void) removeGMSMarker:(GMSMarker *)marker {
-
     marker.map = nil;
-    [self.mArrayMarkersForMap removeObject:marker];
-    NSLog(@"%@", self.mArrayMarkersForMap);
-    [UserController sharedInstance].arrayOfMarkers = self.mArrayMarkersForMap;
-    NSLog(@"%@", [UserController sharedInstance].arrayOfMarkers );
-    [self.gmMapView clear];
-
 }
 
 
