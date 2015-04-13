@@ -71,12 +71,13 @@ static bool kAnimate = true;
 // SceneKit Properties
 @property (strong, nonatomic) SCNView *sceneView;
 @property (nonatomic, strong) SCNNode *pyramidNode;
+@property (nonatomic, strong) SCNNode *placementNode;
 @property (nonatomic, strong) SCNPyramid *pyramid;
-@property (nonatomic, strong) SCNBox *ground;
-@property (nonatomic, strong) SCNNode *cameraNode;
-@property (nonatomic, strong) SCNNode *cameraSceneKitHeadingRotationNode;
-@property (nonatomic, strong) SCNNode *cameraPitchRotationNode;
-@property (nonatomic, strong) SCNNode *cameraTargetNode;
+@property (nonatomic, strong) SCNPyramid *placement;
+@property (nonatomic, strong) SCNNode *cameraSKPositionNode;
+@property (nonatomic, strong) SCNNode *cameraSKHeadingRotationNode;
+@property (nonatomic, strong) SCNNode *cameraSKPitchRotationNode;
+
 
 // GMS Map
 @property (nonatomic,assign) NSInteger zoomSelection;
@@ -199,7 +200,7 @@ static bool kAnimate = true;
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
     [UserController queryUsersNearCurrentUser:self.locationManager.location.coordinate withinMileRadius:10];
-    //[self setupSceneKitView];
+    [self setupSceneKitView];
     [self setUpDataViewFireButton];
     [self setUpPOVButton];
     
@@ -229,7 +230,6 @@ static bool kAnimate = true;
             
             self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[self convertToDegrees:self.pitchWithLimit]];
             
-            
             //[gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
             //[gmMapView animateToViewingAngle:45];
             
@@ -243,8 +243,10 @@ static bool kAnimate = true;
                 self.pitchWithLimit = self.attitude.pitch;
             }
             
-            self.cameraPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (gmMapView.camera.viewingAngle) * (M_PI/180) );
-            self.cameraNode.position = SCNVector3Make(0, -((double)gmMapView.camera.zoom - 22) * 5  ,0);
+            
+            self.cameraSKPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (gmMapView.camera.viewingAngle) * (M_PI/180) );
+            self.cameraSKPositionNode.position = SCNVector3Make(0, -((double)gmMapView.camera.zoom - 22) * 5  ,0);
+            //self.pyramidNode.eulerAngles = SCNVector3Make(-1.54, - self.pitchWithLimit , 1.5 );
             
             // NSLog(@"%f", -((double)gmMapView.camera.zoom - 22) * 5);
             
@@ -346,44 +348,46 @@ static bool kAnimate = true;
     camera.yFov = 10;
     
     // Init our nodes
-    self.cameraTargetNode = [SCNNode new];
-    self.cameraNode = [SCNNode node];
-    self.cameraSceneKitHeadingRotationNode = [SCNNode node];
-    self.cameraPitchRotationNode = [SCNNode node];
+    self.cameraSKPositionNode = [SCNNode node];
+    self.cameraSKHeadingRotationNode = [SCNNode node];
+    self.cameraSKPitchRotationNode = [SCNNode node];
     
     // Setup heading rotation node
-    self.cameraSceneKitHeadingRotationNode.position = SCNVector3Make(0, 0, 0);
-    [self.cameraSceneKitHeadingRotationNode addChildNode: self.cameraPitchRotationNode];
+    self.cameraSKHeadingRotationNode.position = SCNVector3Make(0, 0, 0);
+    [self.cameraSKHeadingRotationNode addChildNode: self.cameraSKPitchRotationNode];
     
     // setup pitch rotation node
-    [self.cameraPitchRotationNode addChildNode:self.cameraNode];
+    [self.cameraSKPitchRotationNode addChildNode:self.cameraSKPositionNode];
     
     // Setup camera node
-    self.cameraNode.position = SCNVector3Make(0, 5, 0);
-    self.cameraNode.rotation = SCNVector4Make(1, 0, 0, 270 * (M_PI / 180));
-    self.cameraNode.camera = camera;
+    self.cameraSKPositionNode.position = SCNVector3Make(0, 5, 0);
+    self.cameraSKPositionNode.rotation = SCNVector4Make(1, 0, 0, 270 * (M_PI / 180));
+    self.cameraSKPositionNode.camera = camera;
     
-    [scene.rootNode addChildNode:self.cameraSceneKitHeadingRotationNode];
+    [scene.rootNode addChildNode:self.cameraSKHeadingRotationNode];
     
-    // Create cube
-    self.pyramid = [SCNPyramid pyramidWithWidth:.2 height:.5 length:.5];
+    // Create pyramid
+    self.pyramid = [SCNPyramid pyramidWithWidth:.1 height:.5 length:.1];
     self.pyramid.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
     
-    // Create ground
-    self.ground = [SCNBox boxWithWidth:.24 height:0 length:.24 chamferRadius:0];
-    self.ground.firstMaterial.diffuse.contents = [UIColor brownColor];
+    // Create cube
+    self.placement = [SCNPyramid pyramidWithWidth:.3 height:.3 length:.3];
+    self.placement.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
     
     //SCNFloor use later
     
     SCNNode *pyramidNode = [SCNNode nodeWithGeometry:self.pyramid];
-    pyramidNode.position = SCNVector3Make(0, .03, 0);
+    pyramidNode.position = SCNVector3Make(0, .13, 0);
     pyramidNode.eulerAngles = SCNVector3Make(-1.54, 0, 1.5);
     
-    //    SCNNode *groundNode = [SCNNode nodeWithGeometry:self.ground];
+    SCNNode *placementNode = [SCNNode nodeWithGeometry:self.placement];
+    placementNode.position = SCNVector3Make(0, .03, 0);
+
     
-    [scene.rootNode addChildNode:pyramidNode];
-    //[scene.rootNode addChildNode:groundNode];
+    [placementNode addChildNode:pyramidNode];
+    [scene.rootNode addChildNode:placementNode];
     self.pyramidNode = pyramidNode;
+    self.placementNode = placementNode;
     
     // Add scene to SceneView
     self.sceneView.scene = scene;
@@ -497,7 +501,7 @@ static bool kAnimate = true;
 
 - (void) removeTimer {
     [self.timer removeFromParentViewController];
-
+    
 }
 
 - (void) fireButtonPressed:(id)sender {
@@ -508,12 +512,13 @@ static bool kAnimate = true;
     self.timer = [[CountdownTimerViewController alloc]initWithSeconds:[self calculateProjectileTravelTime]];
     [self addChildViewController:self.timer];
     [self.timer didMoveToParentViewController:self];
-    [self.view addSubview:self.timer.view];
+    //[self.view addSubview:self.timer.view];
     
     CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                          longitude:[self calculateHitLocation].longitude];
     
-    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:[self calculateProjectileTravelTime]];
+    //    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:[self calculateProjectileTravelTime]];
+    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:3];
     
     [self drawTrajectoryLineToLocation:hitLocation];
     //[self setUpPolyineColorsToLocation:hitLocation];
@@ -721,6 +726,10 @@ static bool kAnimate = true;
 
 
 
+- (void)mapView:(GMSMapView *)mapView didChangeCameraPosition:(GMSCameraPosition *)position {
+    self.cameraSKHeadingRotationNode.eulerAngles = SCNVector3Make(0, -(position.bearing * M_PI / 180), 0);
+}
+
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 10) return;
     
@@ -728,10 +737,11 @@ static bool kAnimate = true;
     [gmMapView animateToViewingAngle:45];
     
     // Use the true heading if it is valid.
-    //    CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
-    //                                       newHeading.trueHeading : newHeading.magneticHeading);
-    //self.cameraSceneKitHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, theHeading * (M_PI/180));
-    self.pyramidNode.eulerAngles = SCNVector3Make(-1.54, - self.pitchWithLimit , 1.5 );
+    CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
+                                       newHeading.trueHeading : newHeading.magneticHeading);
+    //    self.cameraSKHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, gmMapView.camera.bearing * (M_PI / 180));
+    
+    NSLog(@"%f", gmMapView.camera.bearing);
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
