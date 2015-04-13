@@ -92,9 +92,6 @@ static bool kAnimate = true;
 @property (nonatomic,strong) CMAttitude *attitude;
 @property (nonatomic) double deviceYaw;
 
-// User items
-@property (nonatomic,strong) Weapon *currentWeapon;
-
 @end
 
 @implementation MapViewController
@@ -208,7 +205,7 @@ static bool kAnimate = true;
     [self setUpPOVButton];
     
     self.arrayOfCraters = [NSMutableArray new];
-    self.currentWeapon = [Weapon new];
+
 }
 
 - (void) createTargets {
@@ -485,21 +482,20 @@ static bool kAnimate = true;
             
         case 0:
             [self.zoomButton setTitle:@"100" forState:UIControlStateNormal];
-            self.currentWeapon.velocity = 100;
+            [[UserController sharedInstance] setWeaponForUser:cannon];
                         self.zoomSelection = 1;
             break;
         case 1:
             [self.zoomButton setTitle:@"250" forState:UIControlStateNormal];
-            self.currentWeapon.velocity = 250;
+            [[UserController sharedInstance] setWeaponForUser:missle];
                         self.zoomSelection = 2;
             break;
         case 2:
             [self.zoomButton setTitle:@"500" forState:UIControlStateNormal];
-            self.currentWeapon.velocity = 500;
+            [[UserController sharedInstance] setWeaponForUser:nuke];
                         self.zoomSelection = 0;
             break;
     }
-    NSLog(@"%lu", self.currentWeapon.velocity);
 }
 
 
@@ -512,12 +508,12 @@ static bool kAnimate = true;
 - (double) calculateDistanceFromUserWeapon {
     
     // formula to calculate the distance the projectile will travel
-    double range = ( powl(self.currentWeapon.velocity, 2 ) * sinl(2 * self.pitchWithLimit) ) / gravityStatic;
+    double range = ( powl([UserController sharedInstance].currentWeapon.velocity, 2 ) * sinl(2 * self.pitchWithLimit) ) / gravityStatic;
     return range;
 }
 
 - (double) calculateProjectileTravelTime {
-    double time = [self calculateDistanceFromUserWeapon] / self.currentWeapon.velocity * cosh(self.pitchWithLimit);
+    double time = [self calculateDistanceFromUserWeapon] / [UserController sharedInstance].currentWeapon.velocity * cosh(self.pitchWithLimit);
     return time;
 }
 
