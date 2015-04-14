@@ -8,12 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CountdownTimerViewController : UIViewController {
-    
-    NSTimer *timer;
-    UILabel *myCounterLabel;
-}
+@interface CountdownTimerViewController : UIViewController
 
+@property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, retain) UILabel *myCounterLabel;
 @property (nonatomic, assign) int secondsLeft;
 @property (nonatomic, assign) int millisecondsLeft;

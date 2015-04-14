@@ -55,7 +55,7 @@ int hours, minutes, seconds, milliseconds;
     
     
     if (hours == 0 && minutes == 0 && seconds == 0 && milliseconds == 0) {
-        [self.view removeFromSuperview];
+        [self.timer invalidate];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"timerDone" object:nil];
     }
     if (seconds < 0 ) seconds = 0;
@@ -86,7 +86,7 @@ int hours, minutes, seconds, milliseconds;
 
 -(void)countdownTimer{
     
-    timer = [NSTimer scheduledTimerWithTimeInterval:0.1f target:self selector:@selector(updateCounter:) userInfo:nil repeats:YES];
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1f target:self selector:@selector(updateCounter:) userInfo:nil repeats:YES];
 }
 
 @end

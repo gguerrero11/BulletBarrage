@@ -550,14 +550,16 @@ static bool kAnimate = true;
     CountdownTimerViewController *timer = [[CountdownTimerViewController alloc]initWithSeconds:[self calculateProjectileTravelTime]];
     NSLog(@"%@", timer);
     [self addChildViewController:timer];
-    [timer didMoveToParentViewController:self];
+    [self.timer didMoveToParentViewController:self];
     self.timer = timer;
-    //[self.view addSubview:timer.view];
+    [self.view addSubview:timer.view];
     
 }
 
 - (void) removeTimer {
+
     [self.timer removeFromParentViewController];
+
 }
 
 - (void) fireButtonPressed:(id)sender {
