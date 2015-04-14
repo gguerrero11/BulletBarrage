@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MapTest/MapViewController.m"
-            timestampString = "450661627.832516"
+            timestampString = "450664215.662337"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "608"
-            endingLineNumber = "608"
+            startingLineNumber = "621"
+            endingLineNumber = "621"
             landmarkName = "-hitCheckerAtLocation:"
             landmarkType = "5">
          </BreakpointContent>

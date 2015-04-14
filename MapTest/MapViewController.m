@@ -218,6 +218,9 @@ static bool kAnimate = true;
     
     for (PFUser *user in [UserController sharedInstance].arrayOfUsers) {
         
+        NSNumber *healthForTarget = user[healthKey];
+        double health = [healthForTarget doubleValue];
+        
         // will exclude the currentUser in the array
         // NOTE: must use isEqualToString (string), or else it will compare pointers than the actual objectId!
         if (![user.objectId isEqualToString:[PFUser currentUser].objectId]) {
@@ -226,9 +229,17 @@ static bool kAnimate = true;
             marker.user = user;
             marker.map = self.gmMapView;
             marker.position = [UserController convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
+            
+            //Set color of marker according to health
+            marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
+            
             [self.mArrayMarkersForMap addObject:marker];
         }
     }
+}
+
+- (UIColor *) changeColorForHealth:(double)health {
+    return [UIColor colorWithRed:(100 - health)/100 green:health/100 blue:.15 alpha:1.0];
 }
 
 - (void) setUpMotionManager {
@@ -311,14 +322,14 @@ static bool kAnimate = true;
     [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
         if (geoPoint) {
             [PFUser currentUser][userLocationkey] = geoPoint;
-#warning TURN THIS BACK ON BEFORE SUBMITTING!
-            //            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            //                if (succeeded) {
-            //                    NSLog(@"Initial User location saved to Parse");
-            //                } else {
-            //                    NSLog(@"Error: %@", error);
-            //                }
-            //            }];
+//#warning TURN THIS BACK ON BEFORE SUBMITTING!
+                        [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                            if (succeeded) {
+                                NSLog(@"Initial User location saved to Parse");
+                            } else {
+                                NSLog(@"Error: %@", error);
+                            }
+                        }];
             
         } else NSLog(@"Cannot find user!");
     }];
@@ -605,6 +616,8 @@ static bool kAnimate = true;
             
             NSNumber *healthForTarget = userAtMarker[healthKey];
             double health = [healthForTarget doubleValue];
+            
+            // Runs these methods only if the marker has above 0 health
             if (health > 0 ) {
                 // If the distance less than 35% away
                 if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage * 0.35 ) {
@@ -616,7 +629,7 @@ static bool kAnimate = true;
                     health -= self.projectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.projectile.radiusOfDamage);
                     NSLog(@"did %f%% DAMAGE. Health: %f", self.projectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.projectile.radiusOfDamage), health);
                 }
-                
+                marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
                 // checks if health is below 0, if it is, remove the marker
                 userAtMarker[healthKey] = [NSNumber numberWithDouble:health];
                 if (health <= 0 ) {
@@ -627,9 +640,6 @@ static bool kAnimate = true;
                     //[UserController saveUserToParse:[PFUser currentUser]];
                     
                     //                // increment death for userAtMarker saves to Parse
-                    //                [userAtMarker incrementKey:deathKey];
-                    //                [UserController saveUserToParse:userAtMarker];
-                    
                     
                     [self longestDistanceRecordCheckerFromMarker:marker];
                     [self removeGMSMarker:marker];
