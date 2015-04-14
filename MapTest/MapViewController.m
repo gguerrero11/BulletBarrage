@@ -210,6 +210,7 @@ static bool kAnimate = true;
     
     self.arrayOfCraters = [NSMutableArray new];
     
+    
 }
 
 - (void) createTargets {
@@ -322,14 +323,14 @@ static bool kAnimate = true;
     [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
         if (geoPoint) {
             [PFUser currentUser][userLocationkey] = geoPoint;
-//#warning TURN THIS BACK ON BEFORE SUBMITTING!
-                        [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                            if (succeeded) {
-                                NSLog(@"Initial User location saved to Parse");
-                            } else {
-                                NSLog(@"Error: %@", error);
-                            }
-                        }];
+            //#warning TURN THIS BACK ON BEFORE SUBMITTING!
+            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (succeeded) {
+                    NSLog(@"Initial User location saved to Parse");
+                } else {
+                    NSLog(@"Error: %@", error);
+                }
+            }];
             
         } else NSLog(@"Cannot find user!");
     }];
@@ -547,19 +548,21 @@ static bool kAnimate = true;
 }
 
 - (void) createTimer {
-    CountdownTimerViewController *timer = [[CountdownTimerViewController alloc]initWithSeconds:[self calculateProjectileTravelTime]];
-    NSLog(@"%@", timer);
-    [self addChildViewController:timer];
+    self.timer = [[CountdownTimerViewController alloc]initWithSeconds:[self calculateProjectileTravelTime]];
+    self.timer.view.frame = CGRectMake(0, 0, self.view.frame.size.width, 100);
+    self.timer.view.backgroundColor = [UIColor colorWithWhite:1.0 alpha:.4];
+    NSLog(@"%@", self.timer);
+    [self addChildViewController:self.timer];
     [self.timer didMoveToParentViewController:self];
-    self.timer = timer;
-    [self.view addSubview:timer.view];
+    
+    [self.view addSubview:self.timer.view];
     
 }
 
 - (void) removeTimer {
-
+    
     [self.timer removeFromParentViewController];
-
+    
 }
 
 - (void) fireButtonPressed:(id)sender {
@@ -635,6 +638,7 @@ static bool kAnimate = true;
                 // checks if health is below 0, if it is, remove the marker
                 userAtMarker[healthKey] = [NSNumber numberWithDouble:health];
                 if (health <= 0 ) {
+                    [self createAnimateLabel:@"Target Destroyed!" bigText:NO];
                     NSLog(@"DEAD!");
                     
                     // increment kill for currentUser and saves to Parse
@@ -645,39 +649,59 @@ static bool kAnimate = true;
                     
                     [self longestDistanceRecordCheckerFromMarker:marker];
                     [self removeGMSMarker:marker];
-                } else [self createAnimateHitLabel];
+                } else [self createAnimateLabel:@"HIT!" bigText:YES];
                 // Adds +1 to the "shotsHit" on Parse
                 [[PFUser currentUser] incrementKey:shotsHitKey];
             }
             
-            
-            
         }
-        
     }
 }
 
 
 
-- (void) createAnimateHitLabel {
-    // Create HIT label with animation
-    UILabel *hitLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 40, self.view.frame.size.width, 100)];
+- (void) createAnimateLabel:(NSString *)string bigText:(BOOL)bigText {
+    UILabel *hitLabel = [UILabel new];
     [self.view addSubview:hitLabel];
-    hitLabel.text = @"HIT!";
+    hitLabel.text = string;
     hitLabel.textAlignment = NSTextAlignmentCenter;
     hitLabel.textColor = [UIColor redColor];
-    hitLabel.font = [UIFont boldSystemFontOfSize:50];
     
-    // animates the HIT label
-    CGAffineTransform scaleTransformHIT = CGAffineTransformMakeScale(.94, .94);
-    [UIView animateWithDuration:0.5 animations:^{
-        hitLabel.alpha = 0.0;
-        hitLabel.center = CGPointMake(hitLabel.center.x, hitLabel.center.y - 14);
-        hitLabel.transform = scaleTransformHIT;
+    CGAffineTransform scaleTransform = CGAffineTransformMakeScale(.94, .94);
+    
+    if (bigText == YES) {
         
-    } completion:^(BOOL finished) {
-        [hitLabel removeFromSuperview];
-    }];
+        // Create big Text
+        hitLabel.frame = CGRectMake(0, 40, self.view.frame.size.width, 100);
+        hitLabel.font = [UIFont boldSystemFontOfSize:50];
+
+        // animates the label
+        [UIView animateWithDuration:0.5 animations:^{
+            hitLabel.alpha = 0.0;
+            hitLabel.center = CGPointMake(hitLabel.center.x, hitLabel.center.y - 14);
+            hitLabel.transform = scaleTransform;
+            
+        } completion:^(BOOL finished) {
+            [hitLabel removeFromSuperview];
+        }];
+    } else {
+        
+        // Create smaller Text
+        hitLabel.frame = CGRectMake(0, 120, self.view.frame.size.width, 100);
+        hitLabel.font = [UIFont boldSystemFontOfSize:25];
+        
+        // animates the label
+        [UIView animateWithDuration:2.0 animations:^{
+            hitLabel.alpha = 0.0;
+            hitLabel.center = CGPointMake(hitLabel.center.x, hitLabel.center.y - 14);
+            hitLabel.transform = scaleTransform;
+            
+        } completion:^(BOOL finished) {
+            [hitLabel removeFromSuperview];
+        }];
+        
+        
+    }
 }
 
 - (void) longestDistanceRecordCheckerFromMarker:(GMSMarker *)marker {
@@ -688,24 +712,8 @@ static bool kAnimate = true;
         NSNumber *newDistance = [NSNumber numberWithDouble:marker.distance];
         [PFUser currentUser][longestDistanceKey] = newDistance;
         
-        // Create New Record label with animation
-        UILabel *newRecordLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 120, self.view.frame.size.width, 100)];
-        [self.view addSubview:newRecordLabel];
-        newRecordLabel.text = @"NEW DISTANCE RECORD!";
-        newRecordLabel.textAlignment = NSTextAlignmentCenter;
-        newRecordLabel.textColor = [UIColor redColor];
-        newRecordLabel.font = [UIFont boldSystemFontOfSize:25];
+        [self createAnimateLabel:@"NEW DISTANCE RECORD!" bigText:NO];
         
-        // animates the new record label
-        CGAffineTransform scaleTransformNEWRECORD = CGAffineTransformMakeScale(.94, .94);
-        [UIView animateWithDuration:2.0 animations:^{
-            newRecordLabel.alpha = 0.0;
-            newRecordLabel.center = CGPointMake(newRecordLabel.center.x, newRecordLabel.center.y - 14);
-            newRecordLabel.transform = scaleTransformNEWRECORD;
-            
-        } completion:^(BOOL finished) {
-            [newRecordLabel removeFromSuperview];
-        }];
     }
 }
 

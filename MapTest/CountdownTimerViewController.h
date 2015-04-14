@@ -12,7 +12,8 @@
 
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, retain) UILabel *myCounterLabel;
-@property (nonatomic, assign) int secondsLeft;
+@property (nonatomic, retain) UILabel *timeAdvisoryLabel;
+
 @property (nonatomic, assign) int millisecondsLeft;
 
 - (id) initWithSeconds:(double)seconds;
