@@ -47,4 +47,8 @@ static char soundsInChainKey;
     return distanceOutput;
 }
 
+-(NSString *)distanceString {
+    return [NSString stringWithFormat:@"%.0fm", self.distance];
+}
+
 @end

@@ -43,6 +43,7 @@
             NSLog(@"Users Near Location: %lu",[UserController sharedInstance].arrayOfUsers.count);
             
             [[NSNotificationCenter defaultCenter] postNotificationName:@"queryDone" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"createTargets" object:nil];
         }
     }];
     
@@ -60,7 +61,7 @@
             
             GMSMarker *marker = [GMSMarker new];
             marker.user = user;
-
+            
             marker.position = [UserController convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
             [mArray addObject:marker];
         }
@@ -92,7 +93,7 @@
             //[[PFUser currentUser] saveEventually];
         }
     }];
-
+    
 }
 
 

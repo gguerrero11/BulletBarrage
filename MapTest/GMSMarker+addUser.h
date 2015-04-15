@@ -13,6 +13,7 @@
 
 @property (nonatomic, retain) PFUser *user;
 @property (nonatomic) double distance;
+@property (nonatomic, strong) NSString *distanceString;
 
 
 @end

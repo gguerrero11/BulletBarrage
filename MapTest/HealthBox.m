@@ -37,7 +37,7 @@
 
 - (void) updateHealthData {
     
-    HealthData *currentUserHealthData = [HealthDataController sharedInstance].currentUserHealthData;
+    HealthData *currentUserHealthData = [[HealthDataController sharedInstance] retrieveHealthDataFromUser:[PFUser currentUser]];
     NSNumber *healthNumber = currentUserHealthData[healthKey];
     
     // Set up health Label Data

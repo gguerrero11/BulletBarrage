@@ -14,7 +14,7 @@
 
 @property (nonatomic,strong) NSArray *arrayOfHealthData;
 @property (nonatomic,strong) NSNumber *healthNumber;
-@property (nonatomic,strong) HealthData *currentUserHealthData;
+
 
 
 + (HealthDataController *) sharedInstance;
