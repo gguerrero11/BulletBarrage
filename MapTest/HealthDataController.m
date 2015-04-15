@@ -23,7 +23,7 @@
 + (void) saveHealthData:(HealthData *)healthData {
     [healthData saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
-            NSLog(@"User Saved");
+            NSLog(@"Health Data Saved");
         } else {
             NSLog(@"%@", error);
             [healthData saveEventually];
@@ -55,7 +55,7 @@
     return dataToReturn;
 }
 
-- (HealthData *)retrieveUserHealthFromUser:(PFUser *)user {
+- (HealthData *)retrieveHealthDataFromUser:(PFUser *)user {
     HealthData *dataToReturn = [HealthData new];
     for (HealthData *data in [HealthDataController sharedInstance].arrayOfHealthData) {
         PFUser *userAtData = data[userKey];

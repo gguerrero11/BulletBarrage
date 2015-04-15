@@ -23,7 +23,7 @@
 
 + (void) retrieveArrayOfHealthForUsers;
 
-- (HealthData *)retrieveUserHealthFromUser:(PFUser *)user;
+- (HealthData *)retrieveHealthDataFromUser:(PFUser *)user;
 
 
 

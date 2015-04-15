@@ -200,17 +200,15 @@ static bool kAnimate = true;
     NSLog(@"User dismissed the signUpViewController");
 }
 
-
-
 - (void) registerForNotifications {
+ 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createTargets) name:@"queryDone" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeTimer) name:@"queryDone" object:nil];
-
 }
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-
+    
     
     [self registerForNotifications];
     
@@ -226,7 +224,7 @@ static bool kAnimate = true;
     [self setUpDataViewFireButton];
     [self setUpPOVButton];
     
-
+    
     self.healthBox = [[HealthBox alloc]initWithFrame:CGRectMake(0, 0, 100, 70)];
     [self.view addSubview:self.healthBox];
     
@@ -241,10 +239,6 @@ static bool kAnimate = true;
     
     for (PFUser *user in [UserController sharedInstance].arrayOfUsers) {
         
-        HealthData *userHealthData = [[HealthDataController sharedInstance] retrieveUserHealthFromUser:user];
-        NSNumber *healthForTarget = userHealthData[healthKey];
-        double health = [healthForTarget doubleValue];
-        
         // will exclude the currentUser in the array
         // NOTE: must use isEqualToString (string), or else it will compare pointers than the actual objectId!
         if (![user.objectId isEqualToString:[PFUser currentUser].objectId]) {
@@ -253,14 +247,28 @@ static bool kAnimate = true;
             marker.user = user;
             marker.map = self.gmMapView;
             marker.position = [UserController convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
-            
-            //Set color of marker according to health
-            marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
+            marker.icon = [GMSMarker markerImageWithColor:[UIColor blueColor]];
             
             [self.mArrayMarkersForMap addObject:marker];
         }
     }
 }
+
+- (void) updateHealthOfMarkers {
+    
+    for (PFUser *user in [UserController sharedInstance].arrayOfUsers) {
+        
+        HealthData *userHealthData = [[HealthDataController sharedInstance] retrieveHealthDataFromUser:user];
+        NSNumber *healthForTarget = userHealthData[healthKey];
+        double health = [healthForTarget doubleValue];
+        
+        for (GMSMarker *marker in self.mArrayMarkersForMap) {
+            //Set color of marker according to health
+            marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
+        }
+    }
+}
+
 
 - (UIColor *) changeColorForHealth:(double)health {
     return [UIColor colorWithRed:(100 - health)/100 green:health/100 blue:.15 alpha:1.0];
@@ -343,20 +351,20 @@ static bool kAnimate = true;
     }
     
     // Saves location to Parse
-//    [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
-//        if (geoPoint) {
-//            [PFUser currentUser][userLocationkey] = geoPoint;
-//            //#warning TURN THIS BACK ON BEFORE SUBMITTING!
-//            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-//                if (succeeded) {
-//                    NSLog(@"Initial User location saved to Parse");
-//                } else {
-//                    NSLog(@"Error: %@", error);
-//                }
-//            }];
-//            
-//        } else NSLog(@"Cannot find user!");
-//    }];
+    //    [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
+    //        if (geoPoint) {
+    //            [PFUser currentUser][userLocationkey] = geoPoint;
+    //            //#warning TURN THIS BACK ON BEFORE SUBMITTING!
+    //            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+    //                if (succeeded) {
+    //                    NSLog(@"Initial User location saved to Parse");
+    //                } else {
+    //                    NSLog(@"Error: %@", error);
+    //                }
+    //            }];
+    //
+    //        } else NSLog(@"Cannot find user!");
+    //    }];
     
     
     self.myLocation = self.locationManager.location;
@@ -637,6 +645,7 @@ static bool kAnimate = true;
     for (GMSMarker *marker in self.mArrayMarkersForMap) {
         
         PFUser *userAtMarker = marker.user;
+        HealthData *healthDataUserAtMarker = [[HealthDataController sharedInstance] retrieveHealthDataFromUser:userAtMarker];
         
         CLLocationCoordinate2D positionOfMarker = marker.position;
         CLLocation *locationOfMarker = [[CLLocation alloc]initWithCoordinate:positionOfMarker altitude:0 horizontalAccuracy:0 verticalAccuracy:0 timestamp:[NSDate date]];
@@ -647,17 +656,24 @@ static bool kAnimate = true;
             
             // Runs these methods only if the marker has above 0 health
             if (health > 0 ) {
+                
                 // If the distance less than 35% away
                 if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage * 0.35 ) {
+                    
                     // do full damage
                     health -= self.projectile.damage;
                     NSLog(@"FULL DAMAGE. Health: %f", health);
+                    
+                    
                 } else {
+                    
                     // otherwise do damage relative to is distance
                     health -= self.projectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.projectile.radiusOfDamage);
                     NSLog(@"did %f%% DAMAGE. Health: %f", self.projectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.projectile.radiusOfDamage), health);
                 }
+                
                 marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
+                
                 // checks if health is below 0, if it is, remove the marker
                 userAtMarker[healthKey] = [NSNumber numberWithDouble:health];
                 if (health <= 0 ) {
@@ -668,7 +684,9 @@ static bool kAnimate = true;
                     [[PFUser currentUser] incrementKey:killKey];
                     //[UserController saveUserToParse:[PFUser currentUser]];
                     
-                    //                // increment death for userAtMarker saves to Parse
+                    // increment death for userAtMarker saves to Parse
+                    [healthDataUserAtMarker incrementKey:deathKey];
+                    [HealthDataController saveHealthData:healthDataUserAtMarker];
                     
                     [self longestDistanceRecordCheckerFromMarker:marker];
                     [self removeGMSMarker:marker];
@@ -697,7 +715,7 @@ static bool kAnimate = true;
         // Create big Text
         hitLabel.frame = CGRectMake(0, 40, self.view.frame.size.width, 100);
         hitLabel.font = [UIFont boldSystemFontOfSize:50];
-
+        
         // animates the label
         [UIView animateWithDuration:0.5 animations:^{
             hitLabel.alpha = 0.0;
