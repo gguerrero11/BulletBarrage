@@ -677,7 +677,7 @@ static bool kAnimate = true;
     GMSCoordinateBounds *overlayBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:southWest
                                                                               coordinate:northEast];
     GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds
-                                                                           icon:[UIImage imageNamed:@"rubble"]];
+                                                                           icon:[UIImage imageNamed:type]];
     groundOverlay.map = self.gmMapView;
     
     if (disappear == YES) [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
