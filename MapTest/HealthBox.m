@@ -47,7 +47,7 @@
     NSNumber *healthNumber = self.currentUserHealthData[healthKey];
 
     // Set up health Label Data
-    self.healthOfUserLabel.text = [NSString stringWithFormat:@"%lu", [healthNumber integerValue]];
+    self.healthOfUserLabel.text = [NSString stringWithFormat:@"%lu", (long)[healthNumber integerValue]];
 }
 
 /*

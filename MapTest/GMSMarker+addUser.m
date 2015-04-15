@@ -15,6 +15,7 @@ static char soundsInChainKey;
 @implementation GMSMarker (addUser)
 
 @dynamic distance;
+@dynamic distanceString;
 
 //+ (GMSMarker *)addUser:(PFUser *)user {
 //    GMSMarker *marker = [GMSMarker new];

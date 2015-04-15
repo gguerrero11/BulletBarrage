@@ -278,17 +278,18 @@ static bool kAnimate = true;
         double health = [healthForTarget doubleValue];
         //NSLog(@"%f", health);
         
-        // If that marker's health is below 0 it hides it.
-        if (health <= 0) {
-            [self createGMSOverlayAtCoordinate:marker.position type:rubble disappear:NO];
-            marker.icon = [UIImage imageNamed:@"smoke"];
-            }
-        
         //Set color of marker according to health for non-currentUser targets
         if (![[PFUser currentUser].objectId isEqualToString:marker.user.objectId]) {
-            
-            marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
-        
+            if (health > 0) {
+                
+                marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
+                
+            } else {
+                
+                // If that marker's health is below 0 it hides it.
+                [self createGMSOverlayAtCoordinate:marker.position type:rubble disappear:NO];
+                marker.icon = [UIImage imageNamed:@"smoke"];
+            }
         } else {
             
             if (health <= 0) {
@@ -296,6 +297,8 @@ static bool kAnimate = true;
                 UIAlertView *deadAlert = [[UIAlertView alloc]initWithTitle:@"You have been destroyed!" message:@"Well, looks like you're dead. Hopefully it's not because you aimed horribly." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:@"Who got me!?", nil];
                 [deadAlert show];
                 self.respawnButton.hidden = NO;
+                self.fireButton.backgroundColor = [UIColor grayColor];
+                self.fireButton.userInteractionEnabled = NO;
             }
         }
     }
@@ -391,28 +394,28 @@ static bool kAnimate = true;
     // Start heading updates.
     if([CLLocationManager headingAvailable] == YES){
         NSLog(@"Heading is available");
-        self.locationManager.headingFilter = 3;
+        self.locationManager.headingFilter = 4;
         [self.locationManager startUpdatingHeading];
     } else {
         NSLog(@"Heading isn’t available");
     }
     
     // Saves location to Parse
-//        [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
-//            if (geoPoint) {
-//                [PFUser currentUser][userLocationkey] = geoPoint;
-//                //#warning TURN THIS BACK ON BEFORE SUBMITTING!
-//                [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-//                    if (succeeded) {
-//                        NSLog(@"Initial User location saved to Parse");
-//                    } else {
-//                        NSLog(@"Error: %@", error);
-//                    }
-//                }];
-//    
-//            } else NSLog(@"Cannot find user!");
-//        }];
-//    
+        [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
+            if (geoPoint) {
+                [PFUser currentUser][userLocationkey] = geoPoint;
+                //#warning TURN THIS BACK ON BEFORE SUBMITTING!
+                [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                    if (succeeded) {
+                        NSLog(@"Initial User location saved to Parse");
+                    } else {
+                        NSLog(@"Error: %@", error);
+                    }
+                }];
+    
+            } else NSLog(@"Cannot find user!");
+        }];
+    
     
     self.myLocation = self.locationManager.location;
 }
@@ -459,6 +462,7 @@ static bool kAnimate = true;
     self.fireButton.backgroundColor = [UIColor redColor];
     [self.fireButton setTitle:@"Fire!" forState:UIControlStateNormal];
     [self.fireButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.fireButton setTitleColor:[UIColor blackColor] forState:UIControlStateDisabled];
     [self.fireButton addTarget:self action:@selector(fireButtonPressed:) forControlEvents:UIControlEventTouchDown];
     [self.view addSubview:self.fireButton];
     
@@ -480,6 +484,8 @@ static bool kAnimate = true;
     self.currentUserHealthData[healthKey] = @100;
     [HealthDataController saveHealthData:self.currentUserHealthData];
     self.respawnButton.hidden = YES;
+    self.fireButton.backgroundColor = [UIColor redColor];
+    self.fireButton.userInteractionEnabled = YES;
 }
 
 - (BOOL) mapView:(GMSMarker *)mapView didTapMarker:(GMSMarker *)marker {
@@ -944,8 +950,8 @@ static bool kAnimate = true;
     //[gmMapView animateToViewingAngle:45];
     
     // Use the true heading if it is valid.
-    CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
-                                       newHeading.trueHeading : newHeading.magneticHeading);
+//    CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
+//                                       newHeading.trueHeading : newHeading.magneticHeading);
     //    self.cameraSKHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, gmMapView.camera.bearing * (M_PI / 180));
     
 }
