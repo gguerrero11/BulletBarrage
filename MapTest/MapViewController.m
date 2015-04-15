@@ -46,7 +46,8 @@
 
 //static const NSInteger handicap = 1;
 static const NSInteger gravityStatic = 9.8;
-
+static NSString * const craterBigSquare = @"craterBigSquare";
+static NSString * const rubble = @"rubble";
 
 // Polyline Static
 static bool kAnimate = true;
@@ -280,7 +281,7 @@ static bool kAnimate = true;
         
         //Set color of marker according to health
         if (![[PFUser currentUser].objectId isEqualToString:marker.user.objectId]) marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
-        else marker.icon = [GMSMarker markerImageWithColor:[UIColor orangeColor]];
+        else marker.icon = [GMSMarker markerImageWithColor:[UIColor grayColor]];
         
     }
 }
@@ -290,17 +291,19 @@ static bool kAnimate = true;
     double redColor = 0.0;
         double greenColor = 1.0;
     
-    if (health > 50) {
+    if (health >= 50) {
         redColor = (100 - health) / 50 ;
     } else redColor = 0.0;
     
-    if (health < 50) {
+    if (health <= 50) {
         greenColor = (health * 2) /100;
     }
     
     NSLog(@"Colors %f, %f" ,redColor, greenColor);
     
-    return [UIColor colorWithRed:redColor green:greenColor blue:.15 alpha:1.0];
+    
+
+    return [UIColor colorWithRed:redColor green:greenColor blue:0 alpha:1.0];
 }
 
 - (void) setUpMotionManager {
@@ -652,11 +655,8 @@ static bool kAnimate = true;
     
 }
 
-- (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
-    
-    // Play bombExplosion sound
-    [[SoundController sharedInstance] playSoundEffect:bombExplosion];
-    
+
+- (void) createGMSOverlayAtLocation:(CLLocation *)hitLocation type:(NSString *)type disappear:(BOOL)disappear {
     // Create crater coordinates
     // Sets coordinates for the opposite side corners for the overlay (crater)
     CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(hitLocation.coordinate.latitude + self.projectile.sizeOfCrater / 111111.0, hitLocation.coordinate.longitude + self.projectile.sizeOfCrater /111111.0);
@@ -665,10 +665,29 @@ static bool kAnimate = true;
     GMSCoordinateBounds *overlayBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:southWest
                                                                               coordinate:northEast];
     GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds
-                                                                           icon:[UIImage imageNamed:@"craterBigSquare"]];
+                                                                           icon:[UIImage imageNamed:type]];
     groundOverlay.map = self.gmMapView;
     
-    [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
+    if (disappear == YES) [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
+
+}
+
+- (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
+    
+    // Play bombExplosion sound
+    [[SoundController sharedInstance] playSoundEffect:bombExplosion];
+    
+    // play explosion gif
+    GMSMarker *explosion = [GMSMarker new];
+    explosion.map = self.gmMapView;
+    explosion.position = hitLocation.coordinate;
+    explosion.icon = [UIImage animatedImageNamed:@"explosion-" duration:0.7f];
+    [self performSelector:@selector(removeGMSMarker:) withObject:explosion afterDelay:0.7 ];
+
+    // create crater overlay
+    [self createGMSOverlayAtLocation:hitLocation type:rubble disappear:NO];
+    [self createGMSOverlayAtLocation:hitLocation type:craterBigSquare disappear:YES];
+
     
     // Goes through each marker in the array and checks if that marker's position is within the radius of the weapon damage (meters) of the hitlocation
     for (GMSMarker *marker in self.mArrayMarkersForMap) {
@@ -702,8 +721,9 @@ static bool kAnimate = true;
                 
                 marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
                 
+                // ensures health never goes below 0
                 if (health < 0) health = 0;
-                 NSLog(@"health before NSNumber %d", health);
+                
                 // checks if health is below 0, if it is, remove the marker
                 healthDataUserAtMarker[healthKey] = [NSNumber numberWithUnsignedInteger:health];
                 [HealthDataController saveHealthData:healthDataUserAtMarker];

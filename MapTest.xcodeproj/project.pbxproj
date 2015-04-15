@@ -399,13 +399,21 @@
 			isa = PBXGroup;
 			children = (
 				49B9DBC51ACDD519003EA46E /* Main.storyboard */,
-				49C3A5D21ADC3DC1007C8309 /* bombExplosion.caf */,
-				49C3A5D31ADC3DC1007C8309 /* missleImpact.caf */,
-				49C3A5D01ADC35D6007C8309 /* cannon.caf */,
+				49DF85121ADEEB9100080987 /* Sounds */,
 				49B9DBC81ACDD519003EA46E /* Images.xcassets */,
 				49B9DBCA1ACDD519003EA46E /* LaunchScreen.xib */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		49DF85121ADEEB9100080987 /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				49C3A5D21ADC3DC1007C8309 /* bombExplosion.caf */,
+				49C3A5D31ADC3DC1007C8309 /* missleImpact.caf */,
+				49C3A5D01ADC35D6007C8309 /* cannon.caf */,
+			);
+			name = Sounds;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -457,6 +465,7 @@
 				TargetAttributes = {
 					49B9DBB71ACDD518003EA46E = {
 						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = K75493KQVP;
 					};
 					49B9DBD01ACDD519003EA46E = {
 						CreatedOnToolsVersion = 6.2;
@@ -660,6 +669,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/MapTest",
@@ -675,6 +685,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/MapTest",
