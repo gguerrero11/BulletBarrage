@@ -21,7 +21,5 @@
 
 - (id)initWithUser:(PFUser *) user;
 
-- (void) removePin;
-
 
 @end

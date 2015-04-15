@@ -64,6 +64,9 @@
 		49C3A5D41ADC3DC1007C8309 /* bombExplosion.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49C3A5D21ADC3DC1007C8309 /* bombExplosion.caf */; };
 		49C3A5D51ADC3DC1007C8309 /* missleImpact.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49C3A5D31ADC3DC1007C8309 /* missleImpact.caf */; };
 		49C3A5DB1ADC4ADC007C8309 /* GMSMarker+addUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C3A5DA1ADC4ADC007C8309 /* GMSMarker+addUser.m */; };
+		49C3A5DE1ADDA7C8007C8309 /* HealthData.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C3A5DD1ADDA7C8007C8309 /* HealthData.m */; };
+		49C3A5E21ADDAF4A007C8309 /* HealthDataController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C3A5E11ADDAF4A007C8309 /* HealthDataController.m */; };
+		49C3A5E51ADDBE92007C8309 /* HealthBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C3A5E41ADDBE92007C8309 /* HealthBox.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -161,6 +164,12 @@
 		49C3A5D31ADC3DC1007C8309 /* missleImpact.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = missleImpact.caf; sourceTree = "<group>"; };
 		49C3A5D91ADC4ADC007C8309 /* GMSMarker+addUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GMSMarker+addUser.h"; sourceTree = "<group>"; };
 		49C3A5DA1ADC4ADC007C8309 /* GMSMarker+addUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GMSMarker+addUser.m"; sourceTree = "<group>"; };
+		49C3A5DC1ADDA7C8007C8309 /* HealthData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HealthData.h; sourceTree = "<group>"; };
+		49C3A5DD1ADDA7C8007C8309 /* HealthData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HealthData.m; sourceTree = "<group>"; };
+		49C3A5E01ADDAF4A007C8309 /* HealthDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HealthDataController.h; sourceTree = "<group>"; };
+		49C3A5E11ADDAF4A007C8309 /* HealthDataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HealthDataController.m; sourceTree = "<group>"; };
+		49C3A5E31ADDBE92007C8309 /* HealthBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HealthBox.h; sourceTree = "<group>"; };
+		49C3A5E41ADDBE92007C8309 /* HealthBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HealthBox.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -297,12 +306,7 @@
 				49B9DC3C1ACF37BB003EA46E /* MapView */,
 				49B9DC3D1ACF37C6003EA46E /* LeaderBoard */,
 				49B9DC3E1ACF37D1003EA46E /* Profile */,
-				49B9DBC51ACDD519003EA46E /* Main.storyboard */,
-				49C3A5D21ADC3DC1007C8309 /* bombExplosion.caf */,
-				49C3A5D31ADC3DC1007C8309 /* missleImpact.caf */,
-				49C3A5D01ADC35D6007C8309 /* cannon.caf */,
-				49B9DBC81ACDD519003EA46E /* Images.xcassets */,
-				49B9DBCA1ACDD519003EA46E /* LaunchScreen.xib */,
+				49C3A5DF1ADDA829007C8309 /* Resources */,
 				49B9DBBB1ACDD519003EA46E /* Supporting Files */,
 			);
 			path = MapTest;
@@ -339,6 +343,8 @@
 			children = (
 				49B9DBE91ACDDB2A003EA46E /* MapViewController.h */,
 				49B9DBEA1ACDDB2A003EA46E /* MapViewController.m */,
+				49C3A5E31ADDBE92007C8309 /* HealthBox.h */,
+				49C3A5E41ADDBE92007C8309 /* HealthBox.m */,
 				4996BA6E1AD88F04002D5663 /* HitChecker.h */,
 				4996BA6F1AD88F05002D5663 /* HitChecker.m */,
 				4996BA6B1AD82F68002D5663 /* GMSMarkerWithUser.h */,
@@ -371,6 +377,10 @@
 		49B9DC3E1ACF37D1003EA46E /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				49C3A5DC1ADDA7C8007C8309 /* HealthData.h */,
+				49C3A5DD1ADDA7C8007C8309 /* HealthData.m */,
+				49C3A5E01ADDAF4A007C8309 /* HealthDataController.h */,
+				49C3A5E11ADDAF4A007C8309 /* HealthDataController.m */,
 				49B9DC391ACF2D94003EA46E /* ProfileviewControllerViewController.h */,
 				49B9DC3A1ACF2D94003EA46E /* ProfileviewControllerViewController.m */,
 				49B9DC3F1ACF394E003EA46E /* ProfileViewDataSource.h */,
@@ -383,6 +393,19 @@
 				49B9DC431ACF4952003EA46E /* ProfileTableViewCell.m */,
 			);
 			name = Profile;
+			sourceTree = "<group>";
+		};
+		49C3A5DF1ADDA829007C8309 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				49B9DBC51ACDD519003EA46E /* Main.storyboard */,
+				49C3A5D21ADC3DC1007C8309 /* bombExplosion.caf */,
+				49C3A5D31ADC3DC1007C8309 /* missleImpact.caf */,
+				49C3A5D01ADC35D6007C8309 /* cannon.caf */,
+				49B9DBC81ACDD519003EA46E /* Images.xcassets */,
+				49B9DBCA1ACDD519003EA46E /* LaunchScreen.xib */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -494,9 +517,11 @@
 				49835E141AD34F400058917B /* LeaderboardCellTableViewCell.m in Sources */,
 				49603D6D1AD1022300AB3E50 /* CustomSignUpViewController.m in Sources */,
 				49B9DBEB1ACDDB2A003EA46E /* MapViewController.m in Sources */,
+				49C3A5E21ADDAF4A007C8309 /* HealthDataController.m in Sources */,
 				49603D671AD0B87200AB3E50 /* AvatarTableViewCell.m in Sources */,
 				49B9DC411ACF394E003EA46E /* ProfileViewDataSource.m in Sources */,
 				49B9DC3B1ACF2D94003EA46E /* ProfileviewControllerViewController.m in Sources */,
+				49C3A5E51ADDBE92007C8309 /* HealthBox.m in Sources */,
 				49B9DC321ACF2A9A003EA46E /* LeaderboardViewController.m in Sources */,
 				49B9DC381ACF2BEA003EA46E /* LeaderboardDataSource.m in Sources */,
 				49603D641AD0B84700AB3E50 /* WeaponsTableViewCell.m in Sources */,
@@ -512,6 +537,7 @@
 				493583DF1AD5B173007A46EC /* WeaponController.m in Sources */,
 				4996BA6D1AD82F68002D5663 /* GMSMarkerWithUser.m in Sources */,
 				49B9DBBE1ACDD519003EA46E /* main.m in Sources */,
+				49C3A5DE1ADDA7C8007C8309 /* HealthData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

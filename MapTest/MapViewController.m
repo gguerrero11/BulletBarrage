@@ -20,6 +20,9 @@
 #import "GMSMarkerWithUser.h"
 #import "SoundController.h"
 #import "GMSMarker+addUser.h"
+#import "HealthData.h"
+#import "HealthDataController.h"
+#import "HealthBox.h"
 
 @import SceneKit;
 
@@ -68,6 +71,7 @@ static bool kAnimate = true;
 @property (nonatomic, strong) UIButton *zoomButton;
 @property (nonatomic, strong) MKPolyline *polyline;
 @property (nonatomic, strong) UILabel *pitchLabelData;
+@property (nonatomic, strong) HealthBox *healthBox;
 
 // SceneKit Properties
 @property (nonatomic, strong) SCNView *sceneView;
@@ -88,6 +92,7 @@ static bool kAnimate = true;
 @property (nonatomic, strong) NSMutableArray *mArrayMarkersForMap;
 
 @property (nonatomic, strong) Weapon *projectile;
+@property (nonatomic, strong) HealthData *currentUserHealthData;
 
 // CMDevice motion
 @property (nonatomic, strong) CMAttitude *attitude;
@@ -174,6 +179,13 @@ static bool kAnimate = true;
     [PFUser currentUser][shotsHitKey] = [NSNumber numberWithDouble:0.0];
     [PFUser currentUser][longestDistanceKey] = [NSNumber numberWithDouble:0.0];
     [PFUser currentUser][weaponSelectedKey] = cannon;
+    [UserController saveUserToParse:[PFUser currentUser]];
+    
+    
+    self.currentUserHealthData = [HealthData object];
+    self.currentUserHealthData[healthKey] = @100;
+    self.currentUserHealthData[userKey] = [PFUser currentUser];
+    [HealthDataController saveHealthData:self.currentUserHealthData];
     
     [self dismissViewControllerAnimated:YES completion:nil]; // Dismiss the PFSignUpViewController
 }
@@ -199,16 +211,27 @@ static bool kAnimate = true;
     [super viewDidLoad];
     
     [self registerForNotifications];
+    
     [[UserController sharedInstance] setWeaponForUser:cannon];
     [self setUpMotionManager];
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
+    
     [UserController queryUsersNearCurrentUser:self.locationManager.location.coordinate withinMileRadius:10];
+    [HealthDataController retrieveHealthForUsers];
+    
     [self setupSceneKitView];
     [self setUpDataViewFireButton];
     [self setUpPOVButton];
     
+    
+    self.healthBox = [[HealthBox alloc]initWithFrame:CGRectMake(0, 0, 100, 70)  healthData:self.currentUserHealthData];
+    [self.view addSubview:self.healthBox];
+    
     self.arrayOfCraters = [NSMutableArray new];
+    
+    
+    
     
     
 }
@@ -320,20 +343,20 @@ static bool kAnimate = true;
     }
     
     // Saves location to Parse
-    [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
-        if (geoPoint) {
-            [PFUser currentUser][userLocationkey] = geoPoint;
-            //#warning TURN THIS BACK ON BEFORE SUBMITTING!
-            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                if (succeeded) {
-                    NSLog(@"Initial User location saved to Parse");
-                } else {
-                    NSLog(@"Error: %@", error);
-                }
-            }];
-            
-        } else NSLog(@"Cannot find user!");
-    }];
+//    [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
+//        if (geoPoint) {
+//            [PFUser currentUser][userLocationkey] = geoPoint;
+//            //#warning TURN THIS BACK ON BEFORE SUBMITTING!
+//            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+//                if (succeeded) {
+//                    NSLog(@"Initial User location saved to Parse");
+//                } else {
+//                    NSLog(@"Error: %@", error);
+//                }
+//            }];
+//            
+//        } else NSLog(@"Cannot find user!");
+//    }];
     
     
     self.myLocation = self.locationManager.location;
@@ -567,7 +590,7 @@ static bool kAnimate = true;
 
 - (void) fireButtonPressed:(id)sender {
     
-    [self createTimer];
+    //[self createTimer];
     
     [[SoundController sharedInstance] playSoundEffect:cannon];
     //NSURL *urlForCannon = [[NSBundle mainBundle] URLForResource:cannon withExtension:@"caf"];
@@ -638,7 +661,7 @@ static bool kAnimate = true;
                 // checks if health is below 0, if it is, remove the marker
                 userAtMarker[healthKey] = [NSNumber numberWithDouble:health];
                 if (health <= 0 ) {
-                    [self createAnimateLabel:@"Target Destroyed!" bigText:NO];
+                    [self createAnimateLabel:@"TARGET DESTROYED!" bigText:NO];
                     NSLog(@"DEAD!");
                     
                     // increment kill for currentUser and saves to Parse
