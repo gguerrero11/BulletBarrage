@@ -273,15 +273,19 @@ static bool kAnimate = true;
         //NSLog(@"%f", health);
         
         // If that marker's health is below 0 it hides it.
-//        if (health < 0) {
-//            marker.map = nil;
-//            NSLog(@"%@", userHealthData[healthKey]);
-//            marker.snippet = [NSString stringWithFormat:@"%@", userHealthData[healthKey]];
-//        }
+        if (health <= 0) {
+            [self createGMSOverlayAtCoordinate:marker.position type:rubble disappear:NO];
+            marker.map = nil;
+            NSLog(@"%@", userHealthData[healthKey]);
+            marker.snippet = [NSString stringWithFormat:@"%@", userHealthData[healthKey]];
+        }
         
-        //Set color of marker according to health
+        //Set color of marker according to health for non-currentUser targets
         if (![[PFUser currentUser].objectId isEqualToString:marker.user.objectId]) marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
-        else marker.icon = [GMSMarker markerImageWithColor:[UIColor grayColor]];
+        else {
+            marker.icon = [GMSMarker markerImageWithColor:[UIColor grayColor]];
+            
+        }
         
     }
 }
@@ -656,16 +660,24 @@ static bool kAnimate = true;
 }
 
 
-- (void) createGMSOverlayAtLocation:(CLLocation *)hitLocation type:(NSString *)type disappear:(BOOL)disappear {
-    // Create crater coordinates
+- (void) createGMSOverlayAtCoordinate:(CLLocationCoordinate2D )hitLocation type:(NSString *)type disappear:(BOOL)disappear {
+
+    // the distance of the coordinate for the overlay (the corners). This determines the size of the overlay;
+    NSInteger overlayOffset;
+    
+    // checks if its rubble type, if not, the size of the crater according to the weapon is the offset.
+    if (type != rubble) overlayOffset = self.projectile.sizeOfCrater;
+    else overlayOffset = 100;
+    
+    // Create crater coordinates if its not "rubble" type
     // Sets coordinates for the opposite side corners for the overlay (crater)
-    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(hitLocation.coordinate.latitude + self.projectile.sizeOfCrater / 111111.0, hitLocation.coordinate.longitude + self.projectile.sizeOfCrater /111111.0);
-    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(hitLocation.coordinate.latitude - self.projectile.sizeOfCrater /111111.0, hitLocation.coordinate.longitude - self.projectile.sizeOfCrater /111111.0);
+    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(hitLocation.latitude + overlayOffset / 111111.0, hitLocation.longitude + overlayOffset /111111.0);
+    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(hitLocation.latitude - overlayOffset /111111.0, hitLocation.longitude - overlayOffset /111111.0);
     
     GMSCoordinateBounds *overlayBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:southWest
                                                                               coordinate:northEast];
     GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds
-                                                                           icon:[UIImage imageNamed:type]];
+                                                                           icon:[UIImage imageNamed:@"rubble"]];
     groundOverlay.map = self.gmMapView;
     
     if (disappear == YES) [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
@@ -685,10 +697,8 @@ static bool kAnimate = true;
     [self performSelector:@selector(removeGMSMarker:) withObject:explosion afterDelay:0.7 ];
 
     // create crater overlay
-    [self createGMSOverlayAtLocation:hitLocation type:rubble disappear:NO];
-    [self createGMSOverlayAtLocation:hitLocation type:craterBigSquare disappear:YES];
+    [self createGMSOverlayAtCoordinate:hitLocation.coordinate type:craterBigSquare disappear:YES];
 
-    
     // Goes through each marker in the array and checks if that marker's position is within the radius of the weapon damage (meters) of the hitlocation
     for (GMSMarker *marker in self.mArrayMarkersForMap) {
         
@@ -731,6 +741,7 @@ static bool kAnimate = true;
                 if (health <= 0 ) {
                     [self createAnimateLabel:@"TARGET DESTROYED!" bigText:NO];
                     NSLog(@"DEAD!");
+                    [self createGMSOverlayAtCoordinate:hitLocation.coordinate type:rubble disappear:NO];
                     
                     // increment kill for currentUser and saves to Parse
                     [[PFUser currentUser] incrementKey:killKey];
