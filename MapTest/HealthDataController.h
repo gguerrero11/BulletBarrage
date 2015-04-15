@@ -14,13 +14,18 @@
 
 @property (nonatomic,strong) NSArray *arrayOfHealthData;
 @property (nonatomic,strong) NSNumber *healthNumber;
+@property (nonatomic,strong) HealthData *currentUserHealthData;
 
 
 + (HealthDataController *) sharedInstance;
 
 + (void) saveHealthData:(HealthData *)healthData ;
 
-+ (void) retrieveHealthForUsers;
++ (void) retrieveArrayOfHealthForUsers;
+
+- (HealthData *)retrieveUserHealthFromUser:(PFUser *)user;
+
+
 
 
 

@@ -12,8 +12,9 @@
 @interface HealthBox : UIView
 
 @property (nonatomic,strong) HealthData *healthData;
+@property (nonatomic,strong) NSNumber *health;
 
-- (instancetype)initWithFrame:(CGRect)frame healthData:(HealthData *)healthData;
+- (instancetype)initWithFrame:(CGRect)frame;
 
 @end
 

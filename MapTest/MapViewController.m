@@ -131,6 +131,7 @@ static bool kAnimate = true;
 // Sent to the delegate when a PFUser is logged in.
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
     [self dismissViewControllerAnimated:YES completion:NULL];
+    
 }
 
 // Sent to the delegate when the log in attempt fails.
@@ -181,7 +182,6 @@ static bool kAnimate = true;
     [PFUser currentUser][weaponSelectedKey] = cannon;
     [UserController saveUserToParse:[PFUser currentUser]];
     
-    
     self.currentUserHealthData = [HealthData object];
     self.currentUserHealthData[healthKey] = @100;
     self.currentUserHealthData[userKey] = [PFUser currentUser];
@@ -205,10 +205,12 @@ static bool kAnimate = true;
 - (void) registerForNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createTargets) name:@"queryDone" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeTimer) name:@"queryDone" object:nil];
+
 }
 
 - (void) viewDidLoad {
     [super viewDidLoad];
+
     
     [self registerForNotifications];
     
@@ -218,20 +220,17 @@ static bool kAnimate = true;
     [self showMainMapView];
     
     [UserController queryUsersNearCurrentUser:self.locationManager.location.coordinate withinMileRadius:10];
-    [HealthDataController retrieveHealthForUsers];
+    [HealthDataController retrieveArrayOfHealthForUsers];
     
     [self setupSceneKitView];
     [self setUpDataViewFireButton];
     [self setUpPOVButton];
     
-    
-    self.healthBox = [[HealthBox alloc]initWithFrame:CGRectMake(0, 0, 100, 70)  healthData:self.currentUserHealthData];
+
+    self.healthBox = [[HealthBox alloc]initWithFrame:CGRectMake(0, 0, 100, 70)];
     [self.view addSubview:self.healthBox];
     
     self.arrayOfCraters = [NSMutableArray new];
-    
-    
-    
     
     
 }
@@ -242,7 +241,8 @@ static bool kAnimate = true;
     
     for (PFUser *user in [UserController sharedInstance].arrayOfUsers) {
         
-        NSNumber *healthForTarget = user[healthKey];
+        HealthData *userHealthData = [[HealthDataController sharedInstance] retrieveUserHealthFromUser:user];
+        NSNumber *healthForTarget = userHealthData[healthKey];
         double health = [healthForTarget doubleValue];
         
         // will exclude the currentUser in the array

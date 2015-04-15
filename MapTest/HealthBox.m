@@ -11,28 +11,44 @@
 
 @implementation HealthBox
 
-- (instancetype)initWithFrame:(CGRect)frame healthData:(HealthData *)healthData {
+- (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     
     if (self) {
+        
+        [self registerForNotifications];
+        
         self.backgroundColor = [UIColor redColor];
         
-        // Set up Pitch Label
-        UILabel *health = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 30)];
-        health.textAlignment = NSTextAlignmentCenter;
-        health.text = @"Health";
-        health.textColor = [UIColor whiteColor];
-        [self addSubview:health];
+        // Set up health Label
+        UILabel *healthLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 30)];
+        healthLabel.textAlignment = NSTextAlignmentCenter;
+        healthLabel.text = @"Health";
+        healthLabel.textColor = [UIColor whiteColor];
+        [self addSubview:healthLabel];
         
-        // Set up Pitch Label Data
-        UILabel *healthOfUser = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, self.frame.size.width, 50)];
-        healthOfUser.textAlignment = NSTextAlignmentCenter;
-        healthOfUser.font = [UIFont boldSystemFontOfSize:30];
-//        healthOfUser.text = [NSString stringWithFormat:@"%f", [HealthDataController retrieveHealthForUser:[PFUser currentUser]]];
-        healthOfUser.textColor = [UIColor whiteColor];
-        [self addSubview:healthOfUser];
-    }
+        }
     return self;
+}
+
+- (void) registerForNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateHealthData) name:@"healthQueryDone" object:nil];
+}
+
+- (void) updateHealthData {
+    
+    HealthData *currentUserHealthData = [HealthDataController sharedInstance].currentUserHealthData;
+    NSNumber *healthNumber = currentUserHealthData[healthKey];
+    
+    // Set up health Label Data
+    UILabel *healthOfUserLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, self.frame.size.width, 50)];
+    healthOfUserLabel.textAlignment = NSTextAlignmentCenter;
+    healthOfUserLabel.font = [UIFont boldSystemFontOfSize:30];
+    healthOfUserLabel.text = [NSString stringWithFormat:@"%lu", [healthNumber integerValue]];
+    healthOfUserLabel.textColor = [UIColor whiteColor];
+    [self addSubview:healthOfUserLabel];
+
+    
 }
 
 /*

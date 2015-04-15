@@ -7,6 +7,7 @@
 //
 
 #import "HealthDataController.h"
+#import <Parse/Parse.h>
 
 @implementation HealthDataController
 
@@ -30,18 +31,40 @@
     }];
 }
 
-+ (void) retrieveHealthForUsers {
++ (void) retrieveArrayOfHealthForUsers {
     
     PFQuery *healthQuery = [HealthData query];
 
     [healthQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (error) return;
         [HealthDataController sharedInstance].arrayOfHealthData = objects;
+        NSLog(@"%@", [HealthDataController sharedInstance].arrayOfHealthData);
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"healthQueryDone" object:nil];
+        
     }];
-    
-    NSLog(@"%@", [HealthDataController sharedInstance].arrayOfHealthData);
 }
 
+- (HealthData *)currentUserHealthData {
+    HealthData *dataToReturn = [HealthData new];
+    for (HealthData *data in [HealthDataController sharedInstance].arrayOfHealthData) {
+        PFUser *userAtData = data[userKey];
+        if ([userAtData.objectId isEqualToString:[PFUser currentUser].objectId]) {
+            dataToReturn = data;
+        }
+    }
+    return dataToReturn;
+}
+
+- (HealthData *)retrieveUserHealthFromUser:(PFUser *)user {
+    HealthData *dataToReturn = [HealthData new];
+    for (HealthData *data in [HealthDataController sharedInstance].arrayOfHealthData) {
+        PFUser *userAtData = data[userKey];
+        if ([userAtData.objectId isEqualToString:user.objectId]) {
+            dataToReturn = data;
+        }
+    }
+    return dataToReturn;
+}
 
 
 @end
