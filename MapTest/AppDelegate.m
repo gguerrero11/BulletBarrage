@@ -84,9 +84,9 @@
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     
     // Calculate accuracy before saving.
-    NSInteger shotsFiredDouble = [[PFUser currentUser][shotsFiredKey] doubleValue];
-    NSInteger shotsHitDouble = [[PFUser currentUser][shotsHitKey] doubleValue];
-    double result = shotsFiredDouble / shotsHitDouble;
+    double shotsFiredDouble = [[PFUser currentUser][shotsFiredKey] doubleValue];
+    double shotsHitDouble = [[PFUser currentUser][shotsHitKey] doubleValue];
+    double result = shotsHitDouble / shotsFiredDouble;
     NSNumber *accuracyObject = [NSNumber numberWithDouble:result * 100];
     [PFUser currentUser][accuracyKey] = accuracyObject;
     
