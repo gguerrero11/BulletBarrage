@@ -52,7 +52,7 @@ static NSString * const rubble = @"rubble";
 // Polyline Static
 static bool kAnimate = true;
 
-@interface MapViewController () <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate>
+@interface MapViewController () <PFLogInViewControllerDelegate,PFSignUpViewControllerDelegate,UIAlertViewDelegate>
 {
     CMMotionManager *_motionManager;
     GMSCameraPosition *gmCamera;
@@ -69,6 +69,7 @@ static bool kAnimate = true;
 @property (nonatomic, strong) CLLocation *myLocation;
 @property (nonatomic, strong) MKMapCamera *targetCamera;
 @property (nonatomic, strong) UIButton *fireButton;
+@property (nonatomic, strong) UIButton *respawnButton;
 @property (nonatomic, strong) UIButton *zoomButton;
 @property (nonatomic, strong) MKPolyline *polyline;
 @property (nonatomic, strong) UILabel *pitchLabelData;
@@ -201,6 +202,9 @@ static bool kAnimate = true;
     NSLog(@"User dismissed the signUpViewController");
 }
 
+
+#pragma mark viewDidLoad stuff
+
 - (void) registerForNotifications {
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(queryHealthDataForUsers) name:@"queryDone" object:nil];
@@ -229,7 +233,7 @@ static bool kAnimate = true;
 
     
     [self setupSceneKitView];
-    [self setUpDataViewFireButton];
+    [self setUpDataDisplayAndButtons];
     [self setUpPOVButton];
     
     
@@ -253,12 +257,14 @@ static bool kAnimate = true;
         marker.map = self.gmMapView;
         marker.position = [UserController convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
         marker.snippet = marker.distanceString;
+        marker.icon = [GMSMarker markerImageWithColor:[UIColor grayColor]];
         
-        // sets the currentUser's marker to be clear (so it can still be hit detected, but not visible
+        // Sets the currentUser's marker.map to nil
         // NOTE: must use isEqualToString (string), or else it will compare pointers than the actual objectId!
-        if (![user.objectId isEqualToString:[PFUser currentUser].objectId]) marker.icon = [GMSMarker markerImageWithColor:[UIColor blueColor]];
-        else marker.icon = [GMSMarker markerImageWithColor:[UIColor grayColor]];
-        
+        if ([[PFUser currentUser].objectId isEqualToString:marker.user.objectId]) {
+            marker.map = nil;
+        }
+
         [self.mArrayMarkersForMap addObject:marker];
     }
 }
@@ -275,18 +281,23 @@ static bool kAnimate = true;
         // If that marker's health is below 0 it hides it.
         if (health <= 0) {
             [self createGMSOverlayAtCoordinate:marker.position type:rubble disappear:NO];
-            marker.map = nil;
-            NSLog(@"%@", userHealthData[healthKey]);
-            marker.snippet = [NSString stringWithFormat:@"%@", userHealthData[healthKey]];
-        }
+            marker.icon = [UIImage imageNamed:@"smoke"];
+            }
         
         //Set color of marker according to health for non-currentUser targets
-        if (![[PFUser currentUser].objectId isEqualToString:marker.user.objectId]) marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
-        else {
-            marker.icon = [GMSMarker markerImageWithColor:[UIColor grayColor]];
+        if (![[PFUser currentUser].objectId isEqualToString:marker.user.objectId]) {
             
-        }
+            marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
         
+        } else {
+            
+            if (health <= 0) {
+                self.currentUserHealthData = userHealthData;
+                UIAlertView *deadAlert = [[UIAlertView alloc]initWithTitle:@"You have been destroyed!" message:@"Well, looks like you're dead. Hopefully it's not because you aimed horribly." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:@"Who got me!?", nil];
+                [deadAlert show];
+                self.respawnButton.hidden = NO;
+            }
+        }
     }
 }
 
@@ -297,12 +308,12 @@ static bool kAnimate = true;
     
     if (health >= 50) {
         redColor = (100 - health) / 50 ;
-    } else redColor = 0.0;
+    } else redColor = 1.0;
     
     if (health <= 50) {
         greenColor = (health * 2) /100;
     }
-    
+    NSLog(@"Heatlh %f", health);
     NSLog(@"Colors %f, %f" ,redColor, greenColor);
     
     
@@ -418,7 +429,60 @@ static bool kAnimate = true;
     [self.view addSubview:self.gmMapView];
 }
 
-- (BOOL)mapView:(GMSMarker *)mapView didTapMarker:(GMSMarker *)marker {
+- (void) setUpDataDisplayAndButtons {
+    
+    // Set up grey box
+    double widthOfStatView = self.view.frame.size.width *0.3;
+    double heightOfStatView = self.view.frame.size.height *0.1;
+    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(30, self.view.frame.size.height - (60 + heightOfStatView), widthOfStatView, heightOfStatView)];
+    view.backgroundColor = [UIColor grayColor];
+    view.alpha = .65;
+    [self.view addSubview:view];
+    
+    // Set up Pitch Label
+    UILabel *pitchLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, 50)];
+    [view addSubview:pitchLabel];
+    pitchLabel.textAlignment = NSTextAlignmentCenter;
+    pitchLabel.text = @"Pitch";
+    pitchLabel.textColor = [UIColor blackColor];
+    
+    // Set up Pitch Label Data
+    self.pitchLabelData = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, view.frame.size.width, 50)];
+    [view addSubview:self.pitchLabelData];
+    
+    self.pitchLabelData.textAlignment = NSTextAlignmentCenter;
+    self.pitchLabelData.textColor = [UIColor blackColor];
+    
+    // Set up fire button
+    self.fireButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 30, self.view.frame.size.height - 130, 80, 80)];
+    self.fireButton.layer.cornerRadius = 40;
+    self.fireButton.backgroundColor = [UIColor redColor];
+    [self.fireButton setTitle:@"Fire!" forState:UIControlStateNormal];
+    [self.fireButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.fireButton addTarget:self action:@selector(fireButtonPressed:) forControlEvents:UIControlEventTouchDown];
+    [self.view addSubview:self.fireButton];
+    
+    self.respawnButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 75, self.view.frame.size.height / 2, 150, 150)];
+    self.respawnButton.layer.cornerRadius = 75;
+    self.respawnButton.backgroundColor = [UIColor blueColor];
+    [self.respawnButton setTitle:@"Respawn" forState:UIControlStateNormal];
+    [self.respawnButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [self.respawnButton addTarget:self action:@selector(showRespawnButton) forControlEvents:UIControlEventTouchDown];
+    self.respawnButton.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.respawnButton.layer.shadowOpacity = 0.8;
+    self.respawnButton.layer.shadowRadius = 3;
+    self.respawnButton.layer.shadowOffset = CGSizeMake(12.0f, 12.0f);
+    self.respawnButton.hidden = YES;
+    [self.view addSubview:self.respawnButton];
+}
+
+- (void) showRespawnButton {
+    self.currentUserHealthData[healthKey] = @100;
+    [HealthDataController saveHealthData:self.currentUserHealthData];
+    self.respawnButton.hidden = YES;
+}
+
+- (BOOL) mapView:(GMSMarker *)mapView didTapMarker:(GMSMarker *)marker {
     
     return NO;
 }
@@ -489,41 +553,6 @@ static bool kAnimate = true;
     self.sceneView.scene = scene;
     [self.view addSubview:self.sceneView];
     
-    
-}
-
-- (void) setUpDataViewFireButton {
-    
-    // Set up grey box
-    double widthOfStatView = self.view.frame.size.width *0.3;
-    double heightOfStatView = self.view.frame.size.height *0.1;
-    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(30, self.view.frame.size.height - (60 + heightOfStatView), widthOfStatView, heightOfStatView)];
-    view.backgroundColor = [UIColor grayColor];
-    view.alpha = .65;
-    [self.view addSubview:view];
-    
-    // Set up Pitch Label
-    UILabel *pitchLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, 50)];
-    [view addSubview:pitchLabel];
-    pitchLabel.textAlignment = NSTextAlignmentCenter;
-    pitchLabel.text = @"Pitch";
-    pitchLabel.textColor = [UIColor blackColor];
-    
-    // Set up Pitch Label Data
-    self.pitchLabelData = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, view.frame.size.width, 50)];
-    [view addSubview:self.pitchLabelData];
-    
-    self.pitchLabelData.textAlignment = NSTextAlignmentCenter;
-    self.pitchLabelData.textColor = [UIColor blackColor];
-    
-    // Set up fire button
-    self.fireButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 30, self.view.frame.size.height - 130, 80, 80)];
-    self.fireButton.layer.cornerRadius = 40;
-    self.fireButton.backgroundColor = [UIColor redColor];
-    [self.fireButton setTitle:@"Fire!" forState:UIControlStateNormal];
-    [self.fireButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [self.fireButton addTarget:self action:@selector(fireButtonPressed:) forControlEvents:UIControlEventTouchDown];
-    [self.view addSubview:self.fireButton];
     
 }
 
@@ -659,7 +688,6 @@ static bool kAnimate = true;
     
 }
 
-
 - (void) createGMSOverlayAtCoordinate:(CLLocationCoordinate2D )hitLocation type:(NSString *)type disappear:(BOOL)disappear {
 
     // the distance of the coordinate for the overlay (the corners). This determines the size of the overlay;
@@ -667,7 +695,7 @@ static bool kAnimate = true;
     
     // checks if its rubble type, if not, the size of the crater according to the weapon is the offset.
     if (type != rubble) overlayOffset = self.projectile.sizeOfCrater;
-    else overlayOffset = 100;
+    else overlayOffset = 50;
     
     // Create crater coordinates if its not "rubble" type
     // Sets coordinates for the opposite side corners for the overlay (crater)
@@ -714,7 +742,7 @@ static bool kAnimate = true;
             
             // Runs these methods only if the marker has above 0 health
             if (health > 0 ) {
-                [healthDataUserAtMarker incrementKey:deathKey byAmount:@200];
+
                 // If the distance less than 35% away
                 if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage * 0.35 ) {
                     
@@ -738,6 +766,7 @@ static bool kAnimate = true;
                 healthDataUserAtMarker[healthKey] = [NSNumber numberWithUnsignedInteger:health];
                 [HealthDataController saveHealthData:healthDataUserAtMarker];
                 
+                
                 if (health <= 0 ) {
                     [self createAnimateLabel:@"TARGET DESTROYED!" bigText:NO];
                     NSLog(@"DEAD!");
@@ -749,13 +778,15 @@ static bool kAnimate = true;
                     
                     // increment death for userAtMarker saves to Parse
                     [healthDataUserAtMarker incrementKey:deathKey];
-                    [HealthDataController saveHealthData:healthDataUserAtMarker];
+                    //[HealthDataController saveHealthData:healthDataUserAtMarker];
+
                     
                     [self longestDistanceRecordCheckerFromMarker:marker];
                     [self removeGMSMarker:marker];
                 } else [self createAnimateLabel:@"HIT!" bigText:YES];
                 // Adds +1 to the "shotsHit" on Parse
                 [[PFUser currentUser] incrementKey:shotsHitKey];
+
             }
             
         }
@@ -898,6 +929,7 @@ static bool kAnimate = true;
 }
 
 
+#pragma mark navigational items
 
 - (void)mapView:(GMSMapView *)mapView didChangeCameraPosition:(GMSCameraPosition *)position {
     self.cameraSKHeadingRotationNode.eulerAngles = SCNVector3Make(0, -(position.bearing * M_PI / 180), 0);

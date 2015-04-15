@@ -27,6 +27,12 @@
         healthLabel.textColor = [UIColor whiteColor];
         [self addSubview:healthLabel];
         
+        self.healthOfUserLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, self.frame.size.width, 50)];
+        self.healthOfUserLabel.textAlignment = NSTextAlignmentCenter;
+        self.healthOfUserLabel.font = [UIFont boldSystemFontOfSize:30];
+        self.healthOfUserLabel.textColor = [UIColor whiteColor];
+        [self addSubview:self.healthOfUserLabel];
+        
         }
     return self;
 }
@@ -37,18 +43,11 @@
 
 - (void) updateHealthData {
     
-    HealthData *currentUserHealthData = [[HealthDataController sharedInstance] retrieveHealthDataFromUser:[PFUser currentUser]];
-    NSNumber *healthNumber = currentUserHealthData[healthKey];
-    
-    // Set up health Label Data
-    UILabel *healthOfUserLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, self.frame.size.width, 50)];
-    healthOfUserLabel.textAlignment = NSTextAlignmentCenter;
-    healthOfUserLabel.font = [UIFont boldSystemFontOfSize:30];
-    healthOfUserLabel.text = [NSString stringWithFormat:@"%lu", [healthNumber integerValue]];
-    healthOfUserLabel.textColor = [UIColor whiteColor];
-    [self addSubview:healthOfUserLabel];
+    self.currentUserHealthData = [[HealthDataController sharedInstance] retrieveHealthDataFromUser:[PFUser currentUser]];
+    NSNumber *healthNumber = self.currentUserHealthData[healthKey];
 
-    
+    // Set up health Label Data
+    self.healthOfUserLabel.text = [NSString stringWithFormat:@"%lu", [healthNumber integerValue]];
 }
 
 /*

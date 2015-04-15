@@ -32,6 +32,7 @@
 + (void) saveHealthData:(HealthData *)healthData {
     [healthData saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
+            [HealthDataController retrieveArrayOfHealthForUsers];
             NSLog(@"Health Data Saved");
         } else {
             NSLog(@"%@", error);

@@ -9,10 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "HealthDataController.h"
 
-@interface HealthBox : UIView
+@interface HealthBox : UIView <UIAlertViewDelegate>
 
-@property (nonatomic,strong) HealthData *healthData;
+@property (nonatomic,strong) HealthData *currentUserHealthData;
 @property (nonatomic,strong) NSNumber *health;
+@property (nonatomic,strong) UILabel *healthOfUserLabel;
+
 
 - (instancetype)initWithFrame:(CGRect)frame;
 
