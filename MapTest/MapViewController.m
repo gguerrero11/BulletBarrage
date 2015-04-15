@@ -201,9 +201,14 @@ static bool kAnimate = true;
 }
 
 - (void) registerForNotifications {
- 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(queryHealthDataForUsers) name:@"queryDone" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createTargets) name:@"queryDone" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeTimer) name:@"queryDone" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeTimer) name:@"timerDone" object:nil];
+}
+
+- (void) queryHealthDataForUsers {
+        [HealthDataController retrieveArrayOfHealthForUsers];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateHealthOfMarkers) name:@"healthQueryDone" object:nil];
 }
 
 - (void) viewDidLoad {
@@ -218,7 +223,7 @@ static bool kAnimate = true;
     [self showMainMapView];
     
     [UserController queryUsersNearCurrentUser:self.locationManager.location.coordinate withinMileRadius:10];
-    [HealthDataController retrieveArrayOfHealthForUsers];
+
     
     [self setupSceneKitView];
     [self setUpDataViewFireButton];
@@ -239,34 +244,39 @@ static bool kAnimate = true;
     
     for (PFUser *user in [UserController sharedInstance].arrayOfUsers) {
         
+        GMSMarker *marker = [GMSMarker new];
+        
         // will exclude the currentUser in the array
         // NOTE: must use isEqualToString (string), or else it will compare pointers than the actual objectId!
         if (![user.objectId isEqualToString:[PFUser currentUser].objectId]) {
             
-            GMSMarker *marker = [GMSMarker new];
             marker.user = user;
             marker.map = self.gmMapView;
             marker.position = [UserController convertPFGeoPointToLocationCoordinate2D:user[userLocationkey]];
-            marker.icon = [GMSMarker markerImageWithColor:[UIColor blueColor]];
             
             [self.mArrayMarkersForMap addObject:marker];
-        }
+        } else marker.map = nil; // remove marker that's the current user
     }
 }
 
 - (void) updateHealthOfMarkers {
     
-    for (PFUser *user in [UserController sharedInstance].arrayOfUsers) {
+    for (GMSMarker *marker in self.mArrayMarkersForMap) {
         
-        HealthData *userHealthData = [[HealthDataController sharedInstance] retrieveHealthDataFromUser:user];
+        HealthData *userHealthData = [[HealthDataController sharedInstance] retrieveHealthDataFromUser:marker.user];
         NSNumber *healthForTarget = userHealthData[healthKey];
         double health = [healthForTarget doubleValue];
+        NSLog(@"%f", health);
         
-        for (GMSMarker *marker in self.mArrayMarkersForMap) {
-            //Set color of marker according to health
+         //Set color of marker according to health
+        if (![[PFUser currentUser].objectId isEqualToString:marker.user.objectId]) {
             marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
-        }
+        } else marker.icon = [GMSMarker markerImageWithColor:[UIColor clearColor]];
+        
+       
+        
     }
+    
 }
 
 
@@ -651,18 +661,19 @@ static bool kAnimate = true;
         CLLocation *locationOfMarker = [[CLLocation alloc]initWithCoordinate:positionOfMarker altitude:0 horizontalAccuracy:0 verticalAccuracy:0 timestamp:[NSDate date]];
         if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage) {
             
-            NSNumber *healthForTarget = userAtMarker[healthKey];
+            NSNumber *healthForTarget = healthDataUserAtMarker[healthKey];
             double health = [healthForTarget doubleValue];
             
             // Runs these methods only if the marker has above 0 health
             if (health > 0 ) {
-                
+                [healthDataUserAtMarker incrementKey:deathKey byAmount:@200];
                 // If the distance less than 35% away
                 if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage * 0.35 ) {
                     
                     // do full damage
                     health -= self.projectile.damage;
                     NSLog(@"FULL DAMAGE. Health: %f", health);
+                    
                     
                     
                 } else {
@@ -675,7 +686,9 @@ static bool kAnimate = true;
                 marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
                 
                 // checks if health is below 0, if it is, remove the marker
-                userAtMarker[healthKey] = [NSNumber numberWithDouble:health];
+                healthDataUserAtMarker[healthKey] = [NSNumber numberWithDouble:health];
+                [HealthDataController saveHealthData:healthDataUserAtMarker];
+                
                 if (health <= 0 ) {
                     [self createAnimateLabel:@"TARGET DESTROYED!" bigText:NO];
                     NSLog(@"DEAD!");
