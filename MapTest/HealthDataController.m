@@ -11,13 +11,13 @@
 
 @implementation HealthDataController
 
-- (id) init {
-    self = [super init];
-    if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(retrieveArrayOfHealthForUsers) name:@"queryDone" object:nil];
-    }
-    return self;
-}
+//- (id) init {
+//    self = [super init];
+//    if (self) {
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(retrieveArrayOfHealthForUsers) name:@"queryDone" object:nil];
+//    }
+//    return self;
+//}
 
 + (HealthDataController *) sharedInstance {
     static HealthDataController *sharedInstance = nil;
@@ -49,7 +49,6 @@
         if (error) return;
         [HealthDataController sharedInstance].arrayOfHealthData = objects;
         [[NSNotificationCenter defaultCenter] postNotificationName:@"healthQueryDone" object:nil];
-        
     }];
 }
 

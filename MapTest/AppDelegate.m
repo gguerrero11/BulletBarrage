@@ -70,6 +70,7 @@
     
     UINavigationController *navBarProfileVC = [[UINavigationController alloc]initWithRootViewController:profileVC];
     
+    
     UITabBarController *tabBarController = [UITabBarController new];
     tabBarController.viewControllers = @[navBarLeaderboard, navBarMapView, navBarProfileVC];
     tabBarController.selectedIndex = 1;

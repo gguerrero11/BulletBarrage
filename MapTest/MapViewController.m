@@ -23,6 +23,7 @@
 #import "HealthData.h"
 #import "HealthDataController.h"
 #import "HealthBox.h"
+#import "InterfaceLineDrawer.h"
 
 @import SceneKit;
 
@@ -48,6 +49,7 @@
 static const NSInteger gravityStatic = 9.8;
 static NSString * const craterBigSquare = @"craterBigSquare";
 static NSString * const rubble = @"rubble";
+static NSString * const smoke = @"smoke";
 
 // Polyline Static
 static bool kAnimate = true;
@@ -74,6 +76,8 @@ static bool kAnimate = true;
 @property (nonatomic, strong) MKPolyline *polyline;
 @property (nonatomic, strong) UILabel *pitchLabelData;
 @property (nonatomic, strong) HealthBox *healthBox;
+@property (nonatomic, strong) InterfaceLineDrawer *interfaceLineDrawer;
+@property (nonatomic) BOOL initialLaunch;
 
 // SceneKit Properties
 @property (nonatomic, strong) SCNView *sceneView;
@@ -95,6 +99,7 @@ static bool kAnimate = true;
 
 @property (nonatomic, strong) Weapon *projectile;
 @property (nonatomic, strong) HealthData *currentUserHealthData;
+@property (nonatomic, strong) HealthDataController *healthDataController;
 
 // CMDevice motion
 @property (nonatomic, strong) CMAttitude *attitude;
@@ -206,15 +211,14 @@ static bool kAnimate = true;
 #pragma mark viewDidLoad stuff
 
 - (void) registerForNotifications {
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(queryHealthDataForUsers) name:@"queryDone" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createTargets) name:@"createTargets" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registerHDataNotifAndCreateTargets) name:@"queryDone" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeTimer) name:@"timerDone" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDeadAlert) name:@"userDead" object:nil];
-    
+
 }
 
-- (void) queryHealthDataForUsers {
+- (void) registerHDataNotifAndCreateTargets {
+    [self createTargets];
     [HealthDataController retrieveArrayOfHealthForUsers];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateHealthOfMarkers) name:@"healthQueryDone" object:nil];
 }
@@ -222,7 +226,13 @@ static bool kAnimate = true;
 - (void) viewDidLoad {
     [super viewDidLoad];
     
+    self.tabBarController.tabBar.alpha = 0;
     
+    self.initialLaunch = YES;
+    self.healthDataController = [HealthDataController new];
+    
+    self.arrayOfCraters = [NSMutableArray new];
+
     [self registerForNotifications];
     
     [[UserController sharedInstance] setWeaponForUser:cannon];
@@ -232,19 +242,14 @@ static bool kAnimate = true;
     
     [UserController queryUsersNearCurrentUser:self.locationManager.location.coordinate withinMileRadius:10];
     
-    
     [self setupSceneKitView];
+    self.interfaceLineDrawer = [[InterfaceLineDrawer alloc]initWithFrame:self.view.frame withView:self.view];
+
     [self setUpDataDisplayAndButtons];
     [self setUpPOVButton];
     
-    
-    self.healthBox = [[HealthBox alloc]initWithFrame:CGRectMake(0, 0, 100, 70)];
-    [self.view addSubview:self.healthBox];
-    
-    self.arrayOfCraters = [NSMutableArray new];
-    
-    
 }
+
 
 - (void) createTargets {
     
@@ -270,10 +275,17 @@ static bool kAnimate = true;
     }
 }
 
+// this essentially redraws all the markers when: user launches app, hits/destroys a target.
 - (void) updateHealthOfMarkers {
     
+    if (self.mArrayMarkersForMap) {
+        for (GMSMarker *marker in self.mArrayMarkersForMap) marker.map = nil;
+    }
+    
+    [self createTargets];
+    
     for (GMSMarker *marker in self.mArrayMarkersForMap) {
-        
+
         HealthData *userHealthData = [[HealthDataController sharedInstance] retrieveHealthDataFromUser:marker.user];
         NSNumber *healthForTarget = userHealthData[healthKey];
         double health = [healthForTarget doubleValue];
@@ -287,9 +299,15 @@ static bool kAnimate = true;
                 
             } else {
                 
+                // this only creates smoke/rubble at the intial launch of the app
+                if (self.initialLaunch == YES) {
+                    [self createGMSMarkerAtCoordinate:marker.position type:smoke disappear:YES];
+                    [self createGMSOverlayAtCoordinate:marker.position type:rubble disappear:YES];
+                }
+                
                 // If that marker's health is below 0 it hides it.
-                [self createGMSOverlayAtCoordinate:marker.position type:rubble disappear:NO];
-                marker.icon = [UIImage imageNamed:@"smoke"];
+                marker.map = nil;
+
             }
         } else {
             
@@ -299,6 +317,8 @@ static bool kAnimate = true;
             }
         }
     }
+    // setting this to NO disables the creation of smoke/rubble everytime this method is called.
+    self.initialLaunch = NO;
 }
 
 - (UIColor *) changeColorForHealth:(double)health {
@@ -313,10 +333,8 @@ static bool kAnimate = true;
     if (health <= 50) {
         greenColor = (health * 2) /100;
     }
-    NSLog(@"Heatlh %f", health);
-    NSLog(@"Colors %f, %f" ,redColor, greenColor);
-    
-    
+    //NSLog(@"Heatlh %f", health);
+    //NSLog(@"Colors %f, %f" ,redColor, greenColor);
     
     return [UIColor colorWithRed:redColor green:greenColor blue:0 alpha:1.0];
 }
@@ -463,7 +481,9 @@ static bool kAnimate = true;
     [self.fireButton addTarget:self action:@selector(fireButtonPressed:) forControlEvents:UIControlEventTouchDown];
     [self.view addSubview:self.fireButton];
     
-    self.respawnButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 75, self.view.frame.size.height / 2, 150, 150)];
+    // Set up respawn button
+    self.respawnButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 2 -
+                                                                    75, self.view.frame.size.height / 2, 150, 150)];
     self.respawnButton.layer.cornerRadius = 75;
     self.respawnButton.backgroundColor = [UIColor blueColor];
     [self.respawnButton setTitle:@"Respawn" forState:UIControlStateNormal];
@@ -475,6 +495,10 @@ static bool kAnimate = true;
     self.respawnButton.layer.shadowOffset = CGSizeMake(12.0f, 12.0f);
     self.respawnButton.hidden = YES;
     [self.view addSubview:self.respawnButton];
+    
+    // Set up HealthBox
+    self.healthBox = [[HealthBox alloc]initWithFrame:CGRectMake(0, 0, 100, 70)];
+    [self.view addSubview:self.healthBox];
 }
 
 - (void) showRespawnButton {
@@ -574,7 +598,7 @@ static bool kAnimate = true;
     self.zoomButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [self.zoomButton setTitle:@"100" forState:UIControlStateNormal];
     self.zoomButton.layer.cornerRadius = 25;
-    self.zoomButton.frame = CGRectMake(self.view.frame.size.width - 65, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height - 80, 50, 50);
+    self.zoomButton.frame = CGRectMake(self.view.frame.size.width - 100, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height - 80, 50, 50);
     [self.zoomButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     self.zoomButton.tintColor = [UIColor whiteColor];
     self.zoomButton.backgroundColor = [UIColor blueColor];
@@ -702,7 +726,7 @@ static bool kAnimate = true;
     
 }
 
-- (void) createGMSOverlayAtCoordinate:(CLLocationCoordinate2D )hitLocation type:(NSString *)type disappear:(BOOL)disappear {
+- (void) createGMSOverlayAtCoordinate:(CLLocationCoordinate2D )hitCoordinate type:(NSString *)type disappear:(BOOL)disappear {
     
     // the distance of the coordinate for the overlay (the corners). This determines the size of the overlay;
     NSInteger overlayOffset;
@@ -713,17 +737,30 @@ static bool kAnimate = true;
     
     // Create crater coordinates if its not "rubble" type
     // Sets coordinates for the opposite side corners for the overlay (crater)
-    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(hitLocation.latitude + overlayOffset / 111111.0, hitLocation.longitude + overlayOffset /111111.0);
-    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(hitLocation.latitude - overlayOffset /111111.0, hitLocation.longitude - overlayOffset /111111.0);
+    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(hitCoordinate.latitude + overlayOffset / 111111.0, hitCoordinate.longitude + overlayOffset /111111.0);
+    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(hitCoordinate.latitude - overlayOffset /111111.0, hitCoordinate.longitude - overlayOffset /111111.0);
     
     GMSCoordinateBounds *overlayBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:southWest
                                                                               coordinate:northEast];
     GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds
                                                                            icon:[UIImage imageNamed:type]];
+    
+    groundOverlay.bearing = rand() % 360;
+    
     groundOverlay.map = self.gmMapView;
     
-    if (disappear == YES) [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
+    if (disappear == YES) [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:60];
+}
+
+- (void) createGMSMarkerAtCoordinate:(CLLocationCoordinate2D )atCoordinate type:(NSString *)type disappear:(BOOL)disappear {
     
+    // create smoke marker
+    GMSMarker *marker = [GMSMarker new];
+    marker.map = self.gmMapView;
+    marker.position = atCoordinate;
+    marker.icon = [UIImage imageNamed:smoke];
+    
+    if (disappear == YES) [self performSelector:@selector(removeGMSMarker:) withObject:marker afterDelay:60];
 }
 
 - (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
@@ -738,7 +775,7 @@ static bool kAnimate = true;
     explosion.icon = [UIImage animatedImageNamed:@"explosion-" duration:0.7f];
     [self performSelector:@selector(removeGMSMarker:) withObject:explosion afterDelay:0.7 ];
     
-    // create crater overlay
+    // create crater
     [self createGMSOverlayAtCoordinate:hitLocation.coordinate type:craterBigSquare disappear:YES];
     
     // Goes through each marker in the array and checks if that marker's position is within the radius of the weapon damage (meters) of the hitlocation
@@ -773,18 +810,18 @@ static bool kAnimate = true;
                 
                 marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
                 
-                // ensures health never goes below 0
+                // ensures health never goes below 0 and sets it to the user's HealthData
                 if (health < 0) health = 0;
-                
-                // checks if health is below 0, if it is, remove the marker
                 healthDataUserAtMarker[healthKey] = [NSNumber numberWithUnsignedInteger:health];
-                [HealthDataController saveHealthData:healthDataUserAtMarker];
-                
                 
                 if (health <= 0 ) {
+                    
                     [self createAnimateLabel:@"TARGET DESTROYED!" bigText:NO];
                     NSLog(@"DEAD!");
-                    [self createGMSOverlayAtCoordinate:hitLocation.coordinate type:rubble disappear:NO];
+                    
+                    [self createGMSOverlayAtCoordinate:marker.position type:rubble disappear:NO];
+                    
+                    [self createGMSMarkerAtCoordinate:marker.position type:smoke disappear:NO];
                     
                     // increment kill for currentUser and saves to Parse
                     [[PFUser currentUser] incrementKey:killKey];
@@ -792,17 +829,21 @@ static bool kAnimate = true;
                     
                     // increment death for userAtMarker saves to Parse
                     [healthDataUserAtMarker incrementKey:deathKey];
-                    //[HealthDataController saveHealthData:healthDataUserAtMarker];
-                    
                     
                     [self longestDistanceRecordCheckerFromMarker:marker];
                     [self removeGMSMarker:marker];
+                    
                 } else [self createAnimateLabel:@"HIT!" bigText:YES];
-                // Adds +1 to the "shotsHit" on Parse
+                
+                // This will save health data
+                [HealthDataController saveHealthData:healthDataUserAtMarker];
+                
+        
+
+                // Adds +1 to the "shotsHit" but not saved yet.
                 [[PFUser currentUser] incrementKey:shotsHitKey];
                 
             }
-            
         }
     }
 }
@@ -852,13 +893,13 @@ static bool kAnimate = true;
 }
 
 - (void) longestDistanceRecordCheckerFromMarker:(GMSMarker *)marker {
-    // checks if its the longest distance hit, if it is, saves to Parse
+    
+    // checks if its the longest distance hit
     NSNumber *currentLongestDistance = [PFUser currentUser][longestDistanceKey];
     
     if (marker.distance > [currentLongestDistance doubleValue]) {
         NSNumber *newDistance = [NSNumber numberWithDouble:marker.distance];
         [PFUser currentUser][longestDistanceKey] = newDistance;
-        
         [self createAnimateLabel:@"NEW DISTANCE RECORD!" bigText:NO];
         
     }

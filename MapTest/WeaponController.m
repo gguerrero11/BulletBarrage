@@ -30,14 +30,14 @@
         weapon.velocity = 100;
         weapon.damage = 30;
         weapon.radiusOfDamage = 100;
-        weapon.sizeOfCrater = 100;
+        weapon.sizeOfCrater = 150;
     }
     
     if ([weaponString isEqualToString:missle]) {
         weapon.velocity = 250;
         weapon.damage = 80;
         weapon.radiusOfDamage = 50;
-        weapon.sizeOfCrater = 50;
+        weapon.sizeOfCrater = 75;
     }
     
     if ([weaponString isEqualToString:nuke]) {
