@@ -500,7 +500,7 @@ static bool kAnimate = true;
     [self.view addSubview:self.respawnButton];
     
     // Set up HealthBox
-    self.healthBox = [[HealthBox alloc]initWithFrame:CGRectMake(0, 0, 100, 70)];
+    self.healthBox = [[HealthBox alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 35, 0, 100, 70)];
     [self.view addSubview:self.healthBox];
 }
 

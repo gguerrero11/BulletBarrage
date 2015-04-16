@@ -54,8 +54,8 @@ static NSString * const bottom = @"bottom";
     [self.parentView addSubview:zoomLineVertical];
     [self drawStudsForVerticalLine:zoomLineVertical side:side];
     
-    [self drawBoxOn:top of:zoomLineVertical whichSide:side];
-    [self drawBoxOn:bottom of:zoomLineVertical whichSide:side];
+    [self drawBoxOn:top onView:zoomLineVertical whichSide:side moveBasedOn:nil];
+    [self drawBoxOn:bottom onView:zoomLineVertical whichSide:side moveBasedOn:nil];
     
     [self draw:left boxArrowOnLine:zoomLineVertical];
     [self draw:right boxArrowOnLine:zoomLineVertical];
@@ -79,7 +79,7 @@ static NSString * const bottom = @"bottom";
     }
 }
 
-- (void) drawBoxOn:(NSString *)topOrBottom of:(UIView *)view whichSide:(NSString *)side {
+- (void) drawBoxOn:(NSString *)topOrBottom onView:(UIView *)view whichSide:(NSString *)side moveBasedOn:(id)movement {
     double yOrigin = 0.0;
     double heightOfBox = 20;
     double spaceBetween = 5;
@@ -98,10 +98,9 @@ static NSString * const bottom = @"bottom";
 
 - (void) draw:(NSString *)side boxArrowOnLine:(UIView *)line {
     
-    
+    [self drawBoxOn:nil onView:line whichSide:left];
     
 }
-
 
 
 
