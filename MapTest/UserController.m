@@ -40,7 +40,7 @@
             
             [UserController sharedInstance].arrayOfUsers = objects;
             
-            NSLog(@"Users Near Location: %lu",[UserController sharedInstance].arrayOfUsers.count);
+            NSLog(@"Users Near Location: %lu",(unsigned long)[UserController sharedInstance].arrayOfUsers.count);
             
             [[NSNotificationCenter defaultCenter] postNotificationName:@"queryDone" object:nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:@"createTargets" object:nil];

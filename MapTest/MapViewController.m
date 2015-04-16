@@ -206,16 +206,17 @@ static bool kAnimate = true;
 #pragma mark viewDidLoad stuff
 
 - (void) registerForNotifications {
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(queryHealthDataForUsers) name:@"queryDone" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createTargets) name:@"createTargets" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeTimer) name:@"timerDone" object:nil];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDeadAlert) name:@"userDead" object:nil];
+    
 }
 
 - (void) queryHealthDataForUsers {
-        [HealthDataController retrieveArrayOfHealthForUsers];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateHealthOfMarkers) name:@"healthQueryDone" object:nil];
+    [HealthDataController retrieveArrayOfHealthForUsers];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateHealthOfMarkers) name:@"healthQueryDone" object:nil];
 }
 
 - (void) viewDidLoad {
@@ -230,7 +231,7 @@ static bool kAnimate = true;
     [self showMainMapView];
     
     [UserController queryUsersNearCurrentUser:self.locationManager.location.coordinate withinMileRadius:10];
-
+    
     
     [self setupSceneKitView];
     [self setUpDataDisplayAndButtons];
@@ -264,7 +265,7 @@ static bool kAnimate = true;
         if ([[PFUser currentUser].objectId isEqualToString:marker.user.objectId]) {
             marker.map = nil;
         }
-
+        
         [self.mArrayMarkersForMap addObject:marker];
     }
 }
@@ -294,11 +295,7 @@ static bool kAnimate = true;
             
             if (health <= 0) {
                 self.currentUserHealthData = userHealthData;
-                UIAlertView *deadAlert = [[UIAlertView alloc]initWithTitle:@"You have been destroyed!" message:@"Well, looks like you're dead. Hopefully it's not because you aimed horribly." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:@"Who got me!?", nil];
-                [deadAlert show];
-                self.respawnButton.hidden = NO;
-                self.fireButton.backgroundColor = [UIColor grayColor];
-                self.fireButton.userInteractionEnabled = NO;
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"userDead" object:nil];
             }
         }
     }
@@ -307,7 +304,7 @@ static bool kAnimate = true;
 - (UIColor *) changeColorForHealth:(double)health {
     
     double redColor = 0.0;
-        double greenColor = 1.0;
+    double greenColor = 1.0;
     
     if (health >= 50) {
         redColor = (100 - health) / 50 ;
@@ -320,7 +317,7 @@ static bool kAnimate = true;
     NSLog(@"Colors %f, %f" ,redColor, greenColor);
     
     
-
+    
     return [UIColor colorWithRed:redColor green:greenColor blue:0 alpha:1.0];
 }
 
@@ -401,20 +398,20 @@ static bool kAnimate = true;
     }
     
     // Saves location to Parse
-        [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
-            if (geoPoint) {
-                [PFUser currentUser][userLocationkey] = geoPoint;
-                //#warning TURN THIS BACK ON BEFORE SUBMITTING!
-                [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-                    if (succeeded) {
-                        NSLog(@"Initial User location saved to Parse");
-                    } else {
-                        NSLog(@"Error: %@", error);
-                    }
-                }];
-    
-            } else NSLog(@"Cannot find user!");
-        }];
+    [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
+        if (geoPoint) {
+            [PFUser currentUser][userLocationkey] = geoPoint;
+            //#warning TURN THIS BACK ON BEFORE SUBMITTING!
+            [[PFUser currentUser] saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (succeeded) {
+                    NSLog(@"Initial User location saved to Parse");
+                } else {
+                    NSLog(@"Error: %@", error);
+                }
+            }];
+            
+        } else NSLog(@"Cannot find user!");
+    }];
     
     
     self.myLocation = self.locationManager.location;
@@ -486,6 +483,17 @@ static bool kAnimate = true;
     self.respawnButton.hidden = YES;
     self.fireButton.backgroundColor = [UIColor redColor];
     self.fireButton.userInteractionEnabled = YES;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDeadAlert) name:@"userDead" object:nil];
+}
+
+- (void) userDeadAlert {
+    UIAlertView *deadAlert = [[UIAlertView alloc]initWithTitle:@"You have been destroyed!" message:@"Well, looks like you're dead. Hopefully it's not because you aimed horribly." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:@"Who got me!?", nil];
+    [deadAlert show];
+    self.respawnButton.hidden = NO;
+    self.fireButton.backgroundColor = [UIColor grayColor];
+    self.fireButton.userInteractionEnabled = NO;
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"userDead" object:nil];
+    
 }
 
 - (BOOL) mapView:(GMSMarker *)mapView didTapMarker:(GMSMarker *)marker {
@@ -695,7 +703,7 @@ static bool kAnimate = true;
 }
 
 - (void) createGMSOverlayAtCoordinate:(CLLocationCoordinate2D )hitLocation type:(NSString *)type disappear:(BOOL)disappear {
-
+    
     // the distance of the coordinate for the overlay (the corners). This determines the size of the overlay;
     NSInteger overlayOffset;
     
@@ -715,7 +723,7 @@ static bool kAnimate = true;
     groundOverlay.map = self.gmMapView;
     
     if (disappear == YES) [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:3];
-
+    
 }
 
 - (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
@@ -729,10 +737,10 @@ static bool kAnimate = true;
     explosion.position = hitLocation.coordinate;
     explosion.icon = [UIImage animatedImageNamed:@"explosion-" duration:0.7f];
     [self performSelector:@selector(removeGMSMarker:) withObject:explosion afterDelay:0.7 ];
-
+    
     // create crater overlay
     [self createGMSOverlayAtCoordinate:hitLocation.coordinate type:craterBigSquare disappear:YES];
-
+    
     // Goes through each marker in the array and checks if that marker's position is within the radius of the weapon damage (meters) of the hitlocation
     for (GMSMarker *marker in self.mArrayMarkersForMap) {
         
@@ -748,7 +756,7 @@ static bool kAnimate = true;
             
             // Runs these methods only if the marker has above 0 health
             if (health > 0 ) {
-
+                
                 // If the distance less than 35% away
                 if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage * 0.35 ) {
                     
@@ -785,14 +793,14 @@ static bool kAnimate = true;
                     // increment death for userAtMarker saves to Parse
                     [healthDataUserAtMarker incrementKey:deathKey];
                     //[HealthDataController saveHealthData:healthDataUserAtMarker];
-
+                    
                     
                     [self longestDistanceRecordCheckerFromMarker:marker];
                     [self removeGMSMarker:marker];
                 } else [self createAnimateLabel:@"HIT!" bigText:YES];
                 // Adds +1 to the "shotsHit" on Parse
                 [[PFUser currentUser] incrementKey:shotsHitKey];
-
+                
             }
             
         }
@@ -950,8 +958,8 @@ static bool kAnimate = true;
     //[gmMapView animateToViewingAngle:45];
     
     // Use the true heading if it is valid.
-//    CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
-//                                       newHeading.trueHeading : newHeading.magneticHeading);
+    //    CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
+    //                                       newHeading.trueHeading : newHeading.magneticHeading);
     //    self.cameraSKHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, gmMapView.camera.bearing * (M_PI / 180));
     
 }

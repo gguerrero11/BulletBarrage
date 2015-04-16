@@ -10,14 +10,14 @@
 #import "LeaderboardDataSource.h"
 #import "UserController.h"
 #import <Parse/Parse.h>
+#import "HealthDataController.h"
+#import "HealthData.h"
 
 
 
 @interface LeaderboardDataSource ()
 
 @property (nonatomic,strong) UITableView *tableView;
-
-
 
 @end
 
@@ -66,6 +66,13 @@
     NSArray *arraySorted = [arrayOfUsers sortedArrayUsingDescriptors:sortDescriptors];
     PFUser *user = arraySorted[indexPath.row];
     
+    HealthData *healthDataForUserAtCell;
+    for (HealthData *healthData in [HealthDataController sharedInstance].arrayOfHealthData) {
+        
+        PFUser *userInArray = healthData[userKey];
+        if ([user.objectId isEqualToString:userInArray.objectId]) healthDataForUserAtCell = healthData;
+    }
+    
     // Sets cell color to indicate the current user, and its ability to be selected
     if ([user.objectId isEqualToString:[PFUser currentUser].objectId]) {
         cell.backgroundColor = [UIColor colorWithRed:.47 green:.65 blue:.935 alpha:1];
@@ -90,7 +97,7 @@
             
             // Sorting the array by Kill/Death for each User
         case sortByKill:
-            cell.textLabel.text = [NSString stringWithFormat:@"%ld. %@ %@/%@", indexPath.row + 1, user[usernameKey],user[killKey],user[deathKey]];
+            cell.textLabel.text = [NSString stringWithFormat:@"%ld. %@ %@/%@", indexPath.row + 1, user[usernameKey],user[killKey],healthDataForUserAtCell[deathKey]];
             break;
             
             // Sorting the array by Accuracy for each User
