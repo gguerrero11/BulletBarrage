@@ -243,7 +243,10 @@ static bool kAnimate = true;
     [UserController queryUsersNearCurrentUser:self.locationManager.location.coordinate withinMileRadius:10];
     
     [self setupSceneKitView];
+    
     self.interfaceLineDrawer = [[InterfaceLineDrawer alloc]initWithFrame:self.view.frame withView:self.view];
+    self.interfaceLineDrawer.pitchAmount = [self convertToDegrees:self.attitude.pitch];
+    self.interfaceLineDrawer.zoomAmount = self.gmMapView.camera.zoom;
 
     [self setUpDataDisplayAndButtons];
     [self setUpPOVButton];

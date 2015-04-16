@@ -45,16 +45,21 @@ static NSString * const bottom = @"bottom";
 - (void) drawVerticalLines:(NSString *)side {
     double xOrigin = 0.0;
     
-    if ([side isEqualToString:right]) xOrigin = self.parentView.frame.size.width * 0.9;
-    if ([side isEqualToString:left]) xOrigin = self.parentView.frame.size.width * 0.1;
+    if ([side isEqualToString:right]) xOrigin = self.parentView.frame.size.width * 0.85;
+    if ([side isEqualToString:left]) xOrigin = self.parentView.frame.size.width * 0.15;
         
     UIView *zoomLineVertical = [[UIView alloc] initWithFrame:CGRectMake(xOrigin, self.parentView.frame.size.height * 0.1,
                                                                         self.lineThickness, self.lengthOfLine)];
     zoomLineVertical.backgroundColor = self.lineColor;
     [self.parentView addSubview:zoomLineVertical];
     [self drawStudsForVerticalLine:zoomLineVertical side:side];
+    
     [self drawBoxOn:top of:zoomLineVertical whichSide:side];
     [self drawBoxOn:bottom of:zoomLineVertical whichSide:side];
+    
+    [self draw:left boxArrowOnLine:zoomLineVertical];
+    [self draw:right boxArrowOnLine:zoomLineVertical];
+    
     
 }
 
@@ -76,9 +81,9 @@ static NSString * const bottom = @"bottom";
 
 - (void) drawBoxOn:(NSString *)topOrBottom of:(UIView *)view whichSide:(NSString *)side {
     double yOrigin = 0.0;
-    double heightOfBox = 30;
+    double heightOfBox = 20;
     double spaceBetween = 5;
-    double widthOfBox = 30;
+    double widthOfBox = 40;
     
     if ([side isEqualToString:left]) widthOfBox *= -1;
     
@@ -90,6 +95,13 @@ static NSString * const bottom = @"bottom";
     box.layer.borderColor = self.lineColor.CGColor;
     [view addSubview:box];
 }
+
+- (void) draw:(NSString *)side boxArrowOnLine:(UIView *)line {
+    
+    
+    
+}
+
 
 
 

@@ -12,4 +12,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame withView:(UIView *)view;
 
+@property (nonatomic) double zoomAmount;
+@property (nonatomic) double pitchAmount;
+
 @end
