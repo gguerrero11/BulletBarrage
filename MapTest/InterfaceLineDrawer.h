@@ -7,12 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreMotion/CoreMotion.h>
+#import <GoogleMaps/GoogleMaps.h>
+
+static NSString * const right = @"right";
+static NSString * const left = @"left";
 
 @interface InterfaceLineDrawer : UIView
 
 - (instancetype)initWithFrame:(CGRect)frame withView:(UIView *)view;
 
-@property (nonatomic) double zoomAmount;
-@property (nonatomic) double pitchAmount;
+@property (nonatomic, strong) CMAttitude *attitude;
+@property (nonatomic, strong) GMSCameraPosition *mapCamera;
+
+- (void) move:(NSString *)side boxBasedByValue:(double)value;
 
 @end

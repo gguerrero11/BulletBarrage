@@ -245,8 +245,8 @@ static bool kAnimate = true;
     [self setupSceneKitView];
     
     self.interfaceLineDrawer = [[InterfaceLineDrawer alloc]initWithFrame:self.view.frame withView:self.view];
-    self.interfaceLineDrawer.pitchAmount = [self convertToDegrees:self.attitude.pitch];
-    self.interfaceLineDrawer.zoomAmount = self.gmMapView.camera.zoom;
+    self.interfaceLineDrawer.attitude = self.attitude;
+    self.interfaceLineDrawer.mapCamera = self.gmMapView.camera;
 
     [self setUpDataDisplayAndButtons];
     [self setUpPOVButton];
@@ -354,7 +354,10 @@ static bool kAnimate = true;
             self.attitude = motion.attitude;
             self.deviceYaw = motion.attitude.yaw + 1.55;
             
-            self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[self convertToDegrees:self.pitchWithLimit]];
+            self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[MapViewController convertToDegrees:self.pitchWithLimit]];
+            
+            [self.interfaceLineDrawer move:left boxBasedByValue:self.pitchWithLimit];
+            [self.interfaceLineDrawer move:right boxBasedByValue:self.gmMapView.camera.zoom];
             
             //[gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
             //[gmMapView animateToViewingAngle:45];
@@ -651,7 +654,7 @@ static bool kAnimate = true;
 
 #pragma mark Firing/Projectile methods
 
-- (double) convertToDegrees:(double)pitch {
++ (double) convertToDegrees:(double)pitch {
     return pitch * (180/M_PI);
 }
 
@@ -998,7 +1001,7 @@ static bool kAnimate = true;
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 10) return;
     
-    [self.gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
+    [self.gmMapView animateToBearing:-[MapViewController convertToDegrees:self.deviceYaw]];
     //[gmMapView animateToViewingAngle:45];
     
     // Use the true heading if it is valid.

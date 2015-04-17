@@ -20,5 +20,7 @@
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 
++ (double) convertToDegrees:(double)pitch;
+
 @end
 
