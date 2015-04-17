@@ -21,6 +21,8 @@ typedef void(^myCompletion)(BOOL);
 @property (nonatomic,strong) UIColor *lineColor;
 @property (nonatomic,strong) UIColor *labelColor;
 @property (nonatomic,strong) UIColor *transparentBox;
+@property (nonatomic,strong) UIColor *screenTintColor;
+
 @property (nonatomic) double lengthOfLine;
 @property (nonatomic) double lineThickness;
 @property (nonatomic,strong) UIView *parentView;
@@ -41,18 +43,12 @@ typedef void(^myCompletion)(BOOL);
 
 @implementation InterfaceLineDrawer
 
-
-
-- (void) registerForNotifications {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(drawRandomLines) name:@"drawRandomLines" object:nil];
-    
-}
-
 - (instancetype)initWithFrame:(CGRect)frame withView:(UIView *)view{
     self = [super initWithFrame:frame];
     
     if (self) {
         
+        self.screenTintColor = [UIColor colorWithRed:.1 green:.5 blue:.5 alpha:.1];
         self.initalStartup = YES;
         self.parentView = view;
         self.lengthOfLine = view.frame.size.height * .6;
@@ -60,14 +56,12 @@ typedef void(^myCompletion)(BOOL);
         self.lineColor = [UIColor grayColor];
         self.labelColor = [UIColor blackColor];
         self.transparentBox = [UIColor colorWithRed:.5 green:.5 blue:.5 alpha:.4];
-
-        [self registerForNotifications];
-
+        
         [self drawVerticalLines:right];
         [self drawVerticalLines:left];
-
+        
         [self drawScreenEffect];
-                [self drawGlowingLine];
+        [self drawGlowingLine];
     }
     return self;
 }
@@ -77,9 +71,9 @@ typedef void(^myCompletion)(BOOL);
     
     if ([side isEqualToString:right]) xOrigin = self.parentView.frame.size.width * 0.95;
     if ([side isEqualToString:left]) xOrigin = self.parentView.frame.size.width * 0.05;
-        
+    
     UIView *verticalLine = [[UIView alloc] initWithFrame:CGRectMake(xOrigin, self.parentView.frame.size.height * 0.1,
-                                                                        self.lineThickness, self.lengthOfLine)];
+                                                                    self.lineThickness, self.lengthOfLine)];
     verticalLine.backgroundColor = self.lineColor;
     verticalLine.userInteractionEnabled = NO;
     [self.parentView addSubview:verticalLine];
@@ -98,7 +92,7 @@ typedef void(^myCompletion)(BOOL);
     int amountOfStuds = 15;
     int lineLength;
     double spaceBetweenStuds = verticalLine.frame.size.height / amountOfStuds;
-
+    
     
     for (int i = 0; i <= amountOfStuds; i++) {
         lineLength = 10;
@@ -125,7 +119,7 @@ typedef void(^myCompletion)(BOOL);
     // checks to see if box is on top or bottom. If top, then the space will be made going upwards (negative) as well as the height
     if ([topOrBottom isEqualToString:top] && topOrBottom != nil) yOrigin = -spaceBetween + -heightOfBox;
     if ([topOrBottom isEqualToString:bottom] && topOrBottom != nil) yOrigin = spaceBetween + view.frame.size.height;
-
+    
     UIView *box = [[UIView alloc]initWithFrame:CGRectMake(0, yOrigin, widthOfBox, heightOfBox)];
     box.layer.borderWidth = self.lineThickness;
     box.layer.borderColor = self.lineColor.CGColor;
@@ -184,15 +178,14 @@ typedef void(^myCompletion)(BOOL);
 - (void) drawScreenEffect {
     
     double lineTransparency = 0.5;
-    UIColor *screenTint = [UIColor colorWithRed:.1 green:.5 blue:.5 alpha:.1];
     UIColor *interlaceLineColor = [UIColor colorWithRed:.1 green:.6 blue:.7 alpha:lineTransparency];
     
     // draw screen tint
     self.screenTintView = [[UIView alloc]initWithFrame:self.parentView.frame];
     self.screenTintView.userInteractionEnabled = NO;
-    self.screenTintView.backgroundColor = screenTint;
+    self.screenTintView.backgroundColor = self.screenTintColor;
     [self.parentView addSubview:self.screenTintView];
-
+    
     // draw interlace lines
     for (int i = 0; i < (int)(self.parentView.frame.size.height); i ++) {
         if (i % 2 == 0) {
@@ -207,7 +200,7 @@ typedef void(^myCompletion)(BOOL);
 }
 
 - (void) drawGlowingLine {
-
+    
     double heightOfLine = 100;
     
     // draw glowing animated line
@@ -224,7 +217,7 @@ typedef void(^myCompletion)(BOOL);
     // animate glow line
     CGRect destinationFrame = CGRectMake(0, self.frame.size.height + 20, glowLine.frame.size.width, glowLine.frame.size.height);
     
-    [UIView animateWithDuration:10
+    [UIView animateWithDuration:15
                           delay:0.0
                         options:UIViewAnimationCurveLinear | UIViewAnimationOptionRepeat | UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
@@ -237,7 +230,7 @@ typedef void(^myCompletion)(BOOL);
 }
 
 - (void) drawRandomLines {
-
+    
     for (int i = 0; i < 10; i++) {
         
         double heightOfLine = arc4random() % 200;
@@ -246,32 +239,58 @@ typedef void(^myCompletion)(BOOL);
         // create a random line
         UIView *randomLine = [[UIView alloc]initWithFrame:CGRectMake(-30, randomYOrigin, self.parentView.frame.size.width + 60, heightOfLine)];
         [self.screenTintView addSubview:randomLine];
-        randomLine.backgroundColor = [UIColor colorWithWhite:1.0 alpha:.9];
+        
+        randomLine.backgroundColor = [UIColor colorWithWhite:.8 alpha:.8];
+        
+        // "darken" the screen
+        self.screenTintView.backgroundColor = [UIColor blackColor];
+
         
         // change the yOrigin to be random
         randomYOrigin = arc4random() % (int)self.parentView.frame.size.height;
-        CGRect destinationFrame = CGRectMake(0, randomYOrigin, randomLine.frame.size.width, 10);
+        CGRect destinationFrame = CGRectMake(0, randomYOrigin, randomLine.frame.size.width, 0 );
         
         [UIView animateWithDuration:.09 animations:^{
             randomLine.frame = destinationFrame;
         } completion:^(BOOL finished) {
             [randomLine removeFromSuperview];
         }];
-
-
-        NSLog(@"%@", randomLine);
+        
+        [UIView animateWithDuration:0.7
+                              delay:0.0
+                            options:UIViewAnimationCurveEaseOut | UIViewAnimationOptionOverrideInheritedDuration
+                         animations:^{
+                             self.screenTintView.backgroundColor = self.screenTintColor;
+                         }
+                         completion:^(BOOL finished){
+                         }
+         ];
+        
     }
-    
 }
 
 
 
-/*
- Only override drawRect: if you perform custom drawing.
- An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-     Drawing code
-}
-*/
+ //Only override drawRect: if you perform custom drawing.
+ //An empty implementation adversely affects performance during animation.
+// - (void)drawRect:(CGRect)rect {
+//     CGContextRef context = UIGraphicsGetCurrentContext();
+//     
+//     UIColor * whiteColor = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:1.0];
+//     UIColor * lightGrayColor = [UIColor colorWithRed:230.0/255.0 green:230.0/255.0 blue:230.0/255.0 alpha:1.0];
+//     UIColor * redColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:1.0]; // NEW
+//     
+//     CGRect paperRect = self.bounds;
+//     
+//     //drawLinearGradient(context, paperRect, whiteColor.CGColor, lightGrayColor.CGColor);
+//     
+//     // START NEW
+//     CGRect strokeRect = CGRectInset(paperRect, 5.0, 5.0);
+//     CGContextSetStrokeColorWithColor(context, redColor.CGColor);
+//     CGContextSetLineWidth(context, 1.0);
+//     CGContextStrokeRect(context, strokeRect);
+//     // END NEW
+// }
+
 
 @end

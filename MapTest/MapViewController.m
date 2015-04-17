@@ -455,6 +455,7 @@ static bool kAnimate = true;
     self.gmMapView.myLocationEnabled = YES;
     self.gmMapView.settings.scrollGestures = NO;
     self.gmMapView.delegate = self;
+    self.gmMapView.mapType = kGMSTypeNormal;
     
     [self.view addSubview:self.gmMapView];
 }
@@ -712,7 +713,6 @@ static bool kAnimate = true;
 }
 
 - (void) fireButtonPressed:(id)sender {
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"drawRandomLines" object:nil];
     
     //[self createTimer];
     
@@ -795,6 +795,7 @@ static bool kAnimate = true;
     for (GMSMarker *marker in self.mArrayMarkersForMap) {
         
         PFUser *userAtMarker = marker.user;
+        
         HealthData *healthDataUserAtMarker = [[HealthDataController sharedInstance] retrieveHealthDataFromUser:userAtMarker];
         
         CLLocationCoordinate2D positionOfMarker = marker.position;
@@ -806,6 +807,11 @@ static bool kAnimate = true;
             
             // Runs these methods only if the marker has above 0 health
             if (health > 0 ) {
+                
+                // if its the current user getting hit
+                if ([[PFUser currentUser].objectId isEqualToString:userAtMarker.objectId]) {
+                    [self.interfaceLineDrawer drawRandomLines];
+                }
                 
                 // If the distance less than 35% away
                 if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage * 0.35 ) {
@@ -850,8 +856,6 @@ static bool kAnimate = true;
                 
                 // This will save health data
                 [HealthDataController saveHealthData:healthDataUserAtMarker];
-                
-        
 
                 // Adds +1 to the "shotsHit" but not saved yet.
                 [[PFUser currentUser] incrementKey:shotsHitKey];

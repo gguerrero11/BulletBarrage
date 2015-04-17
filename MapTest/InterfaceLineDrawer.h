@@ -21,5 +21,6 @@ static NSString * const left = @"left";
 @property (nonatomic, strong) GMSCameraPosition *mapCamera;
 
 - (void) move:(NSString *)side boxBasedByValue:(double)value;
+- (void) drawRandomLines;
 
 @end
