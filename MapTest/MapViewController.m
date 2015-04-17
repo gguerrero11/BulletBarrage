@@ -228,7 +228,7 @@ static bool kAnimate = true;
 - (void) createColors {
     self.fireButtonColor = [UIColor colorWithRed:.8 green:.1 blue:.1 alpha:.8];
     self.fireButtonBorderColor = [UIColor colorWithRed:.9 green:.3 blue:.3 alpha:1];
-    self.disabledTextColor = [UIColor colorWithRed:.1 green:.1 blue:.1 alpha:.8];
+    self.disabledTextColor = [UIColor colorWithRed:.7 green:.7 blue:.7 alpha:.8];
 }
 
 - (void) viewDidLoad {
@@ -482,7 +482,6 @@ static bool kAnimate = true;
     self.fireButton.layer.shadowOpacity = 1;
     self.fireButton.layer.shadowRadius = 10;
 
-    
     // Set up respawn button
     self.respawnButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 2 -
                                                                     75, self.view.frame.size.height / 2, 150, 150)];
@@ -508,6 +507,7 @@ static bool kAnimate = true;
     [HealthDataController saveHealthData:self.currentUserHealthData];
     self.respawnButton.hidden = YES;
     self.fireButton.backgroundColor = self.fireButtonColor;
+    self.fireButton.titleLabel.textColor = [UIColor whiteColor];
     self.fireButton.userInteractionEnabled = YES;
     self.fireButton.layer.borderWidth = 4;
     self.fireButton.layer.borderColor = self.fireButtonBorderColor.CGColor;
@@ -712,6 +712,7 @@ static bool kAnimate = true;
 }
 
 - (void) fireButtonPressed:(id)sender {
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"drawRandomLines" object:nil];
     
     //[self createTimer];
     

@@ -16,6 +16,8 @@ static NSString * const zoom = @"zoom";
 
 @interface InterfaceLineDrawer ()
 
+typedef void(^myCompletion)(BOOL);
+
 @property (nonatomic,strong) UIColor *lineColor;
 @property (nonatomic,strong) UIColor *labelColor;
 @property (nonatomic,strong) UIColor *transparentBox;
@@ -25,9 +27,12 @@ static NSString * const zoom = @"zoom";
 
 @property (nonatomic,strong) UIView *rightBoxArrow;
 @property (nonatomic,strong) UIView *leftBoxArrow;
+@property (nonatomic) UIView *screenTintView;
+@property (nonatomic,strong) UIView *interlaceLineView;
 @property (nonatomic,strong) UILabel *pitchLabel;
 @property (nonatomic,strong) UILabel *zoomLabel;
 
+@property (nonatomic) BOOL initalStartup;
 
 
 @property (nonatomic) double lengthOfVerticalLines;
@@ -36,11 +41,19 @@ static NSString * const zoom = @"zoom";
 
 @implementation InterfaceLineDrawer
 
+
+
+- (void) registerForNotifications {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(drawRandomLines) name:@"drawRandomLines" object:nil];
+    
+}
+
 - (instancetype)initWithFrame:(CGRect)frame withView:(UIView *)view{
     self = [super initWithFrame:frame];
     
     if (self) {
         
+        self.initalStartup = YES;
         self.parentView = view;
         self.lengthOfLine = view.frame.size.height * .6;
         self.lineThickness = 1.0;
@@ -48,11 +61,13 @@ static NSString * const zoom = @"zoom";
         self.labelColor = [UIColor blackColor];
         self.transparentBox = [UIColor colorWithRed:.5 green:.5 blue:.5 alpha:.4];
 
-        
+        [self registerForNotifications];
+
         [self drawVerticalLines:right];
         [self drawVerticalLines:left];
+
         [self drawScreenEffect];
-        
+                [self drawGlowingLine];
     }
     return self;
 }
@@ -172,23 +187,84 @@ static NSString * const zoom = @"zoom";
     UIColor *screenTint = [UIColor colorWithRed:.1 green:.5 blue:.5 alpha:.1];
     UIColor *interlaceLineColor = [UIColor colorWithRed:.1 green:.6 blue:.7 alpha:lineTransparency];
     
-    UIView *screenTintView = [[UIView alloc]initWithFrame:self.parentView.frame];
-    screenTintView.userInteractionEnabled = NO;
-    screenTintView.backgroundColor = screenTint;
-    [self.parentView addSubview:screenTintView];
+    // draw screen tint
+    self.screenTintView = [[UIView alloc]initWithFrame:self.parentView.frame];
+    self.screenTintView.userInteractionEnabled = NO;
+    self.screenTintView.backgroundColor = screenTint;
+    [self.parentView addSubview:self.screenTintView];
 
+    // draw interlace lines
     for (int i = 0; i < (int)(self.parentView.frame.size.height); i ++) {
         if (i % 2 == 0) {
             
-            UIView *lineView = [[UIView alloc]initWithFrame:CGRectMake(0, i, self.parentView.frame.size.width, 1)];
-            lineView.alpha = lineTransparency;
-            lineView.backgroundColor = interlaceLineColor;
-            lineView.userInteractionEnabled = NO;
-            [screenTintView addSubview:lineView];
+            self.interlaceLineView = [[UIView alloc]initWithFrame:CGRectMake(0, i, self.parentView.frame.size.width, 1)];
+            self.interlaceLineView.alpha = lineTransparency;
+            self.interlaceLineView.backgroundColor = interlaceLineColor;
+            self.interlaceLineView.userInteractionEnabled = NO;
+            [self.screenTintView addSubview:self.interlaceLineView];
         }
-        
     }
 }
+
+- (void) drawGlowingLine {
+
+    double heightOfLine = 100;
+    
+    // draw glowing animated line
+    UIView *glowLine = [[UIView alloc]initWithFrame:CGRectMake(-30, -heightOfLine, self.parentView.frame.size.width + 60, heightOfLine)];
+    glowLine.layer.shadowOpacity = 1.0;
+    glowLine.layer.shadowColor = [UIColor colorWithWhite:1 alpha:1].CGColor;
+    glowLine.layer.opacity = .15;
+    glowLine.layer.shadowRadius = 6;
+    glowLine.userInteractionEnabled = NO;
+    glowLine.backgroundColor = [UIColor colorWithWhite:1 alpha:1];
+    
+    [self.screenTintView addSubview:glowLine];
+    
+    // animate glow line
+    CGRect destinationFrame = CGRectMake(0, self.frame.size.height + 20, glowLine.frame.size.width, glowLine.frame.size.height);
+    
+    [UIView animateWithDuration:10
+                          delay:0.0
+                        options:UIViewAnimationCurveLinear | UIViewAnimationOptionRepeat | UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         glowLine.frame = destinationFrame;
+                     }
+                     completion:^(BOOL finished){
+                     }
+     ];
+    
+}
+
+- (void) drawRandomLines {
+
+    for (int i = 0; i < 10; i++) {
+        
+        double heightOfLine = arc4random() % 200;
+        double randomYOrigin = arc4random() % (int)self.parentView.frame.size.height;
+        
+        // create a random line
+        UIView *randomLine = [[UIView alloc]initWithFrame:CGRectMake(-30, randomYOrigin, self.parentView.frame.size.width + 60, heightOfLine)];
+        [self.screenTintView addSubview:randomLine];
+        randomLine.backgroundColor = [UIColor colorWithWhite:1.0 alpha:.9];
+        
+        // change the yOrigin to be random
+        randomYOrigin = arc4random() % (int)self.parentView.frame.size.height;
+        CGRect destinationFrame = CGRectMake(0, randomYOrigin, randomLine.frame.size.width, 10);
+        
+        [UIView animateWithDuration:.09 animations:^{
+            randomLine.frame = destinationFrame;
+        } completion:^(BOOL finished) {
+            [randomLine removeFromSuperview];
+        }];
+
+
+        NSLog(@"%@", randomLine);
+    }
+    
+}
+
+
 
 /*
  Only override drawRect: if you perform custom drawing.
