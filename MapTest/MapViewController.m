@@ -452,15 +452,24 @@ static bool kAnimate = true;
 
 - (void) setUpDataDisplayAndButtons {
     
+    double widthOfFireButton = 120;
+    
     // Set up fire button
-    self.fireButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 30, self.view.frame.size.height - 130, 80, 80)];
-    self.fireButton.layer.cornerRadius = 40;
-    self.fireButton.backgroundColor = [UIColor redColor];
-    [self.fireButton setTitle:@"Fire!" forState:UIControlStateNormal];
+    self.fireButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - widthOfFireButton / 2,
+                                                                self.view.frame.size.height - 130,
+                                                                widthOfFireButton, 70)];
+    [self.view addSubview:self.fireButton];
+    self.fireButton.backgroundColor = [UIColor colorWithRed:.8 green:.1 blue:.1 alpha:.8];
+    self.fireButton.titleLabel.font = [UIFont systemFontOfSize:30 weight:100];
+    [self.fireButton setTitle:@"FIRE" forState:UIControlStateNormal];
     [self.fireButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [self.fireButton setTitleColor:[UIColor blackColor] forState:UIControlStateDisabled];
     [self.fireButton addTarget:self action:@selector(fireButtonPressed:) forControlEvents:UIControlEventTouchDown];
-    [self.view addSubview:self.fireButton];
+    
+    // modify firebutton border
+    self.fireButton.layer.borderWidth = 4;
+    self.fireButton.layer.borderColor = [UIColor colorWithRed:.9 green:.3 blue:.3 alpha:1].CGColor;
+
     
     // Set up respawn button
     self.respawnButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 2 -

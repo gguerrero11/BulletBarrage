@@ -17,6 +17,7 @@ static NSString * const zoom = @"zoom";
 @interface InterfaceLineDrawer ()
 
 @property (nonatomic,strong) UIColor *lineColor;
+@property (nonatomic,strong) UIColor *labelColor;
 @property (nonatomic,strong) UIColor *transparentBox;
 @property (nonatomic) double lengthOfLine;
 @property (nonatomic) double lineThickness;
@@ -41,9 +42,10 @@ static NSString * const zoom = @"zoom";
     if (self) {
         
         self.parentView = view;
-        self.lengthOfLine = view.frame.size.height * .8;
+        self.lengthOfLine = view.frame.size.height * .6;
         self.lineThickness = 1.0;
-        self.lineColor = [UIColor blackColor];
+        self.lineColor = [UIColor grayColor];
+        self.labelColor = [UIColor blackColor];
         self.transparentBox = [UIColor colorWithRed:.5 green:.5 blue:.5 alpha:.4];
 
         
@@ -79,8 +81,9 @@ static NSString * const zoom = @"zoom";
 
 - (void) drawStudsForVerticalLine:(UIView *)verticalLine side:(NSString *)side {
     int amountOfStuds = 15;
-    double spaceBetweenStuds = verticalLine.frame.size.height / amountOfStuds;
     int lineLength;
+    double spaceBetweenStuds = verticalLine.frame.size.height / amountOfStuds;
+
     
     for (int i = 0; i <= amountOfStuds; i++) {
         lineLength = 10;
@@ -121,7 +124,7 @@ static NSString * const zoom = @"zoom";
     label.text = text;
     label.font = [UIFont systemFontOfSize:15];
     label.userInteractionEnabled = NO;
-    label.textColor = self.lineColor;
+    label.textColor = self.labelColor;
     
     if (movement == YES) {
         box.backgroundColor = self.transparentBox;
@@ -166,21 +169,25 @@ static NSString * const zoom = @"zoom";
 - (void) drawScreenEffect {
     
     double lineTransparency = 0.5;
-    UIColor *interlaceLineColor = [UIColor greenColor];
+    UIColor *screenTint = [UIColor colorWithRed:.1 green:.5 blue:.5 alpha:.1];
+    UIColor *interlaceLineColor = [UIColor colorWithRed:.1 green:.6 blue:.7 alpha:lineTransparency];
     
+    UIView *screenTintView = [[UIView alloc]initWithFrame:self.parentView.frame];
+    screenTintView.userInteractionEnabled = NO;
+    screenTintView.backgroundColor = screenTint;
+    [self.parentView addSubview:screenTintView];
+
     for (int i = 0; i < (int)(self.parentView.frame.size.height); i ++) {
         if (i % 2 == 0) {
             
-            UIView *line = [[UIView alloc]initWithFrame:CGRectMake(0, i, self.parentView.frame.size.width, 1)];
-            line.alpha = lineTransparency;
-            line.backgroundColor = interlaceLineColor;
-            line.userInteractionEnabled = NO;
-            [self.parentView addSubview:line];
+            UIView *lineView = [[UIView alloc]initWithFrame:CGRectMake(0, i, self.parentView.frame.size.width, 1)];
+            lineView.alpha = lineTransparency;
+            lineView.backgroundColor = interlaceLineColor;
+            lineView.userInteractionEnabled = NO;
+            [screenTintView addSubview:lineView];
         }
         
     }
-    
-    
 }
 
 /*
