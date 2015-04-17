@@ -75,6 +75,9 @@ static bool kAnimate = true;
 @property (nonatomic, strong) UIButton *zoomButton;
 @property (nonatomic, strong) MKPolyline *polyline;
 @property (nonatomic, strong) HealthBox *healthBox;
+@property (nonatomic, strong) UIColor *fireButtonColor;
+@property (nonatomic, strong) UIColor *fireButtonBorderColor;
+@property (nonatomic, strong) UIColor *disabledTextColor;
 @property (nonatomic, strong) InterfaceLineDrawer *interfaceLineDrawer;
 @property (nonatomic) BOOL initialLaunch;
 
@@ -222,11 +225,17 @@ static bool kAnimate = true;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateHealthOfMarkers) name:@"healthQueryDone" object:nil];
 }
 
+- (void) createColors {
+    self.fireButtonColor = [UIColor colorWithRed:.8 green:.1 blue:.1 alpha:.8];
+    self.fireButtonBorderColor = [UIColor colorWithRed:.9 green:.3 blue:.3 alpha:1];
+    self.disabledTextColor = [UIColor colorWithRed:.1 green:.1 blue:.1 alpha:.8];
+}
+
 - (void) viewDidLoad {
     [super viewDidLoad];
     
     self.tabBarController.tabBar.alpha = 0;
-    
+    [self createColors];
     self.initialLaunch = YES;
     self.healthDataController = [HealthDataController new];
     
@@ -459,7 +468,7 @@ static bool kAnimate = true;
                                                                 self.view.frame.size.height - 130,
                                                                 widthOfFireButton, 70)];
     [self.view addSubview:self.fireButton];
-    self.fireButton.backgroundColor = [UIColor colorWithRed:.8 green:.1 blue:.1 alpha:.8];
+    self.fireButton.backgroundColor = self.fireButtonColor;
     self.fireButton.titleLabel.font = [UIFont systemFontOfSize:30 weight:100];
     [self.fireButton setTitle:@"FIRE" forState:UIControlStateNormal];
     [self.fireButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -468,7 +477,10 @@ static bool kAnimate = true;
     
     // modify firebutton border
     self.fireButton.layer.borderWidth = 4;
-    self.fireButton.layer.borderColor = [UIColor colorWithRed:.9 green:.3 blue:.3 alpha:1].CGColor;
+    self.fireButton.layer.borderColor = self.fireButtonBorderColor.CGColor;
+    self.fireButton.layer.shadowColor = self.fireButtonColor.CGColor;
+    self.fireButton.layer.shadowOpacity = 1;
+    self.fireButton.layer.shadowRadius = 10;
 
     
     // Set up respawn button
@@ -495,8 +507,14 @@ static bool kAnimate = true;
     self.currentUserHealthData[healthKey] = @100;
     [HealthDataController saveHealthData:self.currentUserHealthData];
     self.respawnButton.hidden = YES;
-    self.fireButton.backgroundColor = [UIColor redColor];
+    self.fireButton.backgroundColor = self.fireButtonColor;
     self.fireButton.userInteractionEnabled = YES;
+    self.fireButton.layer.borderWidth = 4;
+    self.fireButton.layer.borderColor = self.fireButtonBorderColor.CGColor;
+    self.fireButton.layer.shadowColor = self.fireButtonColor.CGColor;
+    self.fireButton.layer.shadowOpacity = 1;
+    self.fireButton.layer.shadowRadius = 10;
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDeadAlert) name:@"userDead" object:nil];
 }
 
@@ -505,7 +523,11 @@ static bool kAnimate = true;
     [deadAlert show];
     self.respawnButton.hidden = NO;
     self.fireButton.backgroundColor = [UIColor grayColor];
+    self.fireButton.titleLabel.textColor = self.disabledTextColor;
     self.fireButton.userInteractionEnabled = NO;
+    self.fireButton.layer.shadowOpacity = 0;
+    self.fireButton.layer.borderColor = self.disabledTextColor.CGColor;
+
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"userDead" object:nil];
     
 }
