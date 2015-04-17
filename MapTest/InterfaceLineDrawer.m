@@ -82,6 +82,7 @@ static NSString * const zoom = @"zoom";
     
     for (int i = 0; i <= amountOfStuds; i++) {
         lineLength = 10;
+        
         if ([side isEqualToString:right]) lineLength *= -1;
         if (i == 0 || i == amountOfStuds) lineLength *= 2;
         
@@ -152,6 +153,7 @@ static NSString * const zoom = @"zoom";
     
     // arrow box on right
     if ([side isEqualToString:right]) {
+        
         // value is from 2 - 21
         double percentage = value / 21;
         self.rightBoxArrow.center = CGPointMake( -self.parentView.frame.size.width * 0.1, (percentage * self.lengthOfVerticalLines) - 25);
@@ -162,7 +164,7 @@ static NSString * const zoom = @"zoom";
         
         // this origin is based on radians. It places the box on percentage based on the length of the line.
         double yOrigin = self.lengthOfVerticalLines * (value / 1.5);
-        self.leftBoxArrow.center = CGPointMake(self.parentView.frame.size.width * 0.1, yOrigin );
+        self.leftBoxArrow.center = CGPointMake(self.parentView.frame.size.width * 0.1, self.lengthOfVerticalLines - yOrigin );
     }
 }
 

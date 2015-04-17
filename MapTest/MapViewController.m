@@ -74,7 +74,6 @@ static bool kAnimate = true;
 @property (nonatomic, strong) UIButton *respawnButton;
 @property (nonatomic, strong) UIButton *zoomButton;
 @property (nonatomic, strong) MKPolyline *polyline;
-@property (nonatomic, strong) UILabel *pitchLabelData;
 @property (nonatomic, strong) HealthBox *healthBox;
 @property (nonatomic, strong) InterfaceLineDrawer *interfaceLineDrawer;
 @property (nonatomic) BOOL initialLaunch;
@@ -354,8 +353,6 @@ static bool kAnimate = true;
             self.attitude = motion.attitude;
             self.deviceYaw = motion.attitude.yaw + 1.55;
             
-            self.pitchLabelData.text = [NSString stringWithFormat:@"%.1f",[MapViewController convertToDegrees:self.pitchWithLimit]];
-            
             [self.interfaceLineDrawer move:left boxBasedByValue:self.pitchWithLimit];
             [self.interfaceLineDrawer move:right boxBasedByValue:self.gmMapView.camera.zoom];
             
@@ -454,28 +451,6 @@ static bool kAnimate = true;
 }
 
 - (void) setUpDataDisplayAndButtons {
-    
-    // Set up grey box
-    double widthOfStatView = self.view.frame.size.width *0.3;
-    double heightOfStatView = self.view.frame.size.height *0.1;
-    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(30, self.view.frame.size.height - (60 + heightOfStatView), widthOfStatView, heightOfStatView)];
-    view.backgroundColor = [UIColor grayColor];
-    view.alpha = .65;
-    [self.view addSubview:view];
-    
-    // Set up Pitch Label
-    UILabel *pitchLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, 50)];
-    [view addSubview:pitchLabel];
-    pitchLabel.textAlignment = NSTextAlignmentCenter;
-    pitchLabel.text = @"Pitch";
-    pitchLabel.textColor = [UIColor blackColor];
-    
-    // Set up Pitch Label Data
-    self.pitchLabelData = [[UILabel alloc] initWithFrame:CGRectMake(0, 30, view.frame.size.width, 50)];
-    [view addSubview:self.pitchLabelData];
-    
-    self.pitchLabelData.textAlignment = NSTextAlignmentCenter;
-    self.pitchLabelData.textColor = [UIColor blackColor];
     
     // Set up fire button
     self.fireButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 30, self.view.frame.size.height - 130, 80, 80)];
