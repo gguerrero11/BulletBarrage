@@ -49,6 +49,7 @@ static NSString * const zoom = @"zoom";
         
         [self drawVerticalLines:right];
         [self drawVerticalLines:left];
+        [self drawScreenEffect];
         
     }
     return self;
@@ -63,6 +64,7 @@ static NSString * const zoom = @"zoom";
     UIView *verticalLine = [[UIView alloc] initWithFrame:CGRectMake(xOrigin, self.parentView.frame.size.height * 0.1,
                                                                         self.lineThickness, self.lengthOfLine)];
     verticalLine.backgroundColor = self.lineColor;
+    verticalLine.userInteractionEnabled = NO;
     [self.parentView addSubview:verticalLine];
     [self drawStudsForVerticalLine:verticalLine side:side];
     
@@ -88,6 +90,7 @@ static NSString * const zoom = @"zoom";
         
         UIView *studdedline = [[UIView alloc] initWithFrame:CGRectMake(0, spaceBetweenStuds * i, lineLength, self.lineThickness)];
         studdedline.backgroundColor = self.lineColor;
+        studdedline.userInteractionEnabled = NO;
         [verticalLine addSubview:studdedline];
     }
 }
@@ -117,6 +120,7 @@ static NSString * const zoom = @"zoom";
     label.textAlignment = NSTextAlignmentCenter;
     label.text = text;
     label.font = [UIFont systemFontOfSize:15];
+    label.userInteractionEnabled = NO;
     label.textColor = self.lineColor;
     
     if (movement == YES) {
@@ -133,17 +137,8 @@ static NSString * const zoom = @"zoom";
     }
 }
 
-
-
 - (void) drawArrowBoxOnView:(UIView *)view whichSide:(NSString *)side withText:(NSString *)text {
     [self drawBoxOn:nil onView:view whichSide:side withMovement:YES withText:text];
-}
-
-
-
-- (void) updateTextIn:(NSString *)side boxWithValue:(double)value {
-    
-    
 }
 
 - (void) move:(NSString *)side boxBasedByValue:(double)value {
@@ -163,9 +158,29 @@ static NSString * const zoom = @"zoom";
     if ([side isEqualToString:left]) {
         
         // this origin is based on radians. It places the box on percentage based on the length of the line.
-        double yOrigin = self.lengthOfVerticalLines * (value / 1.5);
+        double yOrigin = (self.lengthOfVerticalLines - 24) * (value / 1.5);
         self.leftBoxArrow.center = CGPointMake(self.parentView.frame.size.width * 0.1, self.lengthOfVerticalLines - yOrigin );
     }
+}
+
+- (void) drawScreenEffect {
+    
+    double lineTransparency = 0.5;
+    UIColor *interlaceLineColor = [UIColor greenColor];
+    
+    for (int i = 0; i < (int)(self.parentView.frame.size.height); i ++) {
+        if (i % 2 == 0) {
+            
+            UIView *line = [[UIView alloc]initWithFrame:CGRectMake(0, i, self.parentView.frame.size.width, 1)];
+            line.alpha = lineTransparency;
+            line.backgroundColor = interlaceLineColor;
+            line.userInteractionEnabled = NO;
+            [self.parentView addSubview:line];
+        }
+        
+    }
+    
+    
 }
 
 /*
