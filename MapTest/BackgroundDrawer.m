@@ -16,6 +16,10 @@ static NSString * const backgroundGrid = @"backgroundGrid";
 @interface BackgroundDrawer ()
 
 @property (nonatomic) UIView *view;
+@property (nonatomic) UIImageView *gridImageView;
+@property (nonatomic) UIImageView *flakImageView;
+@property (nonatomic) UIImageView *backgroundImage;
+
 
 @end
 
@@ -25,22 +29,30 @@ static NSString * const backgroundGrid = @"backgroundGrid";
 - (void) setUpBackgroundOnView:(UIView *)passedView {
     self.view = passedView;
     
-    UIImageView *backgroundImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-    backgroundImage.image = [UIImage imageNamed:@"leaderBoardScreenBlue"];
-    [self.view addSubview:backgroundImage];
+    self.gridImageView.image = [UIImage imageNamed:flakLines];
+    self.flakImageView.image = [UIImage imageNamed:flakLines];
+    
+    self.backgroundImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    self.backgroundImage.image = [UIImage imageNamed:@"leaderBoardScreenBlue"];
+    [self.view addSubview:self.backgroundImage];
     
     [self continueDrawing];
 }
 
 
 - (void) drawGridBGImages:(NSString *)type {
+
+    UIImageView *backgroundImage;
     
-    // runs when bool is set to YES, (when the user is at the current screen the animation is needed
+    // runs when bool is set to YES, (when the user is at the current screen the animation is needed)
     if (self.shouldContinue) {
         double randomWidth = 0;
         double randomHeight = 0;
         
         if ([type isEqualToString:flakLines]) {
+            
+            backgroundImage = self.flakImageView;
+            
             // sets random width from 600 - 800
             randomWidth = arc4random() % 200 + 600.0;
             
@@ -48,33 +60,36 @@ static NSString * const backgroundGrid = @"backgroundGrid";
             randomHeight = 508 * (randomWidth / 800);
         }
         if ([type isEqualToString:backgroundGrid]) {
+            
+            backgroundImage = self.gridImageView;
+            
             // sets random width from 400 - 2800
             randomWidth = arc4random() % 2400 + 400.0;
             
             // sets the height based on the percentage of the size of the randomWidth to its maximum size
             randomHeight = 1400.0 * (randomWidth / 2800.0);
         }
+
         
         // create the "grid" background
-        UIImageView *backgroundImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, randomWidth, randomHeight)];
+        backgroundImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, randomWidth, randomHeight)];
         backgroundImage.image = [UIImage imageNamed:type];
-        [self.view addSubview:backgroundImage];
+        [self.backgroundImage addSubview:backgroundImage];
+        
+        CGPoint randomCenter = CGPointMake(self.view.frame.size.width / 2.0 , self.view.frame.size.height / 2.0 );
         
         // set the new X,Y destination of the frame.
-        double newX = arc4random() % 600 - 300.0;
-        double newY = arc4random() % 600 - 300.0;
-        
-        int timeOfAnimation = arc4random() % 10 + 55;
-        
-        NSLog(@"%f, %f", newX, newY);
+        double newX = arc4random() % 200 + 200;
+        double newY = arc4random() % 200 + 200;
+        int timeOfAnimation = arc4random() % 10 + 15;
         
         // don't rotate the image randomly if its if the "flakLines" image
         CGAffineTransform rotationTransform;
         if ([type isEqualToString:flakLines]) rotationTransform = CGAffineTransformMakeRotation(0);
-        else rotationTransform = CGAffineTransformMakeRotation(arc4random());
+        else rotationTransform = CGAffineTransformMakeRotation(fmodf(arc4random(), 360.0f));
         
         backgroundImage.transform = rotationTransform;
-        backgroundImage.center = CGPointMake(self.view.frame.size.width / 2, self.view.frame.size.height / 2);
+        backgroundImage.center = randomCenter;
         backgroundImage.alpha = 0;
         
         // animates the fade in, by alpha (independent from the motion animation)
@@ -98,8 +113,10 @@ static NSString * const backgroundGrid = @"backgroundGrid";
                                                   backgroundImage.alpha = 0;
                                               }
                                               completion:^(BOOL finished) {
+                                                  backgroundImage.center = randomCenter;
+                                                  
                                                   // remove it from the view and call the method again
-                                                  [backgroundImage removeFromSuperview];
+                                                  
                                                   [self performSelector:@selector(drawGridBGImages:) withObject:type];
                                               }];
                          }];

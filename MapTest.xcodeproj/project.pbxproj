@@ -394,10 +394,10 @@
 		49B9DC3E1ACF37D1003EA46E /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				49E6F2911AE2313B007B4886 /* BackgroundDrawer.h */,
-				49E6F2921AE2313B007B4886 /* BackgroundDrawer.m */,
 				49B9DC391ACF2D94003EA46E /* ProfileviewControllerViewController.h */,
 				49B9DC3A1ACF2D94003EA46E /* ProfileviewControllerViewController.m */,
+				49E6F2911AE2313B007B4886 /* BackgroundDrawer.h */,
+				49E6F2921AE2313B007B4886 /* BackgroundDrawer.m */,
 				49B9DC3F1ACF394E003EA46E /* ProfileViewDataSource.h */,
 				49B9DC401ACF394E003EA46E /* ProfileViewDataSource.m */,
 				49603D651AD0B87200AB3E50 /* AvatarTableViewCell.h */,

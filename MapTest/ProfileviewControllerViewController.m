@@ -10,9 +10,6 @@
 #import "ProfileViewDataSource.h"
 #import "BackgroundDrawer.h"
 
-static int paddingFromGroupTable = 35;
-
-
 @interface ProfileviewControllerViewController () <UITableViewDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;
@@ -47,7 +44,7 @@ static int paddingFromGroupTable = 35;
     
     // table datasource stuff
     self.dataSource = [ProfileViewDataSource new];
-    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, -paddingFromGroupTable, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStyleGrouped];
+    self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStyleGrouped];
     self.tableView.dataSource = self.dataSource;
     self.tableView.delegate = self;
     self.tableView.scrollEnabled = NO;
@@ -70,39 +67,38 @@ static int paddingFromGroupTable = 35;
     if (indexPath.row == self.selectedIndex) {
         
         return self.selectedCellHeight;
-        
     }
+    
     float remainingFrameSize =  self.view.frame.size.height -
     self.navigationController.navigationBar.frame.size.height -
-        self.tabBarController.tabBar.frame.size.height -
-        self.view.frame.size.width -
-        [UIApplication sharedApplication].statusBarFrame.size.height;
-        self.unselectedCellHeight = remainingFrameSize / 2;
-        return self.unselectedCellHeight;
-    }
+    self.tabBarController.tabBar.frame.size.height -
+    self.view.frame.size.width -
+    [UIApplication sharedApplication].statusBarFrame.size.height;
+    self.unselectedCellHeight = remainingFrameSize / 2;
+    return self.unselectedCellHeight + 5;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Deselect cell
     
-    -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-        // Deselect cell
-        
-        [tableView deselectRowAtIndexPath:indexPath animated:NO];
-        
-        self.selectedIndex = indexPath.row;
-        
-        // This is where magic happens...
-        [self.tableView beginUpdates];
-        [self.tableView endUpdates];
-    }
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
+    self.selectedIndex = indexPath.row;
     
-    
-    /*
-     #pragma mark - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-     // Get the new view controller using [segue destinationViewController].
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
-    @end
+    // This is where magic happens...
+    [self.tableView beginUpdates];
+    [self.tableView endUpdates];
+}
+
+
+/*
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
+
+@end
