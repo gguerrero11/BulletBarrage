@@ -456,7 +456,7 @@ static bool kAnimate = true;
     self.gmMapView.myLocationEnabled = YES;
     self.gmMapView.settings.scrollGestures = NO;
     self.gmMapView.delegate = self;
-    self.gmMapView.mapType = kGMSTypeSatellite;
+    self.gmMapView.mapType = kGMSTypeHybrid;
     [self.view addSubview:self.gmMapView];
     
 }
@@ -734,7 +734,7 @@ static bool kAnimate = true;
     
     //[self createTimer];
     
-    [[SoundController sharedInstance] playSoundEffect:cannon];
+//    [[SoundController sharedInstance] playSoundEffect:cannon];
     //NSURL *urlForCannon = [[NSBundle mainBundle] URLForResource:cannon withExtension:@"caf"];
     //[self.soundController playAudioFileAtURL:urlForCannon];
     

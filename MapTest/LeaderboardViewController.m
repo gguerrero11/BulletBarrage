@@ -70,7 +70,7 @@ static double tableBoxPadding = 8;
     
     // set up background image
     UIImageView *backgroundImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-    backgroundImage.image = [UIImage imageNamed:@"LeaderBoardScreen2"];
+    backgroundImage.image = [UIImage imageNamed:@"leaderBoardScreenBlue"];
     [self.view addSubview:backgroundImage];
     
     // set size of top bar size
