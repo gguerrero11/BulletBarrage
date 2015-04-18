@@ -21,8 +21,8 @@ static double tableBoxPadding = 8;
 
 @interface LeaderboardViewController () <UITableViewDelegate>
 
-@property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) LeaderboardDataSource *dataSource;
+@property (nonatomic,strong) UITableView *tableView;
+@property (nonatomic,strong) LeaderboardDataSource *dataSource;
 @property (nonatomic) double heightOfStatusBarAndNavBar;
 @property (nonatomic) double heightTabBar;
 @property (nonatomic) double yOriginOfTableView;
@@ -30,11 +30,21 @@ static double tableBoxPadding = 8;
 @property (nonatomic,strong) NSArray *arrayForDistance;
 @property (nonatomic,strong) NSArray *arrayForKD;
 @property (nonatomic,strong) UISegmentedControl *segControl;
+@property (nonatomic,strong) BackgroundDrawer *bgDrawer;
 
 
 @end
 
 @implementation LeaderboardViewController
+
+- (void)viewWillDisappear:(BOOL)animated {
+    self.bgDrawer.shouldContinue = NO;
+}
+
+-(void)viewDidAppear:(BOOL)animated {
+    self.bgDrawer.shouldContinue = YES;
+    [self.bgDrawer continueDrawing];
+}
 
 - (void) registerForNotifications {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadTable) name:@"queryDone" object:nil];

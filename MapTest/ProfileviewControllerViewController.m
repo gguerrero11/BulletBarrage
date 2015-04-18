@@ -17,9 +17,11 @@ static int paddingFromGroupTable = 35;
 
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) ProfileViewDataSource *dataSource;
+@property (nonatomic, strong) BackgroundDrawer *bgDrawer;
 @property (nonatomic) float unselectedCellHeight;
 @property (nonatomic) float selectedCellHeight;
 @property (nonatomic) NSInteger selectedIndex;
+
 
 
 
@@ -27,12 +29,21 @@ static int paddingFromGroupTable = 35;
 
 @implementation ProfileviewControllerViewController
 
+- (void)viewWillDisappear:(BOOL)animated {
+    self.bgDrawer.shouldContinue = NO;
+}
+
+-(void)viewDidAppear:(BOOL)animated {
+    self.bgDrawer.shouldContinue = YES;
+    [self.bgDrawer continueDrawing];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"Profile";
     
-    BackgroundDrawer *bgDrawer = [BackgroundDrawer new];
-    [bgDrawer setUpBackgroundOnView:self.view];
+    self.bgDrawer = [BackgroundDrawer new];
+    [self.bgDrawer setUpBackgroundOnView:self.view];
     
     // table datasource stuff
     self.dataSource = [ProfileViewDataSource new];

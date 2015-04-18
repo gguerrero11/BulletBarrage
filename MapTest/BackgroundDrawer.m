@@ -15,7 +15,7 @@ static NSString * const backgroundGrid = @"backgroundGrid";
 
 @interface BackgroundDrawer ()
 
-@property (nonatomic,strong) UIView *view;
+@property (nonatomic) UIView *view;
 
 @end
 
@@ -32,8 +32,10 @@ static NSString * const backgroundGrid = @"backgroundGrid";
     [self continueDrawing];
 }
 
+
 - (void) drawGridBGImages:(NSString *)type {
     
+    // runs when bool is set to YES, (when the user is at the current screen the animation is needed
     if (self.shouldContinue) {
         double randomWidth = 0;
         double randomHeight = 0;
@@ -59,8 +61,8 @@ static NSString * const backgroundGrid = @"backgroundGrid";
         [self.view addSubview:backgroundImage];
         
         // set the new X,Y destination of the frame.
-        double newX = arc4random() % 400 - 200.0;
-        double newY = arc4random() % 400 - 200.0;
+        double newX = arc4random() % 600 - 300.0;
+        double newY = arc4random() % 600 - 300.0;
         
         int timeOfAnimation = arc4random() % 10 + 55;
         
@@ -108,7 +110,6 @@ static NSString * const backgroundGrid = @"backgroundGrid";
 
     [self drawGridBGImages:backgroundGrid];
     [self drawGridBGImages:flakLines];
-    
 }
 
 @end

@@ -54,7 +54,7 @@ int hours, minutes, seconds, milliseconds;
     
     // play missle Sound if less than 6 seconds left
     if (hours == 0 && minutes == 0 && seconds == 5 && milliseconds == 5) {
-        [[SoundController sharedInstance] playSoundEffect:missleImpact];
+        //[[SoundController sharedInstance] playSoundEffect:missleImpact];
     }
     
     if (hours < 0 && minutes < 0 && seconds < 0 && milliseconds < 0) {

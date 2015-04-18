@@ -24,6 +24,7 @@
 #import "HealthDataController.h"
 #import "HealthBox.h"
 #import "InterfaceLineDrawer.h"
+#import "DrawProjectile.h"
 
 @import SceneKit;
 
@@ -79,6 +80,7 @@ static bool kAnimate = true;
 @property (nonatomic, strong) UIColor *fireButtonBorderColor;
 @property (nonatomic, strong) UIColor *disabledTextColor;
 @property (nonatomic, strong) InterfaceLineDrawer *interfaceLineDrawer;
+@property (nonatomic, strong) DrawProjectile *drawProjectile;
 @property (nonatomic) BOOL initialLaunch;
 
 // SceneKit Properties
@@ -456,9 +458,8 @@ static bool kAnimate = true;
     self.gmMapView.myLocationEnabled = YES;
     self.gmMapView.settings.scrollGestures = NO;
     self.gmMapView.delegate = self;
-    self.gmMapView.mapType = kGMSTypeHybrid;
+    self.gmMapView.mapType = kGMSTypeNone;
     [self.view addSubview:self.gmMapView];
-    
 }
 
 - (void) setUpDataDisplayAndButtons {
@@ -485,8 +486,7 @@ static bool kAnimate = true;
     self.fireButton.layer.shadowRadius = 10;
 
     // Set up respawn button
-    self.respawnButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 2 -
-                                                                    75, self.view.frame.size.height / 2, 150, 150)];
+    self.respawnButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 75, self.view.frame.size.height / 2, 150, 150)];
     self.respawnButton.layer.cornerRadius = 75;
     self.respawnButton.backgroundColor = [UIColor blueColor];
     [self.respawnButton setTitle:@"Respawn" forState:UIControlStateNormal];
@@ -734,7 +734,7 @@ static bool kAnimate = true;
     
     //[self createTimer];
 #warning this slows performance
-    [[SoundController sharedInstance] playSoundEffect:cannon];
+    //[[SoundController sharedInstance] playSoundEffect:cannon];
     
     // we need to create a separate projecile weapon instance, so when the user changes weapon mid-flight, it doesn't change that weapon also
     self.projectile = [Weapon new];
@@ -747,38 +747,19 @@ static bool kAnimate = true;
     CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                         longitude:[self calculateHitLocation].longitude];
     
-    double delayTime = [self calculateProjectileTravelTime];
-    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:delayTime];
+    double projectileTravelTime = [self calculateProjectileTravelTime];
+    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:projectileTravelTime];
     
-    
-//    __block CLLocation * hitLocation;
-//    
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//        // calculate location of hit in background
-//        CLLocationCoordinate2D hitCoordinate = [self calculateHitLocation];
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            // run this after calculation is done.
-//            hitLocation = [[CLLocation alloc]initWithLatitude:hitCoordinate.latitude longitude:hitCoordinate.longitude];
-//        });
-//    });
-//
-//    // run hit checker method on background thread.
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//        // calculate time in background
-//        double delayTime = [self calculateProjectileTravelTime];
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            // run this after calculation is done.
-//            [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:delayTime];
-//        });
-//    });
-    
-    [self drawTrajectoryLineToLocation:hitLocation];
+    self.drawProjectile = [DrawProjectile new];
+    [self.drawProjectile drawProjectileOnView:self.gmMapView atCoordinate:hitLocation.coordinate fromCoordinate:self.myLocation.coordinate animationDuration:projectileTravelTime];
+
+    //[self drawTrajectoryLineToLocation:hitLocation];
 }
 
 - (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
     
     // Play bombExplosion sound
-    [[SoundController sharedInstance] playSoundEffect:bombExplosion];
+    //[[SoundController sharedInstance] playSoundEffect:bombExplosion];
     
     // play explosion gif
     GMSMarker *explosion = [GMSMarker new];
