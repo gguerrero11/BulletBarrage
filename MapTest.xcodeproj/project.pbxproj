@@ -344,6 +344,10 @@
 		49B9DC3C1ACF37BB003EA46E /* MapView */ = {
 			isa = PBXGroup;
 			children = (
+				49C3A5DC1ADDA7C8007C8309 /* HealthData.h */,
+				49C3A5DD1ADDA7C8007C8309 /* HealthData.m */,
+				49C3A5E01ADDAF4A007C8309 /* HealthDataController.h */,
+				49C3A5E11ADDAF4A007C8309 /* HealthDataController.m */,
 				49B9DBE91ACDDB2A003EA46E /* MapViewController.h */,
 				49B9DBEA1ACDDB2A003EA46E /* MapViewController.m */,
 				4937A1D61AE0236300B8F771 /* InterfaceLineDrawer.h */,
@@ -382,10 +386,6 @@
 		49B9DC3E1ACF37D1003EA46E /* Profile */ = {
 			isa = PBXGroup;
 			children = (
-				49C3A5DC1ADDA7C8007C8309 /* HealthData.h */,
-				49C3A5DD1ADDA7C8007C8309 /* HealthData.m */,
-				49C3A5E01ADDAF4A007C8309 /* HealthDataController.h */,
-				49C3A5E11ADDAF4A007C8309 /* HealthDataController.m */,
 				49B9DC391ACF2D94003EA46E /* ProfileviewControllerViewController.h */,
 				49B9DC3A1ACF2D94003EA46E /* ProfileviewControllerViewController.m */,
 				49B9DC3F1ACF394E003EA46E /* ProfileViewDataSource.h */,

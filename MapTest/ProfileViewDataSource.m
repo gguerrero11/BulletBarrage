@@ -44,6 +44,7 @@ static NSString *profileCellIdentifier = @"profileCell";
     // avatar cell
     if (indexPath.row == 0) {
         AvatarTableViewCell *avatarCell = [tableView dequeueReusableCellWithIdentifier:avatarCellIdentifier];
+        avatarCell.backgroundColor = [UIColor clearColor];
         avatarCell.textLabel.text = @"Avatar Cell";
         avatarCell.selectionStyle = UITableViewCellSelectionStyleNone;
         return avatarCell;
@@ -51,6 +52,7 @@ static NSString *profileCellIdentifier = @"profileCell";
     // weapon cell
     if (indexPath.row == 1) {
         WeaponsTableViewCell *weaponsCell = [tableView dequeueReusableCellWithIdentifier:weaponCellIdentifier];
+        weaponsCell.backgroundColor = [UIColor clearColor];
         weaponsCell.textLabel.text = @"Weapon Cell";
         weaponsCell.selectionStyle = UITableViewCellSelectionStyleNone;
         return weaponsCell;
@@ -59,6 +61,7 @@ static NSString *profileCellIdentifier = @"profileCell";
     // profile cell
     if (indexPath.row == 2) {
         ProfileTableViewCell *profileCell = [tableView dequeueReusableCellWithIdentifier:profileCellIdentifier];
+        profileCell.backgroundColor = [UIColor clearColor];
         profileCell.textLabel.text = @"Profile Cell";
         profileCell.selectionStyle = UITableViewCellSelectionStyleNone;
         return profileCell;

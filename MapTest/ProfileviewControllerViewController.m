@@ -29,7 +29,10 @@ static int paddingFromGroupTable = 35;
     [super viewDidLoad];
     self.title = @"Profile";
     
-    // init array for selecting cells
+    // set up background image
+    UIImageView *backgroundImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    backgroundImage.image = [UIImage imageNamed:@"LeaderBoardScreen"];
+    [self.view addSubview:backgroundImage];
 
     
     // table datasource stuff
@@ -38,6 +41,7 @@ static int paddingFromGroupTable = 35;
     self.tableView.dataSource = self.dataSource;
     self.tableView.delegate = self;
     self.tableView.scrollEnabled = NO;
+    self.tableView.backgroundColor = [UIColor clearColor];
     
     [self.dataSource registerTableView:self.tableView];
     [self.view addSubview:self.tableView];

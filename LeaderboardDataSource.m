@@ -8,6 +8,7 @@
 
 #import "LeaderBoardController.h"
 #import "LeaderboardDataSource.h"
+#import "LeaderboardCellTableViewCell.h"
 #import "UserController.h"
 #import <Parse/Parse.h>
 #import "HealthDataController.h"
@@ -24,10 +25,9 @@
 @implementation LeaderboardDataSource
 
 
-
 - (void)registerTableView:(UITableView *)tableView {
     self.tableView = tableView;
-    [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:cellIdentifier];
+    [tableView registerClass:[LeaderboardCellTableViewCell class] forCellReuseIdentifier:cellIdentifier];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -36,7 +36,7 @@
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    LeaderboardCellTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     NSArray *arrayOfUsers = [[NSArray alloc]initWithArray:[UserController sharedInstance].arrayOfUsers];
     // NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:distanceKey ascending:NO];
@@ -75,12 +75,12 @@
     
     // Sets cell color to indicate the current user, and its ability to be selected
     if ([user.objectId isEqualToString:[PFUser currentUser].objectId]) {
-        cell.backgroundColor = [UIColor colorWithRed:.47 green:.65 blue:.935 alpha:1];
+//        cell.backgroundColor = [UIColor colorWithRed:.47 green:.65 blue:.935 alpha:1];
+        cell.backgroundColor = [UIColor clearColor];
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.userInteractionEnabled = NO;
     } else {
-        cell.backgroundColor = [UIColor whiteColor];
-        cell.textLabel.textColor = [UIColor blackColor];
+        cell.textLabel.textColor = [UIColor whiteColor];
         cell.userInteractionEnabled = YES;
     }
     
@@ -92,19 +92,19 @@
             // Sorting the array by Distance for each User
         case sortByDistance:
             distance = user[distanceKey];
-            cell.textLabel.text = [NSString stringWithFormat:@"%ld. %@ %.1f m", indexPath.row + 1, user[usernameKey], [distance doubleValue]];
+            cell.textLabel.text = [NSString stringWithFormat:@"%ld %@ %.1f m", indexPath.row + 1, user[usernameKey], [distance doubleValue]];
             break;
             
             // Sorting the array by Kill/Death for each User
         case sortByKill:
-            cell.textLabel.text = [NSString stringWithFormat:@"%ld. %@ %@/%@", indexPath.row + 1, user[usernameKey],user[killKey],healthDataForUserAtCell[deathKey]];
+            cell.textLabel.text = [NSString stringWithFormat:@"%ld %@ %@/%@", indexPath.row + 1, user[usernameKey],user[killKey],healthDataForUserAtCell[deathKey]];
             break;
             
             // Sorting the array by Accuracy for each User
         case sortByAccuracy:
             
             accuracy = user[accuracyKey];
-            cell.textLabel.text = [NSString stringWithFormat:@"%ld. %@ %.1f%%", indexPath.row + 1, user[usernameKey], [accuracy doubleValue]];
+            cell.textLabel.text = [NSString stringWithFormat:@"%ld %@ %.1f%%", indexPath.row + 1, user[usernameKey], [accuracy doubleValue]];
             break;
     }
     

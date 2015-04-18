@@ -234,7 +234,7 @@ static bool kAnimate = true;
 - (void) viewDidLoad {
     [super viewDidLoad];
     
-    self.tabBarController.tabBar.alpha = 0;
+    self.tabBarController.tabBar.alpha = 1;
     [self createColors];
     self.initialLaunch = YES;
     self.healthDataController = [HealthDataController new];
@@ -255,12 +255,13 @@ static bool kAnimate = true;
     self.interfaceLineDrawer = [[InterfaceLineDrawer alloc]initWithFrame:self.view.frame withView:self.view];
     self.interfaceLineDrawer.attitude = self.attitude;
     self.interfaceLineDrawer.mapCamera = self.gmMapView.camera;
+    self.interfaceLineDrawer.userInteractionEnabled = NO;
+    [self.view addSubview:self.interfaceLineDrawer];
 
     [self setUpDataDisplayAndButtons];
     [self setUpPOVButton];
     
 }
-
 
 - (void) createTargets {
     
@@ -455,9 +456,9 @@ static bool kAnimate = true;
     self.gmMapView.myLocationEnabled = YES;
     self.gmMapView.settings.scrollGestures = NO;
     self.gmMapView.delegate = self;
-    self.gmMapView.mapType = kGMSTypeNormal;
-    
+    self.gmMapView.mapType = kGMSTypeSatellite;
     [self.view addSubview:self.gmMapView];
+    
 }
 
 - (void) setUpDataDisplayAndButtons {
@@ -476,10 +477,10 @@ static bool kAnimate = true;
     [self.fireButton setTitleColor:[UIColor blackColor] forState:UIControlStateDisabled];
     [self.fireButton addTarget:self action:@selector(fireButtonPressed:) forControlEvents:UIControlEventTouchDown];
     
-    // modify firebutton border
+    // modify firebutton border and "glow"
     self.fireButton.layer.borderWidth = 4;
     self.fireButton.layer.borderColor = self.fireButtonBorderColor.CGColor;
-    self.fireButton.layer.shadowColor = self.fireButtonColor.CGColor;
+    self.fireButton.layer.shadowColor = [UIColor redColor].CGColor;
     self.fireButton.layer.shadowOpacity = 1;
     self.fireButton.layer.shadowRadius = 10;
 
@@ -584,15 +585,25 @@ static bool kAnimate = true;
     self.placement = [SCNPyramid pyramidWithWidth:.3 height:.3 length:.3];
     self.placement.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
     
-    //SCNFloor use later
-    
+    // grid floor texture - major performance issues
+//    SCNNode*floor = [SCNNode node];
+//    floor.geometry = [SCNFloor floor];
+//    floor.geometry.firstMaterial.diffuse.contents = @"gridclean_360";
+//    floor.geometry.firstMaterial.transparency = .5;
+//    floor.geometry.firstMaterial.diffuse.contentsTransform = SCNMatrix4MakeScale(500, 500, 1); //scale the wood texture
+//    ((SCNFloor*)floor.geometry).reflectivity = 0;
+//    [scene.rootNode addChildNode:floor];
+//    // physics detection for floor use later
+//    SCNPhysicsBody *staticBody = [SCNPhysicsBody staticBody];
+//    floor.physicsBody = staticBody;
+//    [[scene rootNode] addChildNode:floor];
+
     SCNNode *cannonBarrel = [SCNNode nodeWithGeometry:self.cannonBarrel];
     cannonBarrel.pivot = SCNMatrix4MakeTranslation(0, 0, .3);
     cannonBarrel.position = SCNVector3Make(0, .1, 0);
     
     SCNNode *placementNode = [SCNNode nodeWithGeometry:self.placement];
     placementNode.position = SCNVector3Make(0, .03, 0);
-    
     
     [placementNode addChildNode:cannonBarrel];
     [scene.rootNode addChildNode:placementNode];
@@ -604,7 +615,32 @@ static bool kAnimate = true;
     self.sceneView.scene = scene;
     [self.view addSubview:self.sceneView];
     
-    
+}
+
+- (void) HighendChecker {
+//- (NSString *)deviceName
+//{
+//    static NSString *deviceName = nil;
+//    
+//    if (deviceName == nil) {
+//        struct utsname systemInfo;
+//        uname(&systemInfo);
+//        
+//        deviceName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+//    }
+//    return deviceName;
+//}
+//
+//- (BOOL)isHighEndDevice
+//{
+//    //return YES for iPhone 5s and iPad air, NO otherwise
+//    if ([[self deviceName] hasPrefix:@"iPad4"]
+//        || [[self deviceName] hasPrefix:@"iPhone6"]) {
+//        return YES;
+//    }
+//    
+//    return NO;
+//}
 }
 
 - (void) setUpPOVButton {
@@ -694,24 +730,6 @@ static bool kAnimate = true;
                                       self.myLocation.coordinate.longitude + degreeOffsetLongitude);
 }
 
-- (void) createTimer {
-    self.timer = [[CountdownTimerViewController alloc]initWithSeconds:[self calculateProjectileTravelTime]];
-    self.timer.view.frame = CGRectMake(0, 0, self.view.frame.size.width, 100);
-    self.timer.view.backgroundColor = [UIColor colorWithWhite:1.0 alpha:.4];
-    NSLog(@"%@", self.timer);
-    [self addChildViewController:self.timer];
-    [self.timer didMoveToParentViewController:self];
-    
-    [self.view addSubview:self.timer.view];
-    
-}
-
-- (void) removeTimer {
-    
-    [self.timer removeFromParentViewController];
-    
-}
-
 - (void) fireButtonPressed:(id)sender {
     
     //[self createTimer];
@@ -728,52 +746,36 @@ static bool kAnimate = true;
     // Adds +1 to the "shotsFired" on Parse
     [[PFUser currentUser] incrementKey:shotsFiredKey];
     
-    CLLocation * hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
-                                                         longitude:[self calculateHitLocation].longitude];
     
-    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:[self calculateProjectileTravelTime]];
-    //[self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:3];
+    CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
+                                                        longitude:[self calculateHitLocation].longitude];
+    
+    double delayTime = [self calculateProjectileTravelTime];
+    [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:delayTime];
+    
+    
+//    __block CLLocation * hitLocation;
+//    
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        // calculate location of hit in background
+//        CLLocationCoordinate2D hitCoordinate = [self calculateHitLocation];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            // run this after calculation is done.
+//            hitLocation = [[CLLocation alloc]initWithLatitude:hitCoordinate.latitude longitude:hitCoordinate.longitude];
+//        });
+//    });
+//
+//    // run hit checker method on background thread.
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        // calculate time in background
+//        double delayTime = [self calculateProjectileTravelTime];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            // run this after calculation is done.
+//            [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:delayTime];
+//        });
+//    });
     
     [self drawTrajectoryLineToLocation:hitLocation];
-    //[self setUpPolyineColorsToLocation:hitLocation];
-    
-}
-
-- (void) createGMSOverlayAtCoordinate:(CLLocationCoordinate2D )hitCoordinate type:(NSString *)type disappear:(BOOL)disappear {
-    
-    // the distance of the coordinate for the overlay (the corners). This determines the size of the overlay;
-    NSInteger overlayOffset;
-    
-    // checks if its rubble type, if not, the size of the crater according to the weapon is the offset.
-    if (type != rubble) overlayOffset = self.projectile.sizeOfCrater;
-    else overlayOffset = 50;
-    
-    // Create crater coordinates if its not "rubble" type
-    // Sets coordinates for the opposite side corners for the overlay (crater)
-    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(hitCoordinate.latitude + overlayOffset / 111111.0, hitCoordinate.longitude + overlayOffset /111111.0);
-    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(hitCoordinate.latitude - overlayOffset /111111.0, hitCoordinate.longitude - overlayOffset /111111.0);
-    
-    GMSCoordinateBounds *overlayBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:southWest
-                                                                              coordinate:northEast];
-    GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds
-                                                                           icon:[UIImage imageNamed:type]];
-    
-    groundOverlay.bearing = rand() % 360;
-    
-    groundOverlay.map = self.gmMapView;
-    
-    if (disappear == YES) [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:60];
-}
-
-- (void) createGMSMarkerAtCoordinate:(CLLocationCoordinate2D )atCoordinate type:(NSString *)type disappear:(BOOL)disappear {
-    
-    // create smoke marker
-    GMSMarker *marker = [GMSMarker new];
-    marker.map = self.gmMapView;
-    marker.position = atCoordinate;
-    marker.icon = [UIImage imageNamed:smoke];
-    
-    if (disappear == YES) [self performSelector:@selector(removeGMSMarker:) withObject:marker afterDelay:60];
 }
 
 - (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
@@ -810,7 +812,7 @@ static bool kAnimate = true;
                 
                 // if its the current user getting hit
                 if ([[PFUser currentUser].objectId isEqualToString:userAtMarker.objectId]) {
-                    [self.interfaceLineDrawer drawRandomLines];
+                    [self.interfaceLineDrawer drawDamageEventView];
                 }
                 
                 // If the distance less than 35% away
@@ -856,13 +858,50 @@ static bool kAnimate = true;
                 
                 // This will save health data
                 [HealthDataController saveHealthData:healthDataUserAtMarker];
-
+                
                 // Adds +1 to the "shotsHit" but not saved yet.
                 [[PFUser currentUser] incrementKey:shotsHitKey];
                 
             }
         }
     }
+}
+
+- (void) createGMSOverlayAtCoordinate:(CLLocationCoordinate2D )hitCoordinate type:(NSString *)type disappear:(BOOL)disappear {
+    
+    // the distance of the coordinate for the overlay (the corners). This determines the size of the overlay;
+    NSInteger overlayOffset;
+    
+    // checks if its rubble type, if not, the size of the crater according to the weapon is the offset.
+    if (type != rubble) overlayOffset = self.projectile.sizeOfCrater;
+    else overlayOffset = 50;
+    
+    // Create crater coordinates if its not "rubble" type
+    // Sets coordinates for the opposite side corners for the overlay (crater)
+    CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(hitCoordinate.latitude + overlayOffset / 111111.0, hitCoordinate.longitude + overlayOffset /111111.0);
+    CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(hitCoordinate.latitude - overlayOffset /111111.0, hitCoordinate.longitude - overlayOffset /111111.0);
+    
+    GMSCoordinateBounds *overlayBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:southWest
+                                                                              coordinate:northEast];
+    GMSGroundOverlay *groundOverlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds
+                                                                           icon:[UIImage imageNamed:type]];
+    
+    groundOverlay.bearing = rand() % 360;
+    
+    groundOverlay.map = self.gmMapView;
+    
+    if (disappear == YES) [self performSelector:@selector(removeGMOverlay:) withObject:groundOverlay afterDelay:60];
+}
+
+- (void) createGMSMarkerAtCoordinate:(CLLocationCoordinate2D )atCoordinate type:(NSString *)type disappear:(BOOL)disappear {
+    
+    // create smoke marker
+    GMSMarker *marker = [GMSMarker new];
+    marker.map = self.gmMapView;
+    marker.position = atCoordinate;
+    marker.icon = [UIImage imageNamed:smoke];
+    
+    if (disappear == YES) [self performSelector:@selector(removeGMSMarker:) withObject:marker afterDelay:60];
 }
 
 - (void) createAnimateLabel:(NSString *)string bigText:(BOOL)bigText {
