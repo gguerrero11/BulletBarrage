@@ -40,8 +40,7 @@
 @end
 
 
-@interface DrawProjectile () //<GMSMapViewDelegate>
-
+@interface DrawProjectile ()
 @property (nonatomic) GMSMapView *view;
 @property (nonatomic) GMSMutablePath *coords;
 
@@ -98,6 +97,7 @@
     [CATransaction setAnimationDuration:self.animationDuration];  // custom duration, 50km/sec
     [CATransaction setCompletionBlock:^{
         marker.map = nil;
+
     }];
     
     marker.position = self.toCoordinate;
@@ -110,11 +110,5 @@
     }
 }
 
-//- (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
-//    GMSMarker *selectionIcon = [GMSMarker new];
-//    selectionIcon.map = self.view;
-//    selectionIcon.position = marker.position;
-//    return YES;
-//}
 
 @end

@@ -536,7 +536,22 @@ static bool kAnimate = true;
 
 - (BOOL) mapView:(GMSMarker *)mapView didTapMarker:(GMSMarker *)marker {
     
-    return NO;
+    NSLog(@"did tap");
+//    CAShapeLayer *layer = [CAShapeLayer new];
+//    layer.lineWidth = 1;
+//    layer.fillColor = NULL;
+//    layer.path = [UIBezierPath bezierPathWithOvalInRect:CGRectInset(self.view.bounds, 4, 4)].CGPath;
+//    layer.strokeColor = [UIColor redColor].CGColor;
+//    layer.contentsScale = [UIScreen mainScreen].scale;
+//    layer.shouldRasterize = NO;
+    marker.layer.superlayer.opacity = 1;
+    marker.layer.superlayer.borderWidth = 10;
+        marker.layer.superlayer.borderColor = [UIColor whiteColor].CGColor;
+//    [marker.layer.superlayer insertSublayer:layer above:marker.layer.superlayer];
+
+    
+return YES;
+    
 }
 
 
@@ -753,7 +768,7 @@ static bool kAnimate = true;
     self.drawProjectile = [DrawProjectile new];
     [self.drawProjectile drawProjectileOnView:self.gmMapView atCoordinate:hitLocation.coordinate fromCoordinate:self.myLocation.coordinate animationDuration:projectileTravelTime];
 
-    //[self drawTrajectoryLineToLocation:hitLocation];
+    [self drawTrajectoryLineToLocation:hitLocation];
 }
 
 - (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
@@ -957,8 +972,8 @@ static bool kAnimate = true;
     [path addCoordinate:destination.coordinate];
     
     GMSPolyline *polyline = [GMSPolyline polylineWithPath:path];
-    polyline.strokeColor = [UIColor colorWithRed:1 green:0.1 blue:.1 alpha:.2];
-    polyline.strokeWidth = 5.f;
+    polyline.strokeColor = [UIColor colorWithRed:.1 green:0.1 blue:1 alpha:.2];
+    polyline.strokeWidth = 2.f;
     polyline.map = self.gmMapView;
     
     [self performSelector:@selector(removeGMSPolyline:) withObject:polyline afterDelay:[self calculateProjectileTravelTime]];
