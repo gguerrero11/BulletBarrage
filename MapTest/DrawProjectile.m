@@ -40,7 +40,7 @@
 @end
 
 
-@interface DrawProjectile ()
+@interface DrawProjectile () //<GMSMapViewDelegate>
 
 @property (nonatomic) GMSMapView *view;
 @property (nonatomic) GMSMutablePath *coords;
@@ -73,11 +73,14 @@
     
     // to destination
     [self.coords addLatitude:toCoordinate.latitude longitude:toCoordinate.longitude];
+    
+    self.heading = GMSGeometryHeading(self.fromCoordinate, self.toCoordinate);
 
     marker = [GMSMarker markerWithPosition:[self.coords coordinateAtIndex:0]];
     marker.icon = [UIImage imageNamed:@"bullet2x"];
     marker.map = self.view;
     marker.flat = YES;
+    marker.rotation = self.heading;
     [self animateToNextCoord:marker];
     
 }
@@ -106,5 +109,12 @@
         marker.rotation = self.heading;
     }
 }
+
+//- (BOOL)mapView:(GMSMapView *)mapView didTapMarker:(GMSMarker *)marker {
+//    GMSMarker *selectionIcon = [GMSMarker new];
+//    selectionIcon.map = self.view;
+//    selectionIcon.position = marker.position;
+//    return YES;
+//}
 
 @end
