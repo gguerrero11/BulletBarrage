@@ -733,11 +733,8 @@ static bool kAnimate = true;
 - (void) fireButtonPressed:(id)sender {
     
     //[self createTimer];
-    
-//    [[SoundController sharedInstance] playSoundEffect:cannon];
-    //NSURL *urlForCannon = [[NSBundle mainBundle] URLForResource:cannon withExtension:@"caf"];
-    //[self.soundController playAudioFileAtURL:urlForCannon];
-    
+#warning this slows performance
+    [[SoundController sharedInstance] playSoundEffect:cannon];
     
     // we need to create a separate projecile weapon instance, so when the user changes weapon mid-flight, it doesn't change that weapon also
     self.projectile = [Weapon new];

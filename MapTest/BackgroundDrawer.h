@@ -11,6 +11,10 @@
 
 @interface BackgroundDrawer : NSObject
 
-- (void) setUpBackgroundOnView:(UIView *)passedView;
+@property (nonatomic, assign) BOOL shouldContinue;
+
+- (void)setUpBackgroundOnView:(UIView *)passedView;
+
+- (void)continueDrawing;
 
 @end

@@ -94,10 +94,6 @@
     [player play];
     [mArrayOfAudioPlayers addObject:player];
     
-//    [SoundController sharedInstance].player = [[AVAudioPlayer alloc]initWithContentsOfURL:urlForSFX error:nil];
-//    [SoundController sharedInstance].player.numberOfLoops = 0;
-//    [[SoundController sharedInstance].player play];
-//        [self.mArrayOfAudioPlayers addObject:[SoundController sharedInstance].player];
 }
 
 // removes the player once its done playing its sound file.

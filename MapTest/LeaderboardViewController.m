@@ -70,7 +70,7 @@ static double tableBoxPadding = 8;
     self.tabBarController.tabBar.alpha = 1;
     
     BackgroundDrawer *bgDrawer = [BackgroundDrawer new];
-    //[bgDrawer setUpBackgroundOnView:self.view];
+    [bgDrawer setUpBackgroundOnView:self.view];
     
     // set size of top bar size
     self.heightOfStatusBarAndNavBar = self.navigationController.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height;
