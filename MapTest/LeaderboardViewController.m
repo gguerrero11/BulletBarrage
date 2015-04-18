@@ -12,6 +12,7 @@
 #import "UserController.h"
 #import <Parse/Parse.h>
 #import "UserController.h"
+#import "BackgroundDrawer.h"
 
 static double padding = 15;
 static double margin = 25;
@@ -68,10 +69,8 @@ static double tableBoxPadding = 8;
 
     self.tabBarController.tabBar.alpha = 1;
     
-    // set up background image
-    UIImageView *backgroundImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-    backgroundImage.image = [UIImage imageNamed:@"leaderBoardScreenBlue"];
-    [self.view addSubview:backgroundImage];
+    BackgroundDrawer *bgDrawer = [BackgroundDrawer new];
+    //[bgDrawer setUpBackgroundOnView:self.view];
     
     // set size of top bar size
     self.heightOfStatusBarAndNavBar = self.navigationController.navigationBar.frame.size.height + [UIApplication sharedApplication].statusBarFrame.size.height;

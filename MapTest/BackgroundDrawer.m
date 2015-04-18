@@ -55,49 +55,51 @@ static NSString * const backgroundGrid = @"backgroundGrid";
         randomHeight = 1400.0 * (randomWidth / 2800.0);
     }
     
-    NSLog(@"%f, %f", randomWidth, randomHeight);
+    // create the "grid" background
+    UIImageView *backgroundImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, randomWidth, randomHeight)];
+    backgroundImage.image = [UIImage imageNamed:type];
+    [self.view addSubview:backgroundImage];
     
-    UIImageView *backgroundGridView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, randomWidth, randomHeight)];
-    backgroundGridView.image = [UIImage imageNamed:type];
-    [self.view addSubview:backgroundGridView];
-    
-    
+    // set the new X,Y destination of the frame.
     double newX = arc4random() % 400 - 200.0;
     double newY = arc4random() % 400 - 200.0;
-    while (newY > 200 && newX) {
-        newX = arc4random() % 400 - 200.0;
-        newY = arc4random() % 400 - 200.0;
-    }
+
     int timeOfAnimation = arc4random() % 10 + 55;
     
+        NSLog(@"%f, %f", newX, newY);
     
+    // don't rotate the image randomly if its if the "flakLines" image
     CGAffineTransform rotationTransform;
     if ([type isEqualToString:flakLines]) rotationTransform = CGAffineTransformMakeRotation(0);
     else rotationTransform = CGAffineTransformMakeRotation(arc4random());
     
-    backgroundGridView.transform = rotationTransform;
-    backgroundGridView.center = CGPointMake(self.view.frame.size.width / 2, self.view.frame.size.height / 2);
-    backgroundGridView.alpha = 0;
+    backgroundImage.transform = rotationTransform;
+    backgroundImage.center = CGPointMake(self.view.frame.size.width / 2, self.view.frame.size.height / 2);
+    backgroundImage.alpha = 0;
     
+    // animates the fade in, by alpha (independent from the motion animation)
     [UIView animateWithDuration:1.0
                           delay:0
                         options:UIViewAnimationOptionCurveLinear
                      animations:^{
-                         backgroundGridView.alpha = .1;
+                         backgroundImage.alpha = .1;
                      }
                      completion:nil];
     
+    // animate the movement of the image
     [UIView animateWithDuration:timeOfAnimation
                      animations:^{
-                         backgroundGridView.center = CGPointMake(newX, newY);
+                         backgroundImage.center = CGPointMake(newX, newY);
                      }
                      completion:^(BOOL finished) {
+                         // animate a fade out once the movement animation is done.
                          [UIView animateWithDuration:1.0
                                           animations:^{
-                                              backgroundGridView.alpha = 0;
+                                              backgroundImage.alpha = 0;
                                           }
                                           completion:^(BOOL finished) {
-                                              [backgroundGridView removeFromSuperview];
+                                              // remove it from the view and call the method again
+                                              [backgroundImage removeFromSuperview];
                                               [self performSelector:@selector(drawGridBGImages:) withObject:type];
                                           }];
                      }];
