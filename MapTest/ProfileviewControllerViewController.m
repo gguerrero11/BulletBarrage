@@ -8,8 +8,10 @@
 
 #import "ProfileviewControllerViewController.h"
 #import "ProfileViewDataSource.h"
+#import "BackgroundDrawer.h"
 
 static int paddingFromGroupTable = 35;
+
 
 @interface ProfileviewControllerViewController () <UITableViewDelegate>
 
@@ -29,7 +31,8 @@ static int paddingFromGroupTable = 35;
     [super viewDidLoad];
     self.title = @"Profile";
     
-    [self setUpBackground];
+    BackgroundDrawer *bgDrawer = [BackgroundDrawer new];
+    [bgDrawer setUpBackgroundOnView:self.view];
     
     // table datasource stuff
     self.dataSource = [ProfileViewDataSource new];
@@ -48,67 +51,6 @@ static int paddingFromGroupTable = 35;
     // Dispose of any resources that can be recreated.
 }
 
-// set up background image
-- (void) setUpBackground {
-    UIImageView *backgroundImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-    backgroundImage.image = [UIImage imageNamed:@"leaderBoardScreenBlue"];
-    [self.view addSubview:backgroundImage];
-    
-    [self diagonalAnimationForView];
-    [self diagonalAnimationForView];
-
-}
-
-- (void) diagonalAnimationForView {
-
-    // sets random width from 400 - 2800
-    double randomWidth = arc4random() % 2400 + 400;
-    // sets the height based on the percentage of the size of the randomWidth to its maximum size
-    double randomHeight = 1400 * (randomWidth / 2800);
-    
-    NSLog(@"%f, %f", randomWidth, randomHeight);
-    
-    UIImageView *backgroundGrid = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, randomWidth, randomHeight)];
-    backgroundGrid.image = [UIImage imageNamed:@"backgroundGrid"];
-    [self.view addSubview:backgroundGrid];
-    
-
-    double newX = arc4random() % 800 - 400.0;
-    double newY = arc4random() % 800 - 400.0;
-    while (newY > 400 && newX) {
-        newX = arc4random() % 800 - 400.0;
-        newY = arc4random() % 800 - 400.0;
-    }
-    int timeOfAnimation = arc4random() % 20 + 15;
-    
-    CGAffineTransform rotationTransform = CGAffineTransformMakeRotation(arc4random());
-    backgroundGrid.transform = rotationTransform;
-    backgroundGrid.center = CGPointMake(self.view.frame.size.width / 2, self.view.frame.size.height / 2);
-    backgroundGrid.alpha = 0;
-    
-    [UIView animateWithDuration:1.0
-                          delay:0
-                        options:UIViewAnimationOptionCurveLinear
-                     animations:^{
-                         backgroundGrid.alpha = .1;
-                     }
-                     completion:nil];
-    
-    [UIView animateWithDuration:timeOfAnimation
-                     animations:^{
-                         backgroundGrid.center = CGPointMake(newX, newY);
-                     }
-                     completion:^(BOOL finished) {
-                         [UIView animateWithDuration:1.0
-                                          animations:^{
-                                              backgroundGrid.alpha = 0;
-                                          }
-                                          completion:^(BOOL finished) {
-                                              [backgroundGrid removeFromSuperview];
-                                              [self performSelector:@selector(diagonalAnimationForView)];
-                                          }];
-                     }];
-}
 
 #pragma mark TableView delegates
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
