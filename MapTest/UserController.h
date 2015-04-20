@@ -31,8 +31,10 @@ static NSString * const longestDistanceKey = @"longestDistance";
 
 + (UserController *) sharedInstance;
 
-+ (void) queryUsersNearCurrentUser:(CLLocationCoordinate2D)coordinates
-                  withinMileRadius:(double)radiusFromLocationInMiles;
+//+ (void) queryUsersNearCurrentUser:(CLLocationCoordinate2D)coordinates
+//                  withinMileRadius:(double)radiusFromLocationInMiles;
+
++ (void) queryUsers;
 
 - (void) setWeaponForUser:(NSString *)weaponString;
 

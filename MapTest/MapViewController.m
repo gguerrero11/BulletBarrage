@@ -73,7 +73,7 @@ static bool kAnimate = true;
 @property (nonatomic, strong) MKMapCamera *targetCamera;
 @property (nonatomic, strong) UIButton *fireButton;
 @property (nonatomic, strong) UIButton *respawnButton;
-@property (nonatomic, strong) UIButton *zoomButton;
+@property (nonatomic, strong) UIButton *weaponButton;
 @property (nonatomic, strong) MKPolyline *polyline;
 @property (nonatomic, strong) HealthBox *healthBox;
 @property (nonatomic, strong) UIColor *fireButtonColor;
@@ -81,7 +81,9 @@ static bool kAnimate = true;
 @property (nonatomic, strong) UIColor *disabledTextColor;
 @property (nonatomic, strong) InterfaceLineDrawer *interfaceLineDrawer;
 @property (nonatomic, strong) DrawProjectile *drawProjectile;
+@property (nonatomic) UIImageView *weaponIcon;
 @property (nonatomic) BOOL initialLaunch;
+@property (nonatomic) BOOL sound;
 
 // SceneKit Properties
 @property (nonatomic, strong) SCNView *sceneView;
@@ -95,7 +97,7 @@ static bool kAnimate = true;
 @property (nonatomic, strong) SCNNode *cameraSKPitchRotationNode;
 
 // GMS Map
-@property (nonatomic, assign) NSInteger zoomSelection;
+@property (nonatomic, assign) NSInteger weaponSelected;
 @property (nonatomic, assign) double pitchWithLimit;
 @property (nonatomic, strong) NSMutableArray *arrayOfCraters;
 @property (nonatomic, strong) CountdownTimerViewController *timer;
@@ -116,10 +118,21 @@ static bool kAnimate = true;
 
 @implementation MapViewController
 
+- (void)viewDidDisappear:(BOOL)animated {
+    [self.locationManager stopUpdatingHeading];
+    [self.locationManager stopUpdatingLocation];
+    self.gmMapView.hidden = YES;
+    //[_motionManager stopDeviceMotionUpdates];
+}
+
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
+    [self.locationManager startUpdatingHeading];
+    [self.locationManager startUpdatingLocation];
+    self.gmMapView.hidden = NO;
+    [_motionManager startDeviceMotionUpdates];
     
     if (![PFUser currentUser]) { // No user logged in
         // Create the log in view controller
@@ -236,6 +249,8 @@ static bool kAnimate = true;
 - (void) viewDidLoad {
     [super viewDidLoad];
     
+    self.sound = YES;
+    
     self.tabBarController.tabBar.alpha = 1;
     [self createColors];
     self.initialLaunch = YES;
@@ -250,7 +265,7 @@ static bool kAnimate = true;
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
     
-    [UserController queryUsersNearCurrentUser:self.locationManager.location.coordinate withinMileRadius:10];
+    [UserController queryUsers];
     
     [self setupSceneKitView];
     
@@ -261,7 +276,7 @@ static bool kAnimate = true;
     [self.view addSubview:self.interfaceLineDrawer];
 
     [self setUpDataDisplayAndButtons];
-    [self setUpPOVButton];
+    [self setUpSwitchWeaponButton];
     
 }
 
@@ -458,7 +473,7 @@ static bool kAnimate = true;
     self.gmMapView.myLocationEnabled = YES;
     self.gmMapView.settings.scrollGestures = NO;
     self.gmMapView.delegate = self;
-    self.gmMapView.mapType = kGMSTypeNone;
+    self.gmMapView.mapType = kGMSTypeSatellite;
     [self.view addSubview:self.gmMapView];
 }
 
@@ -658,26 +673,30 @@ return YES;
 //}
 }
 
-- (void) setUpPOVButton {
-    self.zoomButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [self.zoomButton setTitle:@"100" forState:UIControlStateNormal];
-    self.zoomButton.layer.cornerRadius = 25;
-    self.zoomButton.frame = CGRectMake(self.view.frame.size.width - 100, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height - 80, 50, 50);
-    [self.zoomButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    self.zoomButton.tintColor = [UIColor whiteColor];
-    self.zoomButton.backgroundColor = [UIColor blueColor];
-    [self.view addSubview:self.zoomButton];
-    [self.zoomButton addTarget:self action:@selector(changeZoom) forControlEvents:UIControlEventTouchUpInside];
+- (void) setUpSwitchWeaponButton {
+    self.weaponButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    //[self.weaponButton setTitle:@"100" forState:UIControlStateNormal];
+
+    self.weaponButton.layer.borderWidth = 1;
+    self.weaponButton.layer.borderColor = [UIColor blueColor].CGColor;
+    self.weaponButton.frame = CGRectMake(self.view.frame.size.width * .95 - 50 , self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height - 80, 50, 50);
+    [self.weaponButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    self.weaponButton.tintColor = [UIColor whiteColor];
+    self.weaponButton.backgroundColor = [UIColor colorWithRed:.1 green:.1 blue:1 alpha:.35];
+    [self.view addSubview:self.weaponButton];
+    [self.weaponButton addTarget:self action:@selector(switchWeaponPressed) forControlEvents:UIControlEventTouchUpInside];
     
-    UIImageView *homeIcon = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"homelocation"]];
-    homeIcon.frame = CGRectMake(self.zoomButton.frame.size.width / 2 - self.zoomButton.frame.size.width * 0.75 / 2, self.zoomButton.frame.size.height / 2 - self.zoomButton.frame.size.height * 0.75 / 2 , self.zoomButton.frame.size.width * 0.75, self.zoomButton.frame.size.height * 0.75);
-    [self.zoomButton addSubview:homeIcon];
+    self.weaponIcon = [[UIImageView alloc]initWithFrame:CGRectMake(self.weaponButton.frame.size.width / 2 - self.weaponButton.frame.size.width * 0.75 / 2, self.weaponButton.frame.size.height / 2 - self.weaponButton.frame.size.height * 0.75 / 2 , self.weaponButton.frame.size.width * 0.75, self.weaponButton.frame.size.height * 0.75)];
+    self.weaponIcon.image = [UIImage imageNamed:@"Mortar Filled-50"];
+    self.weaponIcon.alpha = .65;
+    [self.weaponButton addSubview:self.weaponIcon];
     
 }
 
-- (void) changeZoom {
+- (void) switchWeaponPressed {
+
     
-    switch (self.zoomSelection) {
+    switch (self.weaponSelected) {
             //        case 0:
             //            [gmMapView animateToZoom:18];
             //            self.zoomSelection = 1;
@@ -691,20 +710,23 @@ return YES;
             //            self.zoomSelection = 0;
             //            break;
             
-        case 0:
-            [self.zoomButton setTitle:@"100" forState:UIControlStateNormal];
+        case 2:
+            //[self.weaponButton setTitle:@"100" forState:UIControlStateNormal];
             [[UserController sharedInstance] setWeaponForUser:cannon];
-            self.zoomSelection = 1;
+            self.weaponIcon.image = [UIImage imageNamed:@"Mortar Filled-50"];
+            self.weaponSelected = 0;
+            break;
+        case 0:
+            //[self.weaponButton setTitle:@"250" forState:UIControlStateNormal];
+            [[UserController sharedInstance] setWeaponForUser:missle];
+            self.weaponIcon.image = [UIImage imageNamed:missle];
+            self.weaponSelected = 1;
             break;
         case 1:
-            [self.zoomButton setTitle:@"250" forState:UIControlStateNormal];
-            [[UserController sharedInstance] setWeaponForUser:missle];
-            self.zoomSelection = 2;
-            break;
-        case 2:
-            [self.zoomButton setTitle:@"500" forState:UIControlStateNormal];
+            //[self.weaponButton setTitle:@"500" forState:UIControlStateNormal];
             [[UserController sharedInstance] setWeaponForUser:nuke];
-            self.zoomSelection = 0;
+            self.weaponIcon.image = [UIImage imageNamed:nuke];
+            self.weaponSelected = 2;
             break;
     }
 }
@@ -747,9 +769,10 @@ return YES;
 
 - (void) fireButtonPressed:(id)sender {
     
-    //[self createTimer];
+    //[self createTimer]
 #warning this slows performance
-    //[[SoundController sharedInstance] playSoundEffect:cannon];
+    
+    if (self.sound) [[SoundController sharedInstance] playSoundEffect:cannon];
     
     // we need to create a separate projecile weapon instance, so when the user changes weapon mid-flight, it doesn't change that weapon also
     self.projectile = [Weapon new];
@@ -774,7 +797,7 @@ return YES;
 - (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
     
     // Play bombExplosion sound
-    //[[SoundController sharedInstance] playSoundEffect:bombExplosion];
+    if (self.sound) [[SoundController sharedInstance] playSoundEffect:bombExplosion];
     
     // play explosion gif
     GMSMarker *explosion = [GMSMarker new];
@@ -830,7 +853,7 @@ return YES;
                 
                 if (health <= 0 ) {
                     
-                    [self createAnimateLabel:@"TARGET DESTROYED!" bigText:NO];
+                    [self createAnimateLabel:@"TARGET DESTROYED!" bigText:NO lower:NO];
                     NSLog(@"DEAD!");
                     
                     [self createGMSOverlayAtCoordinate:marker.position type:rubble disappear:NO];
@@ -847,7 +870,7 @@ return YES;
                     [self longestDistanceRecordCheckerFromMarker:marker];
                     [self removeGMSMarker:marker];
                     
-                } else [self createAnimateLabel:@"HIT!" bigText:YES];
+                } else [self createAnimateLabel:@"HIT!" bigText:YES lower:NO];
                 
                 // This will save health data
                 [HealthDataController saveHealthData:healthDataUserAtMarker];
@@ -897,7 +920,7 @@ return YES;
     if (disappear == YES) [self performSelector:@selector(removeGMSMarker:) withObject:marker afterDelay:60];
 }
 
-- (void) createAnimateLabel:(NSString *)string bigText:(BOOL)bigText {
+- (void) createAnimateLabel:(NSString *)string bigText:(BOOL)bigText lower:(BOOL)lower{
     UILabel *hitLabel = [UILabel new];
     [self.view addSubview:hitLabel];
     hitLabel.text = string;
@@ -924,7 +947,11 @@ return YES;
     } else {
         
         // Create smaller Text
-        hitLabel.frame = CGRectMake(0, 120, self.view.frame.size.width, 100);
+        double yOrigin = 0;
+        if (lower == YES) yOrigin = 150;
+        else yOrigin = 120;
+
+        hitLabel.frame = CGRectMake(0, yOrigin, self.view.frame.size.width, 100);
         hitLabel.font = [UIFont boldSystemFontOfSize:25];
         
         // animates the label
@@ -949,7 +976,7 @@ return YES;
     if (marker.distance > [currentLongestDistance doubleValue]) {
         NSNumber *newDistance = [NSNumber numberWithDouble:marker.distance];
         [PFUser currentUser][longestDistanceKey] = newDistance;
-        [self createAnimateLabel:@"NEW DISTANCE RECORD!" bigText:NO];
+        [self createAnimateLabel:@"NEW DISTANCE RECORD!" bigText:NO lower:YES];
         
     }
 }
@@ -1051,7 +1078,7 @@ return YES;
     //    CLLocationDirection  theHeading = ((newHeading.trueHeading > 0) ?
     //                                       newHeading.trueHeading : newHeading.magneticHeading);
     //    self.cameraSKHeadingRotationNode.rotation = SCNVector4Make(0, 1, 0, gmMapView.camera.bearing * (M_PI / 180));
-    
+   
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {

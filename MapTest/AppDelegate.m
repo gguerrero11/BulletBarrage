@@ -25,6 +25,7 @@
 #import "UserController.h"
 #import <Parse/Parse.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import "CustomTabBarViewController.h"
 
 @interface AppDelegate ()
 
@@ -71,9 +72,18 @@
     UINavigationController *navBarProfileVC = [[UINavigationController alloc]initWithRootViewController:profileVC];
     
     
-    UITabBarController *tabBarController = [UITabBarController new];
+    CustomTabBarViewController *tabBarController = [CustomTabBarViewController new];
     tabBarController.viewControllers = @[navBarLeaderboard, navBarMapView, navBarProfileVC];
     tabBarController.selectedIndex = 1;
+    tabBarController.tabBar.clipsToBounds = YES;
+
+    [[UITabBar appearance] setBackgroundImage:[UIImage new]];
+    [[UITabBar appearance] setTintColor:[UIColor clearColor]];
+    [[UITabBar appearance] setShadowImage:[UIImage new]];
+    
+    [[UINavigationBar appearance] setBackgroundImage:[UIImage new] forBarPosition:UIBarPositionTop barMetrics:UIBarMetricsDefault];
+    [[UINavigationBar appearance] setTintColor:[UIColor clearColor]];
+    [[UINavigationBar appearance] setShadowImage:[UIImage new]];
     
     self.window.rootViewController = tabBarController;
     

@@ -44,6 +44,8 @@ static double tableBoxPadding = 8;
 -(void)viewDidAppear:(BOOL)animated {
     self.bgDrawer.shouldContinue = YES;
     [self.bgDrawer continueDrawing];
+    
+
 }
 
 - (void) registerForNotifications {

@@ -26,9 +26,11 @@
     return sharedInstance;
 }
 
-+ (void) queryUsersNearCurrentUser:(CLLocationCoordinate2D)coordinates
-                  withinMileRadius:(double)radiusFromLocationInMiles{
-    
+//+ (void) queryUsersNearCurrentUser:(CLLocationCoordinate2D)coordinates
+//                  withinMileRadius:(double)radiusFromLocationInMiles{
+
++ (void) queryUsers {
+
     // Parse query calls.
     PFQuery *queryForUsers = [PFUser query];
     

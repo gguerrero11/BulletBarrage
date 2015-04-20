@@ -70,6 +70,7 @@
 		49C3A5E51ADDBE92007C8309 /* HealthBox.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C3A5E41ADDBE92007C8309 /* HealthBox.m */; };
 		49E6F2931AE2313B007B4886 /* BackgroundDrawer.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F2921AE2313B007B4886 /* BackgroundDrawer.m */; };
 		49E6F2961AE241CC007B4886 /* DrawProjectile.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F2951AE241CC007B4886 /* DrawProjectile.m */; };
+		49E6F29B1AE4536F007B4886 /* CustomTabBarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F29A1AE4536F007B4886 /* CustomTabBarViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -179,6 +180,8 @@
 		49E6F2921AE2313B007B4886 /* BackgroundDrawer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundDrawer.m; sourceTree = "<group>"; };
 		49E6F2941AE241CC007B4886 /* DrawProjectile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DrawProjectile.h; sourceTree = "<group>"; };
 		49E6F2951AE241CC007B4886 /* DrawProjectile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DrawProjectile.m; sourceTree = "<group>"; };
+		49E6F2991AE4536F007B4886 /* CustomTabBarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomTabBarViewController.h; sourceTree = "<group>"; };
+		49E6F29A1AE4536F007B4886 /* CustomTabBarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomTabBarViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -309,6 +312,8 @@
 				49C3A5CE1ADC2F9E007C8309 /* SoundController.m */,
 				49B9DBBF1ACDD519003EA46E /* AppDelegate.h */,
 				49B9DBC01ACDD519003EA46E /* AppDelegate.m */,
+				49E6F2991AE4536F007B4886 /* CustomTabBarViewController.h */,
+				49E6F29A1AE4536F007B4886 /* CustomTabBarViewController.m */,
 				4996BA651AD82B15002D5663 /* User.h */,
 				4996BA661AD82B15002D5663 /* User.m */,
 				49603D6F1AD20ADF00AB3E50 /* UserController.h */,
@@ -561,6 +566,7 @@
 				4996BA671AD82B15002D5663 /* User.m in Sources */,
 				49E6F2961AE241CC007B4886 /* DrawProjectile.m in Sources */,
 				493583DF1AD5B173007A46EC /* WeaponController.m in Sources */,
+				49E6F29B1AE4536F007B4886 /* CustomTabBarViewController.m in Sources */,
 				4996BA6D1AD82F68002D5663 /* GMSMarkerWithUser.m in Sources */,
 				49B9DBBE1ACDD519003EA46E /* main.m in Sources */,
 				49E6F2931AE2313B007B4886 /* BackgroundDrawer.m in Sources */,

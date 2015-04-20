@@ -33,6 +33,7 @@
 -(void)viewDidAppear:(BOOL)animated {
     self.bgDrawer.shouldContinue = YES;
     [self.bgDrawer continueDrawing];
+    
 }
 
 - (void)viewDidLoad {

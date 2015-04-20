@@ -19,11 +19,14 @@ static NSString * const backgroundGrid = @"backgroundGrid";
 @property (nonatomic) UIImageView *gridImageView;
 @property (nonatomic) UIImageView *flakImageView;
 @property (nonatomic) UIImageView *backgroundImage;
+@property (nonatomic) UIImageView *foreGroundBars;
+@property (nonatomic) UIImageView *barrelRing;
 
 
 @end
 
 @implementation BackgroundDrawer
+
 
 // set up background image
 - (void) setUpBackgroundOnView:(UIView *)passedView {
@@ -37,6 +40,38 @@ static NSString * const backgroundGrid = @"backgroundGrid";
     [self.view addSubview:self.backgroundImage];
     
     [self continueDrawing];
+    [self drawForegroundBars];
+    [self drawRadialRing];
+}
+
+- (void) drawForegroundBars {
+    
+    self.foreGroundBars = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    self.foreGroundBars.image = [UIImage imageNamed:@"metalBars"];
+    [self.view addSubview:self.foreGroundBars];
+    
+}
+
+- (void) drawRadialRing {
+    
+    self.barrelRing = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.height)];
+    [self.barrelRing setCenter:CGPointMake(self.view.center.x, self.view.center.y - self.view.center.y * (17 / self.view.frame.size.height))];
+    self.barrelRing.image = [UIImage imageNamed:@"barrelRing"];
+    [self.foreGroundBars addSubview:self.barrelRing];
+}
+
+- (void) animateRing {
+    
+    if (self.shouldContinue) {
+
+        CABasicAnimation *fullRotation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+        fullRotation.fromValue = [NSNumber numberWithFloat:0];
+        fullRotation.toValue = [NSNumber numberWithFloat:((360*M_PI)/180)];
+        fullRotation.duration = 60;
+        fullRotation.repeatCount = INFINITY;
+        [self.barrelRing.layer addAnimation:fullRotation forKey:@"360"];
+
+    }
 }
 
 
@@ -127,6 +162,19 @@ static NSString * const backgroundGrid = @"backgroundGrid";
 
     [self drawGridBGImages:backgroundGrid];
     [self drawGridBGImages:flakLines];
+    [self animateRing];
+}
+
+- (void)enterAnimation {
+    
+    CGAffineTransform scaleTransform = CGAffineTransformMakeScale(2, 2);
+    
+            [UIView animateWithDuration:3.0 animations:^{
+                self.foreGroundBars.transform = scaleTransform;
+            } completion:^(BOOL finished) {
+
+            }];
+    
 }
 
 @end

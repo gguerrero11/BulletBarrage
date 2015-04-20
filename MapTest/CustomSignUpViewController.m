@@ -1,9 +1,9 @@
 //
 //  CustomSignUpViewController.m
-//  KingOfTheHill
+//  Bullet Barrage
 //
-//  Created by Ryan S. Watt on 3/27/15.
-//  Copyright (c) 2015 David Monson. All rights reserved.
+//  Created by Gabe Guerrero on 3/27/15.
+//  Copyright (c) 2015 Gabe Guerrero. All rights reserved.
 //
 
 #import "CustomSignUpViewController.h"
@@ -33,13 +33,13 @@
 }
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 @end
