@@ -14,6 +14,10 @@
 #import "UserController.h"
 #import "BackgroundDrawer.h"
 
+#import "ObjectAL.h"
+#define BUTTONPRESS_SOUND @"buttonPress2.caf"
+#define METALCLANK_SOUND @"metalClank.caf"
+
 static double padding = 15;
 static double margin = 25;
 static double tableBoxPadding = 8;
@@ -51,6 +55,8 @@ static double tableBoxPadding = 8;
     [self.bgDrawer continueDrawing];
     [self.bgDrawer enterAnimation];
     
+    [[OALSimpleAudio sharedInstance] playEffect:METALCLANK_SOUND];
+    [[OALSimpleAudio sharedInstance] playEffect:BUTTONPRESS_SOUND];
 
 }
 
@@ -84,6 +90,10 @@ static double tableBoxPadding = 8;
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"Leaderboards";
+    
+//    [[OALSimpleAudio sharedInstance] preloadEffect:BUTTONPRESS_SOUND];
+//    [[OALSimpleAudio sharedInstance] preloadEffect:METALCLANK_SOUND];
+    
 
     self.tabBarController.tabBar.alpha = 1;
     

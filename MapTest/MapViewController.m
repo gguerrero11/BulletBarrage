@@ -26,9 +26,10 @@
 #import "DrawProjectile.h"
 
 #import "ObjectAL.h"
-
+#define BUTTONPRESS_SOUND @"buttonPress2.caf"
 #define SHOOT_SOUND @"cannon.caf"
 #define EXPLODE_SOUND @"bombExplosion.caf"
+#define METALCLANK_SOUND @"metalClank.caf"
 
 
 
@@ -125,12 +126,14 @@ static bool kAnimate = true;
     [self.locationManager stopUpdatingHeading];
     [self.locationManager stopUpdatingLocation];
     self.gmMapView.hidden = YES;
-    //[_motionManager stopDeviceMotionUpdates];
+    [_motionManager stopDeviceMotionUpdates];
 }
 
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+
+    [[OALSimpleAudio sharedInstance] playEffect:BUTTONPRESS_SOUND];
     
     [self.locationManager startUpdatingHeading];
     [self.locationManager startUpdatingLocation];
@@ -249,8 +252,7 @@ static bool kAnimate = true;
     self.disabledTextColor = [UIColor colorWithRed:.7 green:.7 blue:.7 alpha:.8];
 }
 
-- (void) viewDidLoad {
-    [super viewDidLoad];
+- (void) preloadSounds {
     
     self.sound = YES;
     
@@ -264,6 +266,14 @@ static bool kAnimate = true;
     // there's no delay when we tell it to play them.
     [[OALSimpleAudio sharedInstance] preloadEffect:SHOOT_SOUND];
     [[OALSimpleAudio sharedInstance] preloadEffect:EXPLODE_SOUND];
+    [[OALSimpleAudio sharedInstance] preloadEffect:BUTTONPRESS_SOUND];
+    [[OALSimpleAudio sharedInstance] preloadEffect:METALCLANK_SOUND];
+    
+}
+
+- (void) viewDidLoad {
+    [super viewDidLoad];
+    [self preloadSounds];
     
     self.tabBarController.tabBar.alpha = 1;
     [self createColors];
@@ -779,7 +789,6 @@ return YES;
 - (void) fireButtonPressed:(id)sender {
     
     //[self createTimer]
-#warning this slows performance
     
 //    if (self.sound) [[SoundController sharedInstance] playSoundEffect:cannon];
     if (self.sound) [[OALSimpleAudio sharedInstance] playEffect:SHOOT_SOUND];

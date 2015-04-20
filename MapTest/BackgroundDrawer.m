@@ -12,6 +12,7 @@
 
 static NSString * const flakLines = @"flakLines";
 static NSString * const backgroundGrid = @"backgroundGrid";
+static NSString * const metalPlate = @"metalPlate";
 
 @interface BackgroundDrawer ()
 
@@ -21,7 +22,8 @@ static NSString * const backgroundGrid = @"backgroundGrid";
 @property (nonatomic) UIImageView *backgroundImage;
 @property (nonatomic) UIImageView *foreGroundBars;
 @property (nonatomic) UIImageView *barrelRing;
-
+@property (nonatomic) UIImageView *metalPlateView;
+@property (nonatomic, assign) double randomRotation;
 
 @end
 
@@ -29,7 +31,7 @@ static NSString * const backgroundGrid = @"backgroundGrid";
 
 
 // set up background image
-- (void) setUpBackgroundOnView:(UIView *)passedView {
+- (void)setUpBackgroundOnView:(UIView *)passedView {
     self.view = passedView;
     
     self.gridImageView.image = [UIImage imageNamed:flakLines];
@@ -42,9 +44,10 @@ static NSString * const backgroundGrid = @"backgroundGrid";
     [self continueDrawing];
     [self drawForegroundBars];
     [self drawRadialRing];
+//    [self drawMetalPlateWithWidth:250 height:150];
 }
 
-- (void) drawForegroundBars {
+- (void)drawForegroundBars {
     
     self.foreGroundBars = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     self.foreGroundBars.image = [UIImage imageNamed:@"metalBars"];
@@ -53,17 +56,55 @@ static NSString * const backgroundGrid = @"backgroundGrid";
     
 }
 
-- (void) drawRadialRing {
+- (void)drawRadialRing {
     
     self.barrelRing = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.height)];
     [self.barrelRing setCenter:CGPointMake(self.view.center.x, self.view.center.y - self.view.center.y * (17 / self.view.frame.size.height))];
     self.barrelRing.image = [UIImage imageNamed:@"barrelRing"];
     self.barrelRing.hidden = YES;
     [self.foreGroundBars addSubview:self.barrelRing];
+    
+}
+
+- (void)drawMetalPlateWithWidth:(double)width height:(double)height {
+    self.metalPlateView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:metalPlate]];
+    self.metalPlateView.frame = CGRectMake(self.view.frame.size.width / 2 - width / 2, -30, width, height);
+    self.metalPlateView.hidden = YES;
+    [self.foreGroundBars addSubview:self.metalPlateView];
+    
+    [self animateMetalPlate:self.metalPlateView];
+    
 
 }
 
-- (void) animateRing {
+- (void)animateMetalPlate:(UIImageView *) metalPlateView  {
+    
+    self.randomRotation = fmodf(arc4random(), 0.6f) - 0.3f;
+
+    
+    // beginning transform
+    CGAffineTransform beginScaleTransform = CGAffineTransformMakeScale(1.4, 1.4);
+    CGAffineTransform rotationBeginTransform = CGAffineTransformMakeRotation(-.1);
+    metalPlateView.hidden = NO;
+    metalPlateView.transform = CGAffineTransformConcat(beginScaleTransform, rotationBeginTransform);
+    metalPlateView.alpha = 0;
+    
+    // ending transform
+    CGAffineTransform scaleTransform = CGAffineTransformMakeScale(1, 1);
+    CGAffineTransform rotationEndTransform = CGAffineTransformMakeRotation(self.randomRotation);
+    
+    [UIView animateWithDuration:.1 delay:0
+                        options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+        metalPlateView.transform = CGAffineTransformConcat(scaleTransform, rotationEndTransform);
+        metalPlateView.alpha = 1;
+    } completion:^(BOOL finished) {
+        
+    }];
+    
+}
+
+- (void)animateRing {
     
     if (self.shouldContinue) {
         
@@ -74,7 +115,7 @@ static NSString * const backgroundGrid = @"backgroundGrid";
                               delay:0
                             options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
-                                 self.barrelRing.transform = rotationTransform;
+                             self.barrelRing.transform = rotationTransform;
                          }
                          completion:^(BOOL finished) {
                              [UIView animateWithDuration:45
@@ -90,8 +131,7 @@ static NSString * const backgroundGrid = @"backgroundGrid";
     }
 }
 
-
-- (void) drawGridBGImages:(NSString *)type {
+- (void)drawGridBGImages:(NSString *)type {
     
     UIImageView *backgroundImage;
     
@@ -195,14 +235,16 @@ static NSString * const backgroundGrid = @"backgroundGrid";
     [UIView animateWithDuration:.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         self.foreGroundBars.transform = scaleTransform;
     } completion:^(BOOL finished) {
+        [self drawMetalPlateWithWidth:250 height:150];
         
     }];
     
 }
 
-- (void) hideBarElements {
+- (void)hideBarElements {
     self.barrelRing.hidden = YES;
-        self.foreGroundBars.hidden = YES;
+    self.foreGroundBars.hidden = YES;
+        self.metalPlateView.hidden = YES;
 }
 
 @end

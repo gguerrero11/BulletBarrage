@@ -97,6 +97,9 @@
 		49E6F3791AE550D3007B4886 /* OALAudioFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F35B1AE550D3007B4886 /* OALAudioFile.m */; };
 		49E6F37A1AE550D3007B4886 /* OALTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F35E1AE550D3007B4886 /* OALTools.m */; };
 		49E6F37C1AE550F3007B4886 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49E6F37B1AE550F3007B4886 /* OpenAL.framework */; };
+		49E6F3811AE56213007B4886 /* metalClank.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F37F1AE56213007B4886 /* metalClank.caf */; };
+		49E6F3821AE56213007B4886 /* buttonPress.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F3801AE56213007B4886 /* buttonPress.caf */; };
+		49E6F3861AE565CF007B4886 /* buttonPress2.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F3851AE565CF007B4886 /* buttonPress2.caf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -268,6 +271,9 @@
 		49E6F35F1AE550D3007B4886 /* ObjectALMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectALMacros.h; sourceTree = "<group>"; };
 		49E6F3601AE550D3007B4886 /* SynthesizeSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynthesizeSingleton.h; sourceTree = "<group>"; };
 		49E6F37B1AE550F3007B4886 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		49E6F37F1AE56213007B4886 /* metalClank.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = metalClank.caf; sourceTree = "<group>"; };
+		49E6F3801AE56213007B4886 /* buttonPress.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buttonPress.caf; sourceTree = "<group>"; };
+		49E6F3851AE565CF007B4886 /* buttonPress2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buttonPress2.caf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -516,6 +522,9 @@
 		49DF85121ADEEB9100080987 /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
+				49E6F3851AE565CF007B4886 /* buttonPress2.caf */,
+				49E6F37F1AE56213007B4886 /* metalClank.caf */,
+				49E6F3801AE56213007B4886 /* buttonPress.caf */,
 				49C3A5D21ADC3DC1007C8309 /* bombExplosion.caf */,
 				49C3A5D31ADC3DC1007C8309 /* missleImpact.caf */,
 				49C3A5D01ADC35D6007C8309 /* cannon.caf */,
@@ -714,7 +723,10 @@
 			files = (
 				49C3A5D51ADC3DC1007C8309 /* missleImpact.caf in Resources */,
 				49B9DBC71ACDD519003EA46E /* Main.storyboard in Resources */,
+				49E6F3861AE565CF007B4886 /* buttonPress2.caf in Resources */,
+				49E6F3811AE56213007B4886 /* metalClank.caf in Resources */,
 				49B9DBCC1ACDD519003EA46E /* LaunchScreen.xib in Resources */,
+				49E6F3821AE56213007B4886 /* buttonPress.caf in Resources */,
 				49B9DBC91ACDD519003EA46E /* Images.xcassets in Resources */,
 				49C3A5D11ADC35D6007C8309 /* cannon.caf in Resources */,
 				49C3A5D41ADC3DC1007C8309 /* bombExplosion.caf in Resources */,

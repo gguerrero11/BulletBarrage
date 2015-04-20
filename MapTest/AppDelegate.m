@@ -51,10 +51,10 @@
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
     
-
-    MapViewController *mapView = [MapViewController new];
+    UIViewController *mapView = [UIViewController new];
+//    MapViewController *mapView = [MapViewController new];
     mapView.tabBarItem.title = @"Select Target";
-    mapView.tabBarItem.image = [UIImage imageNamed:@"Mortar Filled-50"];
+//    mapView.tabBarItem.image = [UIImage imageNamed:@"Mortar Filled-50"];
     
     UINavigationController *navBarMapView = [[UINavigationController alloc]initWithRootViewController:mapView];
     navBarMapView.navigationBarHidden = YES;
@@ -64,13 +64,14 @@
     leaderboardVC.tabBarItem.image = [UIImage imageNamed:@"Medal-50"];
     
     UINavigationController *navBarLeaderboard = [[UINavigationController alloc]initWithRootViewController:leaderboardVC];
+        navBarLeaderboard.navigationBarHidden = YES;
     
     ProfileviewControllerViewController *profileVC = [ProfileviewControllerViewController new];
     profileVC.tabBarItem.title = @"Profile";
     profileVC.tabBarItem.image = [UIImage imageNamed:@"Military Backpack Radio Filled-50"];
     
     UINavigationController *navBarProfileVC = [[UINavigationController alloc]initWithRootViewController:profileVC];
-    
+        navBarProfileVC.navigationBarHidden = YES;
     
     CustomTabBarViewController *tabBarController = [CustomTabBarViewController new];
     tabBarController.viewControllers = @[navBarLeaderboard, navBarMapView, navBarProfileVC];
@@ -84,6 +85,15 @@
     [[UINavigationBar appearance] setBackgroundImage:[UIImage new] forBarPosition:UIBarPositionTop barMetrics:UIBarMetricsDefault];
     [[UINavigationBar appearance] setTintColor:[UIColor clearColor]];
     [[UINavigationBar appearance] setShadowImage:[UIImage new]];
+    
+//    UIImage *selectedImage0 = [UIImage imageNamed:@"button"];
+//    UIImage *unselectedImage0 = [UIImage imageNamed:@"button"];
+//    
+//    UITabBar *tabBar = tabBarController.tabBar;
+//    UITabBarItem *item0 = [tabBar.items objectAtIndex:0];
+//    
+//    item0 = [item0 initWithTitle:@"Leaderboards" image:unselectedImage0 selectedImage:selectedImage0];
+//    
     
     self.window.rootViewController = tabBarController;
     

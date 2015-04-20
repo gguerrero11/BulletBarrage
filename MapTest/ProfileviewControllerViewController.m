@@ -10,6 +10,11 @@
 #import "ProfileViewDataSource.h"
 #import "BackgroundDrawer.h"
 
+#import "ObjectAL.h"
+#define BUTTONPRESS_SOUND @"buttonPress2.caf"
+#define METALCLANK_SOUND @"metalClank.caf"
+
+
 @interface ProfileviewControllerViewController () <UITableViewDelegate>
 
 @property (nonatomic, strong) UITableView *tableView;
@@ -39,6 +44,7 @@
     self.bgDrawer.shouldContinue = YES;
     [self.bgDrawer continueDrawing];
     [self.bgDrawer enterAnimation];
+    [[OALSimpleAudio sharedInstance] playEffect:METALCLANK_SOUND];
     
 }
 
