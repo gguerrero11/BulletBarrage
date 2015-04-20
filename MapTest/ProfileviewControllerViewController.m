@@ -52,9 +52,6 @@
     [super viewDidLoad];
     self.title = @"Profile";
     
-    self.bgDrawer = [BackgroundDrawer new];
-    [self.bgDrawer setUpBackgroundOnView:self.view];
-    
     // table datasource stuff
     self.dataSource = [ProfileViewDataSource new];
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height) style:UITableViewStyleGrouped];
@@ -65,6 +62,9 @@
     
     [self.dataSource registerTableView:self.tableView];
     [self.view addSubview:self.tableView];
+    
+    self.bgDrawer = [BackgroundDrawer new];
+    [self.bgDrawer setUpBackgroundOnView:self.view nameOfView:@"Profile"];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -93,7 +93,7 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // Deselect cell
-    
+        [[OALSimpleAudio sharedInstance] playEffect:BUTTONPRESS_SOUND];
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     
     self.selectedIndex = indexPath.row;

@@ -13,7 +13,7 @@
 
 @property (nonatomic, assign) BOOL shouldContinue;
 
-- (void)setUpBackgroundOnView:(UIView *)passedView;
+- (void)setUpBackgroundOnView:(UIView *)passedView nameOfView:(NSString *)nameOfView;
 
 - (void)continueDrawing;
 

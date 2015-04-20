@@ -22,8 +22,11 @@ static NSString * const metalPlate = @"metalPlate";
 @property (nonatomic) UIImageView *backgroundImage;
 @property (nonatomic) UIImageView *foreGroundBars;
 @property (nonatomic) UIImageView *barrelRing;
-@property (nonatomic) UIImageView *metalPlateView;
+@property (nonatomic) UIButton *metalPlateButton;
+@property (nonatomic, strong) NSString *nameOfView;
 @property (nonatomic, assign) double randomRotation;
+
+@property (nonatomic, assign) BOOL initalStart;
 
 @end
 
@@ -31,20 +34,22 @@ static NSString * const metalPlate = @"metalPlate";
 
 
 // set up background image
-- (void)setUpBackgroundOnView:(UIView *)passedView {
+- (void)setUpBackgroundOnView:(UIView *)passedView nameOfView:(NSString *)nameOfView {
     self.view = passedView;
-    
+    self.nameOfView = nameOfView;
     self.gridImageView.image = [UIImage imageNamed:flakLines];
     self.flakImageView.image = [UIImage imageNamed:flakLines];
     
     self.backgroundImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     self.backgroundImage.image = [UIImage imageNamed:@"leaderBoardScreenBlue"];
-    [self.view addSubview:self.backgroundImage];
+    self.backgroundImage.userInteractionEnabled = NO;
+//    [self.view addSubview:self.backgroundImage];
+    
+    [self.view insertSubview:self.backgroundImage atIndex:0];
     
     [self continueDrawing];
     [self drawForegroundBars];
     [self drawRadialRing];
-//    [self drawMetalPlateWithWidth:250 height:150];
 }
 
 - (void)drawForegroundBars {
@@ -59,39 +64,55 @@ static NSString * const metalPlate = @"metalPlate";
 - (void)drawRadialRing {
     
     self.barrelRing = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.height)];
-    [self.barrelRing setCenter:CGPointMake(self.view.center.x, self.view.center.y - self.view.center.y * (17 / self.view.frame.size.height))];
+    [self.barrelRing setCenter:CGPointMake(self.view.center.x,
+                                           self.view.center.y - self.view.center.y * (17 / self.view.frame.size.height))];
     self.barrelRing.image = [UIImage imageNamed:@"barrelRing"];
     self.barrelRing.hidden = YES;
+    self.barrelRing.userInteractionEnabled = NO;
     [self.foreGroundBars addSubview:self.barrelRing];
     
 }
 
 - (void)drawMetalPlateWithWidth:(double)width height:(double)height {
-    self.metalPlateView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:metalPlate]];
-    self.metalPlateView.frame = CGRectMake(self.view.frame.size.width / 2 - width / 2, -30, width, height);
-    self.metalPlateView.hidden = YES;
-    [self.foreGroundBars addSubview:self.metalPlateView];
+    if (!self.metalPlateButton) {
     
-    [self animateMetalPlate:self.metalPlateView];
+    self.metalPlateButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - width / 2, 10, width, height)];
+    self.metalPlateButton.hidden = YES;
+    [self.metalPlateButton setImage:[UIImage imageNamed:@"metalPlate"] forState:UIControlStateNormal];
+    [self.view addSubview:self.metalPlateButton];
+    [self.metalPlateButton addTarget:self action:@selector(correctMetalPlateRotation:) forControlEvents:UIControlEventTouchDown];
+    self.metalPlateButton.adjustsImageWhenHighlighted = NO;
     
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.metalPlateButton.frame.size.width, self.metalPlateButton.frame.size.height)];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.text = self.nameOfView;
+    label.alpha = .8;
+    label.font = [UIFont boldSystemFontOfSize:20.0];
+    label.textColor = [UIColor whiteColor];
+    [self.metalPlateButton addSubview:label];
+    
+    [self animateMetalPlate:self.metalPlateButton];
+    }
 
 }
 
-- (void)animateMetalPlate:(UIImageView *) metalPlateView  {
+- (void)animateMetalPlate:(UIButton *) metalPlateView  {
     
     self.randomRotation = fmodf(arc4random(), 0.6f) - 0.3f;
-
     
     // beginning transform
     CGAffineTransform beginScaleTransform = CGAffineTransformMakeScale(1.4, 1.4);
-    CGAffineTransform rotationBeginTransform = CGAffineTransformMakeRotation(-.1);
+    CGAffineTransform rotationBeginTransform = CGAffineTransformMakeRotation(0);
     metalPlateView.hidden = NO;
     metalPlateView.transform = CGAffineTransformConcat(beginScaleTransform, rotationBeginTransform);
     metalPlateView.alpha = 0;
     
     // ending transform
     CGAffineTransform scaleTransform = CGAffineTransformMakeScale(1, 1);
-    CGAffineTransform rotationEndTransform = CGAffineTransformMakeRotation(self.randomRotation);
+//    CGAffineTransform rotationEndTransform = CGAffineTransformMakeRotation(M_PI + self.randomRotation);
+        CGAffineTransform rotationEndTransform = CGAffineTransformMakeRotation(self.randomRotation);
+    
+    NSLog(@"%f", self.randomRotation);
     
     [UIView animateWithDuration:.1 delay:0
                         options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionBeginFromCurrentState
@@ -99,10 +120,27 @@ static NSString * const metalPlate = @"metalPlate";
         metalPlateView.transform = CGAffineTransformConcat(scaleTransform, rotationEndTransform);
         metalPlateView.alpha = 1;
     } completion:^(BOOL finished) {
-        
+       
     }];
-    
 }
+
+- (void)correctMetalPlateRotation:(id)sender {
+    
+    NSLog(@"%f", M_PI + (-self.randomRotation));
+    
+    UIButton *metalPlateButton = sender;
+    
+    
+    CGAffineTransform rotationEndTransform = CGAffineTransformMakeRotation(0);
+    
+    [UIView animateWithDuration:.1 delay:0
+                        options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         metalPlateButton.transform = rotationEndTransform;
+                     } completion:nil];
+}
+
+
 
 - (void)animateRing {
     
@@ -118,6 +156,9 @@ static NSString * const metalPlate = @"metalPlate";
                              self.barrelRing.transform = rotationTransform;
                          }
                          completion:^(BOOL finished) {
+                             
+                             
+
                              [UIView animateWithDuration:45
                                                    delay:0
                                                  options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionBeginFromCurrentState
@@ -126,6 +167,9 @@ static NSString * const metalPlate = @"metalPlate";
                                               }
                                               completion:^(BOOL finished) {
                                                   [self animateRing];
+                                              
+                                              
+                                              
                                               }];
                          }];
     }
@@ -235,7 +279,7 @@ static NSString * const metalPlate = @"metalPlate";
     [UIView animateWithDuration:.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         self.foreGroundBars.transform = scaleTransform;
     } completion:^(BOOL finished) {
-        [self drawMetalPlateWithWidth:250 height:150];
+        [self drawMetalPlateWithWidth:250 height:60];
         
     }];
     
@@ -244,7 +288,7 @@ static NSString * const metalPlate = @"metalPlate";
 - (void)hideBarElements {
     self.barrelRing.hidden = YES;
     self.foreGroundBars.hidden = YES;
-        self.metalPlateView.hidden = YES;
+        self.metalPlateButton.hidden = YES;
 }
 
 @end
