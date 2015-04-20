@@ -17,4 +17,8 @@
 
 - (void)continueDrawing;
 
+- (void)enterAnimation;
+
+- (void) hideBarElements;
+
 @end

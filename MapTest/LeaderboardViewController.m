@@ -37,6 +37,11 @@ static double tableBoxPadding = 8;
 
 @implementation LeaderboardViewController
 
+// this hides the foregroundbars and ring as to prevent it from seeing it a split second before its scaled large again when the user goes back to the screen
+- (void)viewDidDisappear:(BOOL)animated {
+    [self.bgDrawer hideBarElements];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     self.bgDrawer.shouldContinue = NO;
 }
@@ -44,6 +49,7 @@ static double tableBoxPadding = 8;
 -(void)viewDidAppear:(BOOL)animated {
     self.bgDrawer.shouldContinue = YES;
     [self.bgDrawer continueDrawing];
+    [self.bgDrawer enterAnimation];
     
 
 }

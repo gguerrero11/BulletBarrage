@@ -48,6 +48,7 @@ static NSString * const backgroundGrid = @"backgroundGrid";
     
     self.foreGroundBars = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     self.foreGroundBars.image = [UIImage imageNamed:@"metalBars"];
+    self.foreGroundBars.hidden = YES;
     [self.view addSubview:self.foreGroundBars];
     
 }
@@ -57,26 +58,41 @@ static NSString * const backgroundGrid = @"backgroundGrid";
     self.barrelRing = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.height)];
     [self.barrelRing setCenter:CGPointMake(self.view.center.x, self.view.center.y - self.view.center.y * (17 / self.view.frame.size.height))];
     self.barrelRing.image = [UIImage imageNamed:@"barrelRing"];
+    self.barrelRing.hidden = YES;
     [self.foreGroundBars addSubview:self.barrelRing];
+
 }
 
 - (void) animateRing {
     
     if (self.shouldContinue) {
-
-        CABasicAnimation *fullRotation = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
-        fullRotation.fromValue = [NSNumber numberWithFloat:0];
-        fullRotation.toValue = [NSNumber numberWithFloat:((360*M_PI)/180)];
-        fullRotation.duration = 60;
-        fullRotation.repeatCount = INFINITY;
-        [self.barrelRing.layer addAnimation:fullRotation forKey:@"360"];
-
+        
+        CGAffineTransform rotationTransform = CGAffineTransformMakeRotation(M_PI);
+        CGAffineTransform rotationEndTransform = CGAffineTransformMakeRotation(M_PI * 2);
+        
+        [UIView animateWithDuration:45
+                              delay:0
+                            options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                                 self.barrelRing.transform = rotationTransform;
+                         }
+                         completion:^(BOOL finished) {
+                             [UIView animateWithDuration:45
+                                                   delay:0
+                                                 options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionBeginFromCurrentState
+                                              animations:^{
+                                                  self.barrelRing.transform = rotationEndTransform;
+                                              }
+                                              completion:^(BOOL finished) {
+                                                  [self animateRing];
+                                              }];
+                         }];
     }
 }
 
 
 - (void) drawGridBGImages:(NSString *)type {
-
+    
     UIImageView *backgroundImage;
     
     // runs when bool is set to YES, (when the user is at the current screen the animation is needed)
@@ -104,7 +120,7 @@ static NSString * const backgroundGrid = @"backgroundGrid";
             // sets the height based on the percentage of the size of the randomWidth to its maximum size
             randomHeight = 1400.0 * (randomWidth / 2800.0);
         }
-
+        
         
         // create the "grid" background
         backgroundImage = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, randomWidth, randomHeight)];
@@ -159,7 +175,7 @@ static NSString * const backgroundGrid = @"backgroundGrid";
 }
 
 - (void)continueDrawing {
-
+    
     [self drawGridBGImages:backgroundGrid];
     [self drawGridBGImages:flakLines];
     [self animateRing];
@@ -167,14 +183,26 @@ static NSString * const backgroundGrid = @"backgroundGrid";
 
 - (void)enterAnimation {
     
-    CGAffineTransform scaleTransform = CGAffineTransformMakeScale(2, 2);
+    CGAffineTransform beginScaleTransform = CGAffineTransformMakeScale(1.4, 1.4);
+    self.foreGroundBars.transform = beginScaleTransform;
     
-            [UIView animateWithDuration:3.0 animations:^{
-                self.foreGroundBars.transform = scaleTransform;
-            } completion:^(BOOL finished) {
+    self.barrelRing.hidden = NO;
+    self.foreGroundBars.hidden = NO;
+    
+    
+    CGAffineTransform scaleTransform = CGAffineTransformMakeScale(1, 1);
+    
+    [UIView animateWithDuration:.3 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        self.foreGroundBars.transform = scaleTransform;
+    } completion:^(BOOL finished) {
+        
+    }];
+    
+}
 
-            }];
-    
+- (void) hideBarElements {
+    self.barrelRing.hidden = YES;
+        self.foreGroundBars.hidden = YES;
 }
 
 @end

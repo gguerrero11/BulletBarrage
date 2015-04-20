@@ -108,6 +108,8 @@
     if (marker.flat) {
         marker.rotation = self.heading;
     }
+        
+\
 }
 
 

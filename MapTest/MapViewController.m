@@ -18,13 +18,19 @@
 #import "WeaponController.h"
 #import "UserController.h"
 #import "GMSMarkerWithUser.h"
-#import "SoundController.h"
 #import "GMSMarker+addUser.h"
 #import "HealthData.h"
 #import "HealthDataController.h"
 #import "HealthBox.h"
 #import "InterfaceLineDrawer.h"
 #import "DrawProjectile.h"
+
+#import "ObjectAL.h"
+
+#define SHOOT_SOUND @"cannon.caf"
+#define EXPLODE_SOUND @"bombExplosion.caf"
+
+
 
 @import SceneKit;
 
@@ -111,9 +117,6 @@ static bool kAnimate = true;
 @property (nonatomic, strong) CMAttitude *attitude;
 @property (nonatomic) double deviceYaw;
 
-// Sound Effects
-@property (nonatomic,strong) SoundController *soundController;
-
 @end
 
 @implementation MapViewController
@@ -132,7 +135,7 @@ static bool kAnimate = true;
     [self.locationManager startUpdatingHeading];
     [self.locationManager startUpdatingLocation];
     self.gmMapView.hidden = NO;
-    [_motionManager startDeviceMotionUpdates];
+    //[_motionManager startDeviceMotionUpdates];
     
     if (![PFUser currentUser]) { // No user logged in
         // Create the log in view controller
@@ -251,30 +254,34 @@ static bool kAnimate = true;
     
     self.sound = YES;
     
+    // We don't want ipod music to keep playing since
+    [OALSimpleAudio sharedInstance].allowIpod = NO;
+    
+    // Mute all audio if the silent switch is turned on.
+    [OALSimpleAudio sharedInstance].honorSilentSwitch = YES;
+    
+    // This loads the sound effects into memory so that
+    // there's no delay when we tell it to play them.
+    [[OALSimpleAudio sharedInstance] preloadEffect:SHOOT_SOUND];
+    [[OALSimpleAudio sharedInstance] preloadEffect:EXPLODE_SOUND];
+    
     self.tabBarController.tabBar.alpha = 1;
     [self createColors];
     self.initialLaunch = YES;
     self.healthDataController = [HealthDataController new];
-    
     self.arrayOfCraters = [NSMutableArray new];
-
     [self registerForNotifications];
-    
     [[UserController sharedInstance] setWeaponForUser:cannon];
     [self setUpMotionManager];
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
-    
     [UserController queryUsers];
-    
     [self setupSceneKitView];
-    
     self.interfaceLineDrawer = [[InterfaceLineDrawer alloc]initWithFrame:self.view.frame withView:self.view];
     self.interfaceLineDrawer.attitude = self.attitude;
     self.interfaceLineDrawer.mapCamera = self.gmMapView.camera;
     self.interfaceLineDrawer.userInteractionEnabled = NO;
     [self.view addSubview:self.interfaceLineDrawer];
-
     [self setUpDataDisplayAndButtons];
     [self setUpSwitchWeaponButton];
     
@@ -373,6 +380,8 @@ static bool kAnimate = true;
     
     if (_motionManager.isGyroAvailable) {
         //tell maanger to start pulling gyroscope info
+        
+        _motionManager.deviceMotionUpdateInterval = .03;
         
         [_motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical toQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
             
@@ -772,7 +781,8 @@ return YES;
     //[self createTimer]
 #warning this slows performance
     
-    if (self.sound) [[SoundController sharedInstance] playSoundEffect:cannon];
+//    if (self.sound) [[SoundController sharedInstance] playSoundEffect:cannon];
+    if (self.sound) [[OALSimpleAudio sharedInstance] playEffect:SHOOT_SOUND];
     
     // we need to create a separate projecile weapon instance, so when the user changes weapon mid-flight, it doesn't change that weapon also
     self.projectile = [Weapon new];
@@ -797,14 +807,14 @@ return YES;
 - (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
     
     // Play bombExplosion sound
-    if (self.sound) [[SoundController sharedInstance] playSoundEffect:bombExplosion];
-    
+    if (self.sound) [[OALSimpleAudio sharedInstance] playEffect:EXPLODE_SOUND];
     // play explosion gif
     GMSMarker *explosion = [GMSMarker new];
     explosion.map = self.gmMapView;
     explosion.position = hitLocation.coordinate;
     explosion.icon = [UIImage animatedImageNamed:@"explosion-" duration:0.7f];
-    [self performSelector:@selector(removeGMSMarker:) withObject:explosion afterDelay:0.7 ];
+
+        [self performSelector:@selector(removeGMSMarker:) withObject:explosion afterDelay:0.7 ];
     
     // create crater
     [self createGMSOverlayAtCoordinate:hitLocation.coordinate type:craterBigSquare disappear:YES];
