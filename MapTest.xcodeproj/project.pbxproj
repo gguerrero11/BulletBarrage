@@ -100,6 +100,9 @@
 		49E6F3811AE56213007B4886 /* metalClank.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F37F1AE56213007B4886 /* metalClank.caf */; };
 		49E6F3821AE56213007B4886 /* buttonPress.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F3801AE56213007B4886 /* buttonPress.caf */; };
 		49E6F3861AE565CF007B4886 /* buttonPress2.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F3851AE565CF007B4886 /* buttonPress2.caf */; };
+		49E6F39F1AE6F085007B4886 /* FlakBarrel.dae in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F39C1AE6F085007B4886 /* FlakBarrel.dae */; };
+		49E6F3A01AE6F085007B4886 /* FlakStand.dae in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F39D1AE6F085007B4886 /* FlakStand.dae */; };
+		49E6F3A11AE6F085007B4886 /* FlakTurnTable.dae in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F39E1AE6F085007B4886 /* FlakTurnTable.dae */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -274,6 +277,9 @@
 		49E6F37F1AE56213007B4886 /* metalClank.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = metalClank.caf; sourceTree = "<group>"; };
 		49E6F3801AE56213007B4886 /* buttonPress.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buttonPress.caf; sourceTree = "<group>"; };
 		49E6F3851AE565CF007B4886 /* buttonPress2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buttonPress2.caf; sourceTree = "<group>"; };
+		49E6F39C1AE6F085007B4886 /* FlakBarrel.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml.dae; path = FlakBarrel.dae; sourceTree = "<group>"; };
+		49E6F39D1AE6F085007B4886 /* FlakStand.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml.dae; path = FlakStand.dae; sourceTree = "<group>"; };
+		49E6F39E1AE6F085007B4886 /* FlakTurnTable.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml.dae; path = FlakTurnTable.dae; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -510,11 +516,15 @@
 		49C3A5DF1ADDA829007C8309 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				49E6F39C1AE6F085007B4886 /* FlakBarrel.dae */,
+				49E6F39D1AE6F085007B4886 /* FlakStand.dae */,
+				49E6F39E1AE6F085007B4886 /* FlakTurnTable.dae */,
 				49E6F31E1AE550D3007B4886 /* ObjectAL */,
 				49B9DBC51ACDD519003EA46E /* Main.storyboard */,
 				49DF85121ADEEB9100080987 /* Sounds */,
 				49B9DBC81ACDD519003EA46E /* Images.xcassets */,
 				49B9DBCA1ACDD519003EA46E /* LaunchScreen.xib */,
+				49E6F3951AE6DC60007B4886 /* gameModels */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -640,6 +650,13 @@
 			path = Support;
 			sourceTree = "<group>";
 		};
+		49E6F3951AE6DC60007B4886 /* gameModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = gameModels;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -722,9 +739,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				49C3A5D51ADC3DC1007C8309 /* missleImpact.caf in Resources */,
+				49E6F3A11AE6F085007B4886 /* FlakTurnTable.dae in Resources */,
 				49B9DBC71ACDD519003EA46E /* Main.storyboard in Resources */,
 				49E6F3861AE565CF007B4886 /* buttonPress2.caf in Resources */,
+				49E6F39F1AE6F085007B4886 /* FlakBarrel.dae in Resources */,
 				49E6F3811AE56213007B4886 /* metalClank.caf in Resources */,
+				49E6F3A01AE6F085007B4886 /* FlakStand.dae in Resources */,
 				49B9DBCC1ACDD519003EA46E /* LaunchScreen.xib in Resources */,
 				49E6F3821AE56213007B4886 /* buttonPress.caf in Resources */,
 				49B9DBC91ACDD519003EA46E /* Images.xcassets in Resources */,
@@ -935,7 +955,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -954,7 +974,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

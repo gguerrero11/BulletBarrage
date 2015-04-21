@@ -97,7 +97,7 @@ static bool kAnimate = true;
 
 // SceneKit Properties
 @property (nonatomic, strong) SCNView *sceneView;
-@property (nonatomic, strong) SCNNode *cannonBarrelNode;
+@property (nonatomic, strong) SCNNode *cannonTurnTableNode;
 @property (nonatomic, strong) SCNNode *barrelPivotNode;
 @property (nonatomic, strong) SCNNode *placementNode;
 @property (nonatomic, strong) SCNBox *cannonBarrel;
@@ -427,8 +427,8 @@ static bool kAnimate = true;
             self.cameraSKPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (self.gmMapView.camera.viewingAngle) * (M_PI/180) );
             self.cameraSKPositionNode.position = SCNVector3Make(0, -((double)self.gmMapView.camera.zoom - 22) * 5  ,0);
             
-            self.cannonBarrelNode.eulerAngles = SCNVector3Make(self.pitchWithLimit, self.deviceYaw, 0 );
-            
+            self.barrelPivotNode.eulerAngles = SCNVector3Make(self.pitchWithLimit,0, 0 );
+            self.cannonTurnTableNode.eulerAngles = SCNVector3Make(0, self.deviceYaw, 0 );
             
             //            self.pyramidNode.eulerAngles = SCNVector3Make(self.deviceYaw, 0, 1.5 );
             
@@ -663,17 +663,52 @@ return YES;
 //    floor.physicsBody = staticBody;
 //    [[scene rootNode] addChildNode:floor];
 
-    SCNNode *cannonBarrel = [SCNNode nodeWithGeometry:self.cannonBarrel];
-    cannonBarrel.pivot = SCNMatrix4MakeTranslation(0, 0, .3);
-    cannonBarrel.position = SCNVector3Make(0, .1, 0);
+//    SCNNode *cannonBarrel = [SCNNode nodeWithGeometry:self.cannonBarrel];
+//    cannonBarrel.pivot = SCNMatrix4MakeTranslation(0, 0, .3);
+//    cannonBarrel.position = SCNVector3Make(0, .1, 0);
+//    
+//    SCNNode *placementNode = [SCNNode nodeWithGeometry:self.placement];
+//    placementNode.position = SCNVector3Make(0, .03, 0);
     
-    SCNNode *placementNode = [SCNNode nodeWithGeometry:self.placement];
-    placementNode.position = SCNVector3Make(0, .03, 0);
+    // create Cannon stand
+    SCNScene *cannonStand = [SCNScene sceneNamed:@"FlakStand.dae"
+                                    inDirectory:nil
+                                        options:@{SCNSceneSourceConvertToYUpKey : @YES,
+                                                  SCNSceneSourceAnimationImportPolicyKey :SCNSceneSourceAnimationImportPolicyPlayRepeatedly}];
     
-    [placementNode addChildNode:cannonBarrel];
+    SCNScene *cannonTurnTableScene = [SCNScene sceneNamed:@"FlakTurnTable.dae"
+                                     inDirectory:nil
+                                         options:@{SCNSceneSourceConvertToYUpKey : @YES,
+                                                   SCNSceneSourceAnimationImportPolicyKey :SCNSceneSourceAnimationImportPolicyPlayRepeatedly}];
+    
+    // create Cannon barrel
+    SCNScene *cannonBarrelScene = [SCNScene sceneNamed:@"FlakBarrel.dae"
+                                    inDirectory:nil
+                                        options:@{SCNSceneSourceConvertToYUpKey : @YES,
+                                                  SCNSceneSourceAnimationImportPolicyKey :SCNSceneSourceAnimationImportPolicyPlayRepeatedly}];
+    
+    SCNNode *placementNode = cannonStand.rootNode;
+    placementNode.position = SCNVector3Make(0, 0, 0);
+    placementNode.eulerAngles = SCNVector3Make(0, 0, 0);
+    placementNode.scale = SCNVector3Make(.01, .01, .01);
+    
+    
+    SCNNode *cannonBarrel = cannonBarrelScene.rootNode;
+    cannonBarrel.pivot = SCNMatrix4MakeTranslation(0, 0, 0);
+    cannonBarrel.position = SCNVector3Make(0, 9, 0);
+
+    
+    SCNNode *cannonTurnTable = cannonTurnTableScene.rootNode;
+    cannonTurnTable.pivot = SCNMatrix4MakeTranslation(0, 0, 0);
+    cannonTurnTable.position = SCNVector3Make(0, 6, 0);
+
+    
+    [cannonTurnTable addChildNode:cannonBarrel];
+    [placementNode addChildNode:cannonTurnTable];
     [scene.rootNode addChildNode:placementNode];
-    
-    self.cannonBarrelNode = cannonBarrel;
+
+    self.barrelPivotNode = cannonBarrel;
+    self.cannonTurnTableNode = cannonTurnTable;
     self.placementNode = placementNode;
     
     // Add scene to SceneView
