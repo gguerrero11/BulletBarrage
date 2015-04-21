@@ -91,6 +91,7 @@ static bool kAnimate = true;
 @property (nonatomic, strong) InterfaceLineDrawer *interfaceLineDrawer;
 @property (nonatomic, strong) DrawProjectile *drawProjectile;
 @property (nonatomic) UIImageView *weaponIcon;
+@property (nonatomic) UIImageView *cameraIcon;
 @property (nonatomic) BOOL initialLaunch;
 @property (nonatomic) BOOL sound;
 
@@ -296,7 +297,7 @@ static bool kAnimate = true;
     self.interfaceLineDrawer.userInteractionEnabled = NO;
     [self.view addSubview:self.interfaceLineDrawer];
     [self setUpDataDisplayAndButtons];
-    [self setUpSwitchWeaponButton];
+    
     
     //set up tabBar image
     UIImageView *tabBar = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
@@ -426,6 +427,8 @@ static bool kAnimate = true;
             self.cameraSKPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (self.gmMapView.camera.viewingAngle) * (M_PI/180) );
             self.cameraSKPositionNode.position = SCNVector3Make(0, -((double)self.gmMapView.camera.zoom - 22) * 5  ,0);
             
+            self.cannonBarrelNode.eulerAngles = SCNVector3Make(self.pitchWithLimit, self.deviceYaw, 0 );
+            
             
             //            self.pyramidNode.eulerAngles = SCNVector3Make(self.deviceYaw, 0, 1.5 );
             
@@ -495,13 +498,14 @@ static bool kAnimate = true;
 - (void) showMainMapView {
     
     gmCamera = [GMSCameraPosition cameraWithTarget:self.myLocation.coordinate zoom:15 bearing:32 viewingAngle:17];
-    
     self.gmMapView = [GMSMapView mapWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height + 250) camera:gmCamera];
     self.gmMapView.myLocationEnabled = YES;
     self.gmMapView.settings.scrollGestures = NO;
     self.gmMapView.delegate = self;
     self.gmMapView.mapType = kGMSTypeSatellite;
     [self.view addSubview:self.gmMapView];
+    
+    self.cameraFollow = YES;
 }
 
 - (void) setUpDataDisplayAndButtons {
@@ -544,6 +548,10 @@ static bool kAnimate = true;
     // Set up HealthBox
     self.healthBox = [[HealthBox alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 35, 0, 100, 70)];
     [self.view addSubview:self.healthBox];
+    
+    // Set up weapon/Camera Button
+    [self setUpSwitchWeaponButton];
+    [self setUpCameraFollow];
 }
 
 - (void) showRespawnButton {
@@ -700,30 +708,67 @@ return YES;
 //}
 }
 
+- (void) placeButton:(UIButton *)button side:(NSString *)side{
+    double xOrigin;
+    double width = 50;
+    if ([side isEqualToString:@"right"]) {
 
+        xOrigin = self.view.frame.size.width * .95 - width;
+
+    }
+    else {
+        xOrigin = self.view.frame.size.width * .05;
+
+    }
+    
+    button.layer.borderWidth = 1;
+    button.layer.borderColor = [UIColor blueColor].CGColor;
+    button.frame = CGRectMake( xOrigin, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height - 80, width, width);
+    [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    button.tintColor = [UIColor whiteColor];
+    button.backgroundColor = [UIColor colorWithRed:.1 green:.1 blue:1 alpha:.35];
+    button.alpha = .65;
+    [self.view addSubview:button];
+}
 
 - (void) setUpSwitchWeaponButton {
-    self.weaponButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    //[self.weaponButton setTitle:@"100" forState:UIControlStateNormal];
-
-    self.weaponButton.layer.borderWidth = 1;
-    self.weaponButton.layer.borderColor = [UIColor blueColor].CGColor;
-    self.weaponButton.frame = CGRectMake(self.view.frame.size.width * .95 - 50 , self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height - 80, 50, 50);
-    [self.weaponButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    self.weaponButton.tintColor = [UIColor whiteColor];
-    self.weaponButton.backgroundColor = [UIColor colorWithRed:.1 green:.1 blue:1 alpha:.35];
-    [self.view addSubview:self.weaponButton];
+    self.weaponButton = [UIButton new];
     [self.weaponButton addTarget:self action:@selector(switchWeaponPressed) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self placeButton:self.weaponButton side:@"right"];
     
     self.weaponIcon = [[UIImageView alloc]initWithFrame:CGRectMake(self.weaponButton.frame.size.width / 2 - self.weaponButton.frame.size.width * 0.75 / 2, self.weaponButton.frame.size.height / 2 - self.weaponButton.frame.size.height * 0.75 / 2 , self.weaponButton.frame.size.width * 0.75, self.weaponButton.frame.size.height * 0.75)];
     self.weaponIcon.image = [UIImage imageNamed:@"Mortar Filled-50"];
-    self.weaponIcon.alpha = .65;
     [self.weaponButton addSubview:self.weaponIcon];
     
+
+}
+
+- (void) setUpCameraFollow {
+    self.cameraFollowButton = [UIButton new];
+    [self.cameraFollowButton addTarget:self action:@selector(cameraFollowPressed) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self placeButton:self.cameraFollowButton side:nil];
+    
+    self.cameraIcon = [[UIImageView alloc]initWithFrame:CGRectMake(self.cameraFollowButton.frame.size.width / 2 - self.cameraFollowButton.frame.size.width * 0.75 / 2, self.cameraFollowButton.frame.size.height / 2 - self.cameraFollowButton.frame.size.height * 0.75 / 2 , self.cameraFollowButton.frame.size.width * 0.75, self.cameraFollowButton.frame.size.height * 0.75)];
+    self.cameraIcon.image = [UIImage imageNamed:@"cameraLocked"];
+    [self.cameraFollowButton addSubview:self.cameraIcon];
+}
+
+- (void) cameraFollowPressed {
+    if (self.cameraFollow == YES) {
+        self.cameraIcon.image = [UIImage imageNamed:@"cameraUnlocked"];
+        self.cameraFollow = NO;
+    }
+    else {
+        self.cameraIcon.image = [UIImage imageNamed:@"cameraLocked"];
+        [self.gmMapView animateToBearing:-[MapViewController convertToDegrees:self.deviceYaw]];
+        self.cameraFollow = YES;
+    }
 }
 
 - (void) switchWeaponPressed {
-
+    
     
     switch (self.weaponSelected) {
             //        case 0:
@@ -1093,14 +1138,13 @@ return YES;
 
 - (void)mapView:(GMSMapView *)mapView didChangeCameraPosition:(GMSCameraPosition *)position {
     self.cameraSKHeadingRotationNode.eulerAngles = SCNVector3Make(0, -(position.bearing * M_PI / 180), 0);
-    self.cannonBarrelNode.eulerAngles = SCNVector3Make(self.pitchWithLimit, self.deviceYaw, 0 );
-    
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 10) return;
     
-    [self.gmMapView animateToBearing:-[MapViewController convertToDegrees:self.deviceYaw]];
+    if (self.cameraFollow == YES) [self.gmMapView animateToBearing:-[MapViewController convertToDegrees:self.deviceYaw]];
+    
     //[gmMapView animateToViewingAngle:45];
     
     // Use the true heading if it is valid.
