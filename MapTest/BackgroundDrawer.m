@@ -25,7 +25,7 @@ static NSString * const metalPlate = @"metalPlate";
 @property (nonatomic) UIButton *metalPlateButton;
 @property (nonatomic, strong) NSString *nameOfView;
 @property (nonatomic, assign) double randomRotation;
-
+@property (nonatomic) UILabel *metalPlateLabel;
 @property (nonatomic, assign) BOOL initalStart;
 
 @end
@@ -75,25 +75,24 @@ static NSString * const metalPlate = @"metalPlate";
 
 - (void)drawMetalPlateWithWidth:(double)width height:(double)height {
     if (!self.metalPlateButton) {
-    
     self.metalPlateButton = [[UIButton alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - width / 2, 10, width, height)];
+    self.metalPlateLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.metalPlateButton.frame.size.width, self.metalPlateButton.frame.size.height)];
+
+    }
     self.metalPlateButton.hidden = YES;
     [self.metalPlateButton setImage:[UIImage imageNamed:@"metalPlate"] forState:UIControlStateNormal];
     [self.view addSubview:self.metalPlateButton];
     [self.metalPlateButton addTarget:self action:@selector(correctMetalPlateRotation:) forControlEvents:UIControlEventTouchDown];
     self.metalPlateButton.adjustsImageWhenHighlighted = NO;
     
-    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.metalPlateButton.frame.size.width, self.metalPlateButton.frame.size.height)];
-    label.textAlignment = NSTextAlignmentCenter;
-    label.text = self.nameOfView;
-    label.alpha = .8;
-    label.font = [UIFont boldSystemFontOfSize:20.0];
-    label.textColor = [UIColor whiteColor];
-    [self.metalPlateButton addSubview:label];
+    self.metalPlateLabel.textAlignment = NSTextAlignmentCenter;
+    self.metalPlateLabel.text = self.nameOfView;
+    self.metalPlateLabel.alpha = .8;
+    self.metalPlateLabel.font = [UIFont boldSystemFontOfSize:20.0];
+    self.metalPlateLabel.textColor = [UIColor whiteColor];
+    [self.metalPlateButton addSubview:self.metalPlateLabel];
     
     [self animateMetalPlate:self.metalPlateButton];
-    }
-
 }
 
 - (void)animateMetalPlate:(UIButton *) metalPlateView  {

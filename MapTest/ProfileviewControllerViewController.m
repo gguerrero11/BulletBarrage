@@ -50,7 +50,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"Profile";
+    self.title = @"";
     
     // table datasource stuff
     self.dataSource = [ProfileViewDataSource new];

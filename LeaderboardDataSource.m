@@ -97,7 +97,7 @@
             
             // Sorting the array by Kill/Death for each User
         case sortByKill:
-            cell.textLabel.text = [NSString stringWithFormat:@"%ld %@ %@/%@", indexPath.row + 1, user[usernameKey],user[killKey],healthDataForUserAtCell[deathKey]];
+            cell.textLabel.text = [NSString stringWithFormat:@"%ld %@ %@/%lu", indexPath.row + 1, user[usernameKey],user[killKey],[healthDataForUserAtCell[deathKey]integerValue]];
             break;
             
             // Sorting the array by Accuracy for each User

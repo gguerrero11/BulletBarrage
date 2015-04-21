@@ -22,7 +22,7 @@ static double padding = 17;
 static double margin = 25;
 static double tableBoxPadding = 8;
 
-@interface LeaderboardViewController () <UITableViewDelegate>
+@interface LeaderboardViewController () <UITableViewDelegate,UITabBarControllerDelegate>
 
 @property (nonatomic,strong) UITableView *tableView;
 @property (nonatomic,strong) LeaderboardDataSource *dataSource;
@@ -89,7 +89,7 @@ static double tableBoxPadding = 8;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"Leaderboards";
+    self.title = @"";
     
     self.tableBackgroundColor = [UIColor colorWithRed:.5 green:.5 blue:.5 alpha:.3];
     self.tableBorderColor = [UIColor colorWithRed:90.0/255.0 green:195.0/255.0 blue:247.0/255.0 alpha:.6];
