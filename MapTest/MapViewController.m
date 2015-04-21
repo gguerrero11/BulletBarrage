@@ -24,6 +24,7 @@
 #import "HealthBox.h"
 #import "InterfaceLineDrawer.h"
 #import "DrawProjectile.h"
+#import "BackgroundDrawer.h"
 
 #import "ObjectAL.h"
 #define BUTTONPRESS_SOUND @"buttonPress2.caf"
@@ -81,6 +82,7 @@ static bool kAnimate = true;
 @property (nonatomic, strong) UIButton *fireButton;
 @property (nonatomic, strong) UIButton *respawnButton;
 @property (nonatomic, strong) UIButton *weaponButton;
+@property (nonatomic, strong) UIButton *cameraFollowButton;
 @property (nonatomic, strong) MKPolyline *polyline;
 @property (nonatomic, strong) HealthBox *healthBox;
 @property (nonatomic, strong) UIColor *fireButtonColor;
@@ -109,6 +111,7 @@ static bool kAnimate = true;
 @property (nonatomic, strong) NSMutableArray *arrayOfCraters;
 @property (nonatomic, strong) CountdownTimerViewController *timer;
 @property (nonatomic, strong) NSMutableArray *mArrayMarkersForMap;
+@property (nonatomic) BOOL cameraFollow;
 
 @property (nonatomic, strong) Weapon *projectile;
 @property (nonatomic, strong) HealthData *currentUserHealthData;
@@ -126,7 +129,7 @@ static bool kAnimate = true;
     [self.locationManager stopUpdatingHeading];
     [self.locationManager stopUpdatingLocation];
     self.gmMapView.hidden = YES;
-    [_motionManager stopDeviceMotionUpdates];
+    //[_motionManager stopDeviceMotionUpdates];
 }
 
 
@@ -294,6 +297,11 @@ static bool kAnimate = true;
     [self.view addSubview:self.interfaceLineDrawer];
     [self setUpDataDisplayAndButtons];
     [self setUpSwitchWeaponButton];
+    
+    //set up tabBar image
+    UIImageView *tabBar = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    tabBar.image = [UIImage imageNamed:@"metalBarsWithIconsMiddle"];
+    [self.view addSubview:tabBar];
     
 }
 
@@ -691,6 +699,8 @@ return YES;
 //    return NO;
 //}
 }
+
+
 
 - (void) setUpSwitchWeaponButton {
     self.weaponButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];

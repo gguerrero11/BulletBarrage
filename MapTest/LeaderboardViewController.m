@@ -97,7 +97,7 @@ static double tableBoxPadding = 8;
     self.tabBarController.tabBar.alpha = 1;
     
     self.bgDrawer = [BackgroundDrawer new];
-    [self.bgDrawer setUpBackgroundOnView:self.view nameOfView:@"Leaderboards"];
+    [self.bgDrawer setUpBackgroundOnView:self.view nameOfView:@"Leaderboards" side:@"left"];
 
 
     // set size of top bar size
@@ -120,7 +120,7 @@ static double tableBoxPadding = 8;
     [self.view addSubview:self.segControl];
     
     // set up table view
-    self.yOriginOfTableView = self.segControl.frame.origin.y + self.segControl.frame.size.height;
+    self.yOriginOfTableView = self.segControl.frame.origin.y + self.segControl.frame.size.height + 7;
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(margin, self.yOriginOfTableView,
                                                                   self.view.frame.size.width - margin * 2,

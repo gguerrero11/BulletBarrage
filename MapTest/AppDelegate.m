@@ -60,13 +60,13 @@
     navBarMapView.navigationBarHidden = YES;
     
     LeaderboardViewController *leaderboardVC = [LeaderboardViewController new];
-    leaderboardVC.tabBarItem.image = [UIImage imageNamed:@"Medal-50"];
+//    leaderboardVC.tabBarItem.image = [UIImage imageNamed:@"Medal-50"];
     
     UINavigationController *navBarLeaderboard = [[UINavigationController alloc]initWithRootViewController:leaderboardVC];
         navBarLeaderboard.navigationBarHidden = YES;
     
     ProfileviewControllerViewController *profileVC = [ProfileviewControllerViewController new];
-    profileVC.tabBarItem.image = [UIImage imageNamed:@"Military Backpack Radio Filled-50"];
+  //  profileVC.tabBarItem.image = [UIImage imageNamed:@"Military Backpack Radio Filled-50"];
     
     UINavigationController *navBarProfileVC = [[UINavigationController alloc]initWithRootViewController:profileVC];
         navBarProfileVC.navigationBarHidden = YES;
@@ -77,7 +77,7 @@
     tabBarController.tabBar.clipsToBounds = YES;
 
     [[UITabBar appearance] setBackgroundImage:[UIImage new]];
-    [[UITabBar appearance] setTintColor:[UIColor blueColor]];
+    [[UITabBar appearance] setTintColor:[UIColor clearColor]];
     [[UITabBar appearance] setShadowImage:[UIImage new]];
     
     [[UINavigationBar appearance] setBackgroundImage:[UIImage new] forBarPosition:UIBarPositionTop barMetrics:UIBarMetricsDefault];

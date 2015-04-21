@@ -45,6 +45,7 @@
     [self.bgDrawer continueDrawing];
     [self.bgDrawer enterAnimation];
     [[OALSimpleAudio sharedInstance] playEffect:METALCLANK_SOUND];
+    [[OALSimpleAudio sharedInstance] playEffect:BUTTONPRESS_SOUND];
     
 }
 
@@ -64,7 +65,7 @@
     [self.view addSubview:self.tableView];
     
     self.bgDrawer = [BackgroundDrawer new];
-    [self.bgDrawer setUpBackgroundOnView:self.view nameOfView:@"Profile"];
+    [self.bgDrawer setUpBackgroundOnView:self.view nameOfView:@"Profile" side:@"right"];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -34,7 +34,8 @@ static NSString * const metalPlate = @"metalPlate";
 
 
 // set up background image
-- (void)setUpBackgroundOnView:(UIView *)passedView nameOfView:(NSString *)nameOfView {
+- (void)setUpBackgroundOnView:(UIView *)passedView nameOfView:(NSString *)nameOfView side:(NSString *)side{
+    
     self.view = passedView;
     self.nameOfView = nameOfView;
     self.gridImageView.image = [UIImage imageNamed:flakLines];
@@ -48,14 +49,18 @@ static NSString * const metalPlate = @"metalPlate";
     [self.view insertSubview:self.backgroundImage atIndex:0];
     
     [self continueDrawing];
-    [self drawForegroundBars];
+    [self drawForegroundBars:side];
     [self drawRadialRing];
 }
 
-- (void)drawForegroundBars {
+- (void)drawForegroundBars:(NSString *)side {
     
+    UIImage *backgroundImage = [UIImage imageNamed:@"metalBarsWithIconsMiddle"];
+    if ([side isEqualToString:@"left"]) backgroundImage = [UIImage imageNamed:@"metalBarsWithIconsLeft"];
+    if ([side isEqualToString:@"right"]) backgroundImage = [UIImage imageNamed:@"metalBarsWithIconsRight"];
+        
     self.foreGroundBars = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
-    self.foreGroundBars.image = [UIImage imageNamed:@"metalBars"];
+    self.foreGroundBars.image = backgroundImage;
     self.foreGroundBars.hidden = YES;
     [self.view addSubview:self.foreGroundBars];
     
@@ -111,25 +116,17 @@ static NSString * const metalPlate = @"metalPlate";
 //    CGAffineTransform rotationEndTransform = CGAffineTransformMakeRotation(M_PI + self.randomRotation);
         CGAffineTransform rotationEndTransform = CGAffineTransformMakeRotation(self.randomRotation);
     
-    NSLog(@"%f", self.randomRotation);
-    
     [UIView animateWithDuration:.1 delay:0
                         options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
         metalPlateView.transform = CGAffineTransformConcat(scaleTransform, rotationEndTransform);
         metalPlateView.alpha = 1;
-    } completion:^(BOOL finished) {
-       
-    }];
+                     } completion:nil];
 }
 
 - (void)correctMetalPlateRotation:(id)sender {
     
-    NSLog(@"%f", M_PI + (-self.randomRotation));
-    
     UIButton *metalPlateButton = sender;
-    
-    
     CGAffineTransform rotationEndTransform = CGAffineTransformMakeRotation(0);
     
     [UIView animateWithDuration:.1 delay:0
@@ -279,9 +276,7 @@ static NSString * const metalPlate = @"metalPlate";
         self.foreGroundBars.transform = scaleTransform;
     } completion:^(BOOL finished) {
         [self drawMetalPlateWithWidth:250 height:60];
-        
     }];
-    
 }
 
 - (void)hideBarElements {
