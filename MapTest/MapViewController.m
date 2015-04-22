@@ -915,10 +915,7 @@ static bool kAnimate = true;
     [self drawTrajectoryLineToLocation:hitLocation];
     
     Projectile *projectile = [[WeaponController sharedInstance] projectileWithHitLocation:hitLocation flightTime:projectileTravelTime withWeapon:[UserController sharedInstance].currentWeapon.weaponString];
-    [WeaponController sharedInstance] save
-    
-    
-    
+    [WeaponController saveProjectileToParse:projectile];
     
     }
 
