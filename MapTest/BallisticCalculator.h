@@ -10,4 +10,7 @@
 
 @interface BallisticCalculator : NSObject
 
+- (double) getFlightTimeFromVelocity:(double)vel radians:(double)rad;
+- (double) getRangeFromVelocity:(double)vel radians:(double)rad;
+
 @end

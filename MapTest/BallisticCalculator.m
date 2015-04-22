@@ -15,6 +15,26 @@ static double gravity = 9.8;
 
 @interface BallisticCalculator ()
 
+@property (nonatomic, assign) double range;
+@property (nonatomic, assign) double velocity;
+@property (nonatomic, assign) double radians;
+@property (nonatomic) double tFlight;
+
+@property (nonatomic, assign) double x;
+@property (nonatomic, assign) double xO;
+@property (nonatomic, assign) double Vxo;
+@property (nonatomic, assign) double tTime;
+
+@property (nonatomic, assign) double y;
+@property (nonatomic, assign) double heightFromGround;
+@property (nonatomic, assign) double Vyo;
+
+@property (nonatomic, assign) double Vy;
+@property (nonatomic, assign) double tRise;
+
+@property (nonatomic, assign) double maxHeight;
+
+@property (nonatomic, assign) double tFall;
 
 @end
 
@@ -22,41 +42,20 @@ static double gravity = 9.8;
 
 @implementation BallisticCalculator
 
-double velocity;
-double radians;
-double range;
-double tFlight;
-
 // internal properties
-double x;
-double xO;
-double Vxo;
-double tTime;
-
-double y;
-double heightFromGround;
-double Vyo;
-
-double Vy;
-double tRise;
-
-double maxHeight;
-
-double tFall;
 
 
-+ (double) getFlightTimeFromVelocity:(double)vel radians:(double)rad {
-    velocity = vel;
-    radians = rad;
-    return tFlight;
+- (double) getFlightTimeFromVelocity:(double)vel radians:(double)rad {
+    self.velocity = vel;
+    self.radians = rad;
+    return self.tFlight;
 }
 
-+ (double) getRangeFromVelocity:(double)vel radians:(double)rad {
-    velocity = vel;
-    radians = rad;
-    return range;
+- (double) getRangeFromVelocity:(double)vel radians:(double)rad {
+    self.velocity = vel;
+    self.radians = rad;
+    return self.range;
 }
-
 
 #pragma mark Calculations
 
@@ -64,12 +63,13 @@ double tFall;
  "The motion of an object moving near the surface of the earth can be described using the equations:"
  */
 
-- (double) x {
-    return xO + Vxo * tTime;
+
+- (double)x {
+    return self.xO + self.Vxo * self.tTime;
 }
 
-- (double) y {
-    return heightFromGround + Vyo * tTime - 0.5 * gravity * pow(tTime, 2);
+- (double)y {
+    return self.heightFromGround + self.Vyo * self.tTime - 0.5 * gravity * pow(self.tTime, 2);
 }
 
 
@@ -78,11 +78,11 @@ double tFall;
 */
 
 - (double)Vxo {
-    return velocity * cos(radians);
+    return self.velocity * cos(self.radians);
 }
 
 - (double)Vyo {
-    return velocity * sinh(radians);
+    return self.velocity * sinh(self.radians);
 }
 
 /*
@@ -90,11 +90,11 @@ double tFall;
  */
 
 - (double)Vy {
-    return Vyo - (gravity * tTime);
+    return self.Vyo - (gravity * self.tTime);
 }
 
 - (double)tRise {
-    return Vyo / gravity;
+    return self.Vyo / gravity;
 }
 
 /*
@@ -102,7 +102,7 @@ double tFall;
  */
 
 - (double)maxHeight {
-    return heightFromGround + Vyo * tTime - 0.5 * gravity * pow(tTime, 2);
+    return self.heightFromGround + self.Vyo * self.tTime - 0.5 * gravity * pow(self.tTime, 2);
 }
 
 /*
@@ -110,24 +110,23 @@ double tFall;
  */
 
 
-- (double) tFall {
-    return sqrt(2 * maxHeight / gravity);
+- (double)tFall {
+    return sqrt(2 * self.maxHeight / gravity);
 }
 
 /*
   "The total flight time of the projectile is then:"
 */
 
-- (double) tFlight {
-    return tRise + tFall;
+- (double)tFlight {
+    return [self tRise] + [self tFall];
 }
-
 /*
  "From this, equation (1) gives the maximum range:"
  */
 
-- (double) range {
-    return Vxo * tFlight;
+- (double)range {
+    return self.Vxo * self.tFlight;
 }
 
 

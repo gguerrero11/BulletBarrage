@@ -25,6 +25,7 @@
 #import "InterfaceLineDrawer.h"
 #import "DrawProjectile.h"
 #import "BackgroundDrawer.h"
+#import "BallisticCalculator.h"
 
 #import "ObjectAL.h"
 #define BUTTONPRESS_SOUND @"buttonPress2.caf"
@@ -112,6 +113,7 @@ static bool kAnimate = true;
 @property (nonatomic, strong) NSMutableArray *arrayOfCraters;
 @property (nonatomic, strong) CountdownTimerViewController *timer;
 @property (nonatomic, strong) NSMutableArray *mArrayMarkersForMap;
+@property (nonatomic, strong) BallisticCalculator *ballisticCalculator;
 @property (nonatomic) BOOL cameraFollow;
 
 @property (nonatomic, strong) Weapon *projectile;
@@ -144,10 +146,6 @@ static bool kAnimate = true;
     self.gmMapView.hidden = NO;
     [self setUpMotionManager];
 
-    
-    
-    
-    
     if (![PFUser currentUser]) { // No user logged in
         // Create the log in view controller
         CustomLoginViewController *logInViewController = [[CustomLoginViewController alloc] init];
@@ -285,6 +283,7 @@ static bool kAnimate = true;
     self.initialLaunch = YES;
     self.healthDataController = [HealthDataController new];
     self.arrayOfCraters = [NSMutableArray new];
+    self.ballisticCalculator = [BallisticCalculator new];
     
     [self registerForNotifications];
     [[UserController sharedInstance] setWeaponForUser:cannon];
@@ -848,15 +847,23 @@ return YES;
 }
 
 - (double) calculateDistanceFromUserWeapon {
+    NSLog(@"%f", [self.ballisticCalculator getRangeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit]);
     
+    return [self.ballisticCalculator getRangeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit];
+
     // formula to calculate the distance the projectile will travel
-    double range = ( powl([UserController sharedInstance].currentWeapon.velocity, 2 ) * sinl(2 * self.pitchWithLimit) ) / gravityStatic;
-    return range;
+    //    double range = ( powl([UserController sharedInstance].currentWeapon.velocity, 2 ) * sinl(2 * self.pitchWithLimit) ) / gravityStatic;
+    //    return range;
 }
 
 - (double) calculateProjectileTravelTime {
-    double time = [self calculateDistanceFromUserWeapon] / [UserController sharedInstance].currentWeapon.velocity * cosh(self.pitchWithLimit);
-    return time;
+    
+        NSLog(@"%f", [self.ballisticCalculator getFlightTimeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit]);
+    
+    return [self.ballisticCalculator getFlightTimeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit];
+    
+    //    double time = [self calculateDistanceFromUserWeapon] / [UserController sharedInstance].currentWeapon.velocity * cosh(self.pitchWithLimit);
+    //    return time;
 }
 
 - (CLLocationCoordinate2D) calculateHitLocation {

@@ -37,7 +37,6 @@
     //    self.titleLabel.textAlignment = NSTextAlignmentCenter;
     //    self.titleLabel.font = [UIFont fontWithName:@"Arial-BoldMT" size:24];
     
-    
 }
 
 - (void)viewDidLayoutSubviews {
