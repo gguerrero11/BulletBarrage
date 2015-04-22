@@ -669,18 +669,18 @@ return YES;
 //    placementNode.position = SCNVector3Make(0, .03, 0);
     
     // create Cannon stand
-    SCNScene *cannonStand = [SCNScene sceneNamed:@"FlakStand.dae"
+    SCNScene *cannonStand = [SCNScene sceneNamed:@"art.scnassets/geometry/FlakStand.dae"
                                     inDirectory:nil
                                         options:@{SCNSceneSourceConvertToYUpKey : @YES,
                                                   SCNSceneSourceAnimationImportPolicyKey :SCNSceneSourceAnimationImportPolicyPlayRepeatedly}];
     // creates cannon turn table
-    SCNScene *cannonTurnTableScene = [SCNScene sceneNamed:@"FlakTurnTable.dae"
+    SCNScene *cannonTurnTableScene = [SCNScene sceneNamed:@"art.scnassets/geometry/FlakTurnTable.dae"
                                      inDirectory:nil
                                          options:@{SCNSceneSourceConvertToYUpKey : @YES,
                                                    SCNSceneSourceAnimationImportPolicyKey :SCNSceneSourceAnimationImportPolicyPlayRepeatedly}];
     
     // create Cannon barrel
-    SCNScene *cannonBarrelScene = [SCNScene sceneNamed:@"FlakBarrel.dae"
+    SCNScene *cannonBarrelScene = [SCNScene sceneNamed:@"art.scnassets/geometry/FlakBarrel.dae"
                                     inDirectory:nil
                                         options:@{SCNSceneSourceConvertToYUpKey : @YES,
                                                   SCNSceneSourceAnimationImportPolicyKey :SCNSceneSourceAnimationImportPolicyPlayRepeatedly}];

@@ -10,6 +10,7 @@
 
 
 #import "BallisticCalculator.h"
+#import "MapViewController.h"
 
 static double gravity = 9.8;
 
@@ -43,17 +44,19 @@ static double gravity = 9.8;
 @implementation BallisticCalculator
 
 // internal properties
-
+double degrees;
 
 - (double) getFlightTimeFromVelocity:(double)vel radians:(double)rad {
-    self.velocity = vel;
     self.radians = rad;
+    self.velocity = vel;
+//    self.radians = rad;
     return self.tFlight;
 }
 
 - (double) getRangeFromVelocity:(double)vel radians:(double)rad {
-    self.velocity = vel;
     self.radians = rad;
+    self.velocity = vel;
+//    self.radians = rad;
     return self.range;
 }
 
@@ -62,7 +65,6 @@ static double gravity = 9.8;
 /*
  "The motion of an object moving near the surface of the earth can be described using the equations:"
  */
-
 
 - (double)x {
     return self.xO + self.Vxo * self.tTime;
@@ -78,7 +80,9 @@ static double gravity = 9.8;
 */
 
 - (double)Vxo {
-    return self.velocity * cos(self.radians);
+    NSLog(@"Vxo radians %f", self.radians);
+    NSLog(@"Vxo final %f", cos(30));
+    return self.velocity * cosh(self.radians);
 }
 
 - (double)Vyo {
