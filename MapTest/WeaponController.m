@@ -49,6 +49,9 @@
     // set weaponType
     projectile.weaponType = weaponString;
     
+    // set current user to projectile
+    projectile.fromUser = [PFUser currentUser];
+    
     // set date/time the shot will arrive at the target
     NSDate *arrivalDate = [[NSDate alloc]initWithTimeIntervalSinceNow:flightTime];
     NSLog(@"Flight Time: %f", flightTime);
@@ -57,6 +60,12 @@
     projectile.timeOfArrival = arrivalDate;
     
     return projectile;
+}
+
+- (void) queryProjectilesWithinMeterRadius:(double)radius {
+    
+    
+    
 }
 
 - (Weapon *) getWeapon:(NSString *)weaponString {

@@ -93,8 +93,7 @@
             NSLog(@"%@", error);
             //[[PFUser currentUser] saveEventually];
         }
-    }];
-    
+    }];    
 }
 
 
