@@ -24,13 +24,11 @@ static double gravity = 9.8;
 @property (nonatomic, assign) double x;
 @property (nonatomic, assign) double xO;
 @property (nonatomic, assign) double Vxo;
-@property (nonatomic, assign) double tTime;
 
 @property (nonatomic, assign) double y;
 @property (nonatomic, assign) double heightFromGround;
 @property (nonatomic, assign) double Vyo;
 
-@property (nonatomic, assign) double Vy;
 @property (nonatomic, assign) double tRise;
 
 @property (nonatomic, assign) double maxHeight;
@@ -67,35 +65,28 @@ double degrees;
  */
 
 - (double)x {
-    return self.xO + self.Vxo * self.tTime;
+    return self.xO + self.Vxo * self.tFlight;
 }
 
 - (double)y {
-    return self.heightFromGround + self.Vyo * self.tTime - 0.5 * gravity * pow(self.tTime, 2);
+    return self.heightFromGround + self.Vyo * self.tRise - 0.5 * gravity * pow(self.tRise, 2);
 }
-
 
 /*
  "The calculator solves these two simultaneous equations to obtain a description of the ballistic trajectory. The horizontal and vertical components of initial velocity are determined from:"
 */
 
 - (double)Vxo {
-    NSLog(@"Vxo radians %f", self.radians);
-    NSLog(@"Vxo final %f", cos(30));
-    return self.velocity * cosh(self.radians);
+    return self.velocity * cos(self.radians);
 }
 
 - (double)Vyo {
-    return self.velocity * sinh(self.radians);
+    return self.velocity * sin(self.radians);
 }
 
 /*
  "Then the calculator computes the time to reach the maximum height by finding the time at which vertical velocity becomes zero:"
  */
-
-- (double)Vy {
-    return self.Vyo - (gravity * self.tTime);
-}
 
 - (double)tRise {
     return self.Vyo / gravity;
@@ -106,7 +97,10 @@ double degrees;
  */
 
 - (double)maxHeight {
-    return self.heightFromGround + self.Vyo * self.tTime - 0.5 * gravity * pow(self.tTime, 2);
+    self.heightFromGround = 2.4;
+//        NSLog(@"maxHeight %f", self.heightFromGround + self.Vyo * self.tRise - 0.5 * gravity * pow(self.tRise, 2));
+//    NSLog(@"pow %f", pow(self.tRise, 2));
+    return self.heightFromGround + self.Vyo * self.tRise - 0.5 * gravity * pow(self.tRise, 2);
 }
 
 /*
@@ -123,7 +117,7 @@ double degrees;
 */
 
 - (double)tFlight {
-    return [self tRise] + [self tFall];
+    return self.tRise + self.tFall;
 }
 /*
  "From this, equation (1) gives the maximum range:"

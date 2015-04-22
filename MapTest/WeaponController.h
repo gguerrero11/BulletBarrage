@@ -9,8 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "Weapon.h"
 
+static NSString * const grenade = @"grenade";
 static NSString * const cannon = @"cannon";
-static NSString * const missle = @"missle";
 static NSString * const nuke = @"nuke";
 
 @interface WeaponController : NSObject

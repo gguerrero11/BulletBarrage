@@ -26,18 +26,18 @@
     
     Weapon *weapon = [Weapon new];
     
-    if ([weaponString isEqualToString:cannon]) {
-        weapon.velocity = 820;  // measured in m/s (meters per second)
+    if ([weaponString isEqualToString:grenade]) {
+        weapon.velocity = 26.8224;  // measured in m/s (meters per second)
         weapon.damage = 30;
-        weapon.radiusOfDamage = 100;
-        weapon.sizeOfCrater = 150;
+        weapon.radiusOfDamage = 10;
+        weapon.sizeOfCrater = 8;
     }
     
-    if ([weaponString isEqualToString:missle]) {
-        weapon.velocity = 250;
-        weapon.damage = 80;
-        weapon.radiusOfDamage = 50;
-        weapon.sizeOfCrater = 75;
+    if ([weaponString isEqualToString:cannon]) {
+        weapon.velocity = 820;
+        weapon.damage = 50;
+        weapon.radiusOfDamage = 100;
+        weapon.sizeOfCrater = 150;
     }
     
     if ([weaponString isEqualToString:nuke]) {

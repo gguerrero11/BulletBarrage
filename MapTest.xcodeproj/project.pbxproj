@@ -102,6 +102,7 @@
 		49E6F3861AE565CF007B4886 /* buttonPress2.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F3851AE565CF007B4886 /* buttonPress2.caf */; };
 		49E6F3A61AE7384A007B4886 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F3A51AE7384A007B4886 /* art.scnassets */; };
 		49E6F3AA1AE7519B007B4886 /* BallisticCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F3A91AE7519B007B4886 /* BallisticCalculator.m */; };
+		49E6F3AD1AE81A23007B4886 /* UIColor+InterfaceColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F3AC1AE81A23007B4886 /* UIColor+InterfaceColors.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -279,6 +280,8 @@
 		49E6F3A51AE7384A007B4886 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
 		49E6F3A81AE7519B007B4886 /* BallisticCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BallisticCalculator.h; sourceTree = "<group>"; };
 		49E6F3A91AE7519B007B4886 /* BallisticCalculator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BallisticCalculator.m; sourceTree = "<group>"; };
+		49E6F3AB1AE81A23007B4886 /* UIColor+InterfaceColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+InterfaceColors.h"; sourceTree = "<group>"; };
+		49E6F3AC1AE81A23007B4886 /* UIColor+InterfaceColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+InterfaceColors.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -415,8 +418,7 @@
 				4996BA661AD82B15002D5663 /* User.m */,
 				49603D6F1AD20ADF00AB3E50 /* UserController.h */,
 				49603D701AD20ADF00AB3E50 /* UserController.m */,
-				49E6F3A81AE7519B007B4886 /* BallisticCalculator.h */,
-				49E6F3A91AE7519B007B4886 /* BallisticCalculator.m */,
+				49E6F3AE1AE81A30007B4886 /* Tools */,
 				49603D6E1AD1023500AB3E50 /* Login */,
 				49B9DC3C1ACF37BB003EA46E /* MapView */,
 				49B9DC3D1ACF37C6003EA46E /* LeaderBoard */,
@@ -656,6 +658,17 @@
 			name = gameModels;
 			sourceTree = "<group>";
 		};
+		49E6F3AE1AE81A30007B4886 /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				49E6F3A81AE7519B007B4886 /* BallisticCalculator.h */,
+				49E6F3A91AE7519B007B4886 /* BallisticCalculator.m */,
+				49E6F3AB1AE81A23007B4886 /* UIColor+InterfaceColors.h */,
+				49E6F3AC1AE81A23007B4886 /* UIColor+InterfaceColors.m */,
+			);
+			name = Tools;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -770,6 +783,7 @@
 				49835E111AD32FA10058917B /* LeaderBoardController.m in Sources */,
 				49E6F3621AE550D3007B4886 /* OALActionManager.m in Sources */,
 				49E6F3681AE550D3007B4886 /* OALSimpleAudio.m in Sources */,
+				49E6F3AD1AE81A23007B4886 /* UIColor+InterfaceColors.m in Sources */,
 				49E6F3721AE550D3007B4886 /* OpenALManager.m in Sources */,
 				49835E141AD34F400058917B /* LeaderboardCellTableViewCell.m in Sources */,
 				49E6F36B1AE550D3007B4886 /* ALChannelSource.m in Sources */,

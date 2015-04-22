@@ -11,14 +11,23 @@
 
 @implementation HealthBox
 
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame:frame];
+
+
+//- (instancetype)initWithFrame:(CGRect)frame {
+//    self = [super initWithFrame:frame];
+
+- (id) initWithView:(UIView *)view {
+    self = [super init];
     
     if (self) {
         
-        [self registerForNotifications];
+        double xOrigin = view.frame.size.width * .2;
+        double widthOfBox = view.frame.size.width - xOrigin * 2;
         
-        self.backgroundColor = [UIColor redColor];
+        
+        self.frame = CGRectMake(xOrigin, 0, widthOfBox, 60);
+        
+        [self registerForNotifications];
         
         // Set up health Label
         UILabel *healthLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, 30)];

@@ -15,8 +15,7 @@
 @property (nonatomic,strong) NSNumber *health;
 @property (nonatomic,strong) UILabel *healthOfUserLabel;
 
-
-- (instancetype)initWithFrame:(CGRect)frame;
+- (id) initWithView:(UIView *)view;
 
 @end
 

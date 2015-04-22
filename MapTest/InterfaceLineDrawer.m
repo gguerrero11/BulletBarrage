@@ -8,6 +8,7 @@
 
 #import "InterfaceLineDrawer.h"
 #import "MapViewController.h"
+#import "UIColor+InterfaceColors.h"
 
 static NSString * const top = @"top";
 static NSString * const bottom = @"bottom";
@@ -18,10 +19,10 @@ static NSString * const zoom = @"zoom";
 
 typedef void(^myCompletion)(BOOL);
 
-@property (nonatomic,strong) UIColor *lineColor;
-@property (nonatomic,strong) UIColor *labelColor;
-@property (nonatomic,strong) UIColor *transparentBox;
-@property (nonatomic,strong) UIColor *screenTintColor;
+//@property (nonatomic,strong) UIColor *lineColor;
+//@property (nonatomic,strong) UIColor *labelColor;
+//@property (nonatomic,strong) UIColor *transparentBox;
+//@property (nonatomic,strong) UIColor *screenTintColor;
 
 @property (nonatomic) double lengthOfLine;
 @property (nonatomic) double lineThickness;
@@ -55,7 +56,6 @@ typedef void(^myCompletion)(BOOL);
         self.lengthOfLine = view.frame.size.height * .6;
         self.lineShadowGlowRadius = 3.5;
         
-        [self setUpColors];
         //[self drawScreenTintEffect];
 
         [self drawVerticalLines:right];
@@ -65,24 +65,24 @@ typedef void(^myCompletion)(BOOL);
     return self;
 }
 
-- (void) setUpColors {
-    self.screenTintColor = [UIColor colorWithRed:123.0/255.0
-                                           green:204.0/255.0
-                                            blue:123.0/255.0 alpha:.3];
-   
-    self.lineColor =  [UIColor colorWithRed:123.0/255.0
-                                      green:255.0/255.0
-                                       blue:112.0/255.0 alpha:1];
-    
-    self.labelColor = [UIColor colorWithRed:123.0/255.0
-                                      green:255.0/255.0
-                                       blue:112.0/255.0 alpha:1];
-    
-    self.transparentBox = [UIColor colorWithRed:123.0/255.0
-                                          green:204.0/255.0
-                                           blue:112.0/255.0 alpha:.25];
-    
-}
+//- (void) setUpColors {
+//    self.screenTintColor = [UIColor colorWithRed:123.0/255.0
+//                                           green:204.0/255.0
+//                                            blue:123.0/255.0 alpha:.3];
+//   
+//    self.lineColor =  [UIColor colorWithRed:123.0/255.0
+//                                      green:255.0/255.0
+//                                       blue:112.0/255.0 alpha:1];
+//    
+//    self.labelColor = [UIColor colorWithRed:123.0/255.0
+//                                      green:255.0/255.0
+//                                       blue:112.0/255.0 alpha:1];
+//    
+//    self.transparentBox = [UIColor colorWithRed:123.0/255.0
+//                                          green:204.0/255.0
+//                                           blue:112.0/255.0 alpha:.25];
+//    
+//}
 
 - (void) drawVerticalLines:(NSString *)side {
     double xOrigin = 0.0;
@@ -92,13 +92,13 @@ typedef void(^myCompletion)(BOOL);
     
     UIView *verticalLine = [[UIView alloc] initWithFrame:CGRectMake(xOrigin, self.parentView.frame.size.height * 0.1,
                                                                     self.lineThickness, self.lengthOfLine)];
-    verticalLine.backgroundColor = self.lineColor;
+    verticalLine.backgroundColor = [UIColor lineColor];
     verticalLine.userInteractionEnabled = NO;
     
     // adds glow to the lines
     verticalLine.layer.shadowOpacity = .9;
     verticalLine.layer.shadowRadius = self.lineShadowGlowRadius;
-    verticalLine.layer.shadowColor = self.lineColor.CGColor;
+    verticalLine.layer.shadowColor = [UIColor lineColor].CGColor;
 
     [self addSubview:verticalLine];
     [self drawStudsForVerticalLine:verticalLine side:side];
@@ -125,7 +125,7 @@ typedef void(^myCompletion)(BOOL);
         if (i == 0 || i == amountOfStuds) lineLength *= 2;
         
         UIView *studdedline = [[UIView alloc] initWithFrame:CGRectMake(0, spaceBetweenStuds * i, lineLength, self.lineThickness)];
-        studdedline.backgroundColor = self.lineColor;
+        studdedline.backgroundColor = [UIColor lineColor];
         studdedline.userInteractionEnabled = NO;
         [verticalLine addSubview:studdedline];
     }
@@ -149,7 +149,7 @@ typedef void(^myCompletion)(BOOL);
     
     UIView *box = [[UIView alloc]initWithFrame:CGRectMake(0, yOrigin, widthOfBox, heightOfBox)];
     box.layer.borderWidth = self.lineThickness;
-    box.layer.borderColor = self.lineColor.CGColor;
+    box.layer.borderColor = [UIColor lineColor].CGColor;
     [view addSubview:box];
     
     UILabel *label = [UILabel new];
@@ -157,13 +157,13 @@ typedef void(^myCompletion)(BOOL);
     label.text = text;
     label.font = [UIFont systemFontOfSize:15];
     label.userInteractionEnabled = NO;
-    label.textColor = self.labelColor;
+    label.textColor = [UIColor labelColor];
     if ([side isEqual:left]) label.frame = CGRectMake(0, 0, box.frame.size.width, box.frame.size.height);
     if ([side isEqual:right]) label.frame = CGRectMake(0, 0, -box.frame.size.width, box.frame.size.height);
     [box addSubview: label];
 
     if (movement == YES) {
-        box.backgroundColor = self.transparentBox;
+        box.backgroundColor = [UIColor transparentBox];
         if (side == right) {
             self.rightBoxArrow = box;
             self.zoomLabel = label;
@@ -207,7 +207,7 @@ typedef void(^myCompletion)(BOOL);
     // draw screen tint
     self.screenTintView = [[UIView alloc]initWithFrame:self.parentView.frame];
     self.screenTintView.userInteractionEnabled = NO;
-    self.screenTintView.backgroundColor = self.screenTintColor;
+    self.screenTintView.backgroundColor = [UIColor screenTintColor];
     [self addSubview:self.screenTintView];
     
     }
@@ -244,37 +244,43 @@ typedef void(^myCompletion)(BOOL);
 
 - (void) drawDamageEventView {
     
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 15; i++) {
         
-        double heightOfLine = arc4random() % 200;
+        double heightOfLine = arc4random() % 195 + 5;
         double randomYOrigin = arc4random() % (int)self.parentView.frame.size.height;
+        //NSLog(@"randomYOrigin %f", randomYOrigin);
         
         // create a random line
         UIView *randomLine = [[UIView alloc]initWithFrame:CGRectMake(-30, randomYOrigin, self.parentView.frame.size.width + 60, heightOfLine)];
-        [self.parentView addSubview:randomLine];
+        [self.parentView insertSubview:randomLine atIndex:3];
         
         randomLine.backgroundColor = [UIColor colorWithWhite:.8 alpha:1];
         
         // "darken" the screen
-        self.screenTintView.backgroundColor = [UIColor colorWithRed:.1 green:.1 blue:.1 alpha:.8];
+        UIView *blackScreen = [[UIView alloc]initWithFrame:self.parentView.frame];
+        [self.parentView insertSubview:blackScreen atIndex:2];
+        blackScreen.backgroundColor = [UIColor colorWithRed:.1 green:.1 blue:.1 alpha:.5];
 
         // change the yOrigin to be random
         randomYOrigin = arc4random() % (int)self.parentView.frame.size.height;
         CGRect destinationFrame = CGRectMake(0, randomYOrigin, randomLine.frame.size.width, 0 );
         
-        [UIView animateWithDuration:.09 animations:^{
+        // interference lines animation
+        [UIView animateWithDuration:.1 animations:^{
             randomLine.frame = destinationFrame;
         } completion:^(BOOL finished) {
             [randomLine removeFromSuperview];
         }];
         
-        [UIView animateWithDuration:0.8
+        // darken screen animation
+        [UIView animateWithDuration:0.5
                               delay:0.0
-                            options:UIViewAnimationCurveEaseOut | UIViewAnimationOptionOverrideInheritedDuration
+                            options:UIViewAnimationCurveEaseIn | UIViewAnimationOptionOverrideInheritedDuration
                          animations:^{
-                             self.screenTintView.backgroundColor = self.screenTintColor;
+                             blackScreen.alpha = 0.0;
                          }
                          completion:^(BOOL finished){
+                             [blackScreen removeFromSuperview];
                          }
          ];
     }

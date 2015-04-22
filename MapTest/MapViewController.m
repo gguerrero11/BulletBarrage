@@ -145,6 +145,11 @@ static bool kAnimate = true;
     [self.locationManager startUpdatingLocation];
     self.gmMapView.hidden = NO;
     [self setUpMotionManager];
+    
+//    ////// TESTING PURPOSES ////////
+//    self.pitchWithLimit = 0.523598776;
+//    self.deviceYaw = 1.3;
+//    ///////////////////////////////
 
     if (![PFUser currentUser]) { // No user logged in
         // Create the log in view controller
@@ -215,7 +220,7 @@ static bool kAnimate = true;
     [PFUser currentUser][shotsFiredKey] = [NSNumber numberWithDouble:0.0];
     [PFUser currentUser][shotsHitKey] = [NSNumber numberWithDouble:0.0];
     [PFUser currentUser][longestDistanceKey] = [NSNumber numberWithDouble:0.0];
-    [PFUser currentUser][weaponSelectedKey] = cannon;
+    [PFUser currentUser][weaponSelectedKey] = grenade;
     [UserController saveUserToParse:[PFUser currentUser]];
     
     self.currentUserHealthData = [HealthData object];
@@ -286,12 +291,12 @@ static bool kAnimate = true;
     self.ballisticCalculator = [BallisticCalculator new];
     
     [self registerForNotifications];
-    [[UserController sharedInstance] setWeaponForUser:cannon];
+    [[UserController sharedInstance] setWeaponForUser:grenade];
     [self createColors];
     [self preloadSounds];
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
-    [self setupSceneKitView];
+    //[self setupSceneKitView];
     [self drawInterfaceLines];
     [UserController queryUsers];
     
@@ -414,21 +419,20 @@ static bool kAnimate = true;
             self.attitude = motion.attitude;
             self.deviceYaw = motion.attitude.yaw + 1.55;
             
-            [self.interfaceLineDrawer move:left boxBasedByValue:self.pitchWithLimit];
-            [self.interfaceLineDrawer move:right boxBasedByValue:self.gmMapView.camera.zoom];
-            
-            //[gmMapView animateToBearing:-[self convertToDegrees:self.deviceYaw]];
-            //[gmMapView animateToViewingAngle:45];
+            double minimumAngle = -0.0523598776;
             
             //[gmMapView animateToLocation:self.myLocation.coordinate];
             // NSLog(@"%f", gmMapView.camera.viewingAngle);
             
             // Set pitch limit for map camera
-            if (self.attitude.pitch <= 0){
-                self.pitchWithLimit = 0;
+            if (self.attitude.pitch <= minimumAngle){
+                self.pitchWithLimit = minimumAngle;
             } else {
                 self.pitchWithLimit = self.attitude.pitch;
             }
+            
+            [self.interfaceLineDrawer move:left boxBasedByValue:self.pitchWithLimit];
+            [self.interfaceLineDrawer move:right boxBasedByValue:self.gmMapView.camera.zoom];
             
             self.cameraSKPitchRotationNode.rotation = SCNVector4Make(1, 0, 0, (self.gmMapView.camera.viewingAngle) * (M_PI/180) );
             self.cameraSKPositionNode.position = SCNVector3Make(0, -((double)self.gmMapView.camera.zoom - 22) * 5  ,0);
@@ -552,7 +556,9 @@ static bool kAnimate = true;
     [self.view addSubview:self.respawnButton];
     
     // Set up HealthBox
-    self.healthBox = [[HealthBox alloc]initWithFrame:CGRectMake(self.view.frame.size.width / 2 - 35, 0, 100, 70)];
+
+    self.healthBox = [[HealthBox alloc]initWithView:self.view];
+
     [self.view addSubview:self.healthBox];
     
     // Set up weapon/Camera Button
@@ -587,26 +593,6 @@ static bool kAnimate = true;
     self.fireButton.layer.borderColor = self.disabledTextColor.CGColor;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"userDead" object:nil];
-    
-}
-
-- (BOOL) mapView:(GMSMarker *)mapView didTapMarker:(GMSMarker *)marker {
-    
-    NSLog(@"did tap");
-//    CAShapeLayer *layer = [CAShapeLayer new];
-//    layer.lineWidth = 1;
-//    layer.fillColor = NULL;
-//    layer.path = [UIBezierPath bezierPathWithOvalInRect:CGRectInset(self.view.bounds, 4, 4)].CGPath;
-//    layer.strokeColor = [UIColor redColor].CGColor;
-//    layer.contentsScale = [UIScreen mainScreen].scale;
-//    layer.shouldRasterize = NO;
-    marker.layer.superlayer.opacity = 1;
-    marker.layer.superlayer.borderWidth = 10;
-        marker.layer.superlayer.borderColor = [UIColor whiteColor].CGColor;
-//    [marker.layer.superlayer insertSublayer:layer above:marker.layer.superlayer];
-
-    
-return YES;
     
 }
 
@@ -772,7 +758,7 @@ return YES;
     [self placeButton:self.weaponButton side:@"right"];
     
     self.weaponIcon = [[UIImageView alloc]initWithFrame:CGRectMake(self.weaponButton.frame.size.width / 2 - self.weaponButton.frame.size.width * 0.75 / 2, self.weaponButton.frame.size.height / 2 - self.weaponButton.frame.size.height * 0.75 / 2 , self.weaponButton.frame.size.width * 0.75, self.weaponButton.frame.size.height * 0.75)];
-    self.weaponIcon.image = [UIImage imageNamed:@"Mortar Filled-50"];
+    self.weaponIcon.image = [UIImage imageNamed:grenade];
     [self.weaponButton addSubview:self.weaponIcon];
     
 
@@ -820,14 +806,14 @@ return YES;
             
         case 2:
             //[self.weaponButton setTitle:@"100" forState:UIControlStateNormal];
-            [[UserController sharedInstance] setWeaponForUser:cannon];
-            self.weaponIcon.image = [UIImage imageNamed:@"Mortar Filled-50"];
+            [[UserController sharedInstance] setWeaponForUser:grenade];
+            self.weaponIcon.image = [UIImage imageNamed:grenade];
             self.weaponSelected = 0;
             break;
         case 0:
             //[self.weaponButton setTitle:@"250" forState:UIControlStateNormal];
-            [[UserController sharedInstance] setWeaponForUser:missle];
-            self.weaponIcon.image = [UIImage imageNamed:missle];
+            [[UserController sharedInstance] setWeaponForUser:cannon];
+            self.weaponIcon.image = [UIImage imageNamed:cannon];
             self.weaponSelected = 1;
             break;
         case 1:
@@ -847,7 +833,7 @@ return YES;
 }
 
 - (double) calculateDistanceFromUserWeapon {
-    NSLog(@"%f", [self.ballisticCalculator getRangeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit]);
+    NSLog(@"calculateDistanceFromUserWeapon %f", [self.ballisticCalculator getRangeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit]);
     
     return [self.ballisticCalculator getRangeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit];
 
@@ -858,7 +844,7 @@ return YES;
 
 - (double) calculateProjectileTravelTime {
     
-        NSLog(@"%f", [self.ballisticCalculator getFlightTimeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit]);
+        NSLog(@"calculateProjectileTravelTime %f", [self.ballisticCalculator getFlightTimeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit]);
     
     return [self.ballisticCalculator getFlightTimeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit];
     
@@ -1003,10 +989,11 @@ return YES;
     
     // the distance of the coordinate for the overlay (the corners). This determines the size of the overlay;
     NSInteger overlayOffset;
+    NSInteger sizeOfRubble = 10;
     
     // checks if its rubble type, if not, the size of the crater according to the weapon is the offset.
     if (type != rubble) overlayOffset = self.projectile.sizeOfCrater;
-    else overlayOffset = 50;
+    else overlayOffset = sizeOfRubble;
     
     // Create crater coordinates if its not "rubble" type
     // Sets coordinates for the opposite side corners for the overlay (crater)
@@ -1176,11 +1163,31 @@ return YES;
 }
 
 
-#pragma mark navigational items
+#pragma mark navigational delegates
 
 - (void)mapView:(GMSMapView *)mapView didChangeCameraPosition:(GMSCameraPosition *)position {
     self.cameraSKHeadingRotationNode.eulerAngles = SCNVector3Make(0, -(position.bearing * M_PI / 180), 0);
 }
+
+- (BOOL) mapView:(GMSMarker *)mapView didTapMarker:(GMSMarker *)marker {
+    
+    NSLog(@"did tap");
+
+    
+ 
+    
+    return NO;
+    
+}
+
+//- (UIView *)mapView:(GMSMapView *)mapView markerInfoWindow:(GMSMarker *)marker {
+//    
+//    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40,40)];
+//    view.backgroundColor = [UIColor redColor];
+//    
+//    marker.title = @"title";
+//    return view;
+//}
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 10) return;
@@ -1218,5 +1225,7 @@ return YES;
     // Dispose of any resources that can be recreated.
     
 }
+
+
 
 @end
