@@ -67,9 +67,9 @@
     [self addSubview:healthBarBorder];
     
     // setup health bar progress
-    UIView *healthBarBorder = [[UIView alloc]initWithFrame:CGRectMake(healthBarXOrigin, healthBarYOrigin, healthBarWidth, healthBarHeight)];
+    UIView *healthBarProgress = [[UIView alloc]initWithFrame:CGRectMake(healthBarXOrigin, healthBarYOrigin, healthBarWidth, healthBarHeight)];
     healthBarBorder.backgroundColor = [UIColor healthBarOrange];
-    [self addSubview:healthBarBorder];
+    [self addSubview:healthBarProgress];
 
     
     
