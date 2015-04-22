@@ -15,7 +15,10 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
-    
+        
+        self.rank = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 20, 40)];
+        self.rank.backgroundColor = [UIColor redColor];
+        
     }
     return self;
 }

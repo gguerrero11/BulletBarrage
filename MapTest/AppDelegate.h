@@ -8,6 +8,19 @@
 
 #import <UIKit/UIKit.h>
 
+
+/* NOTES
+ 
+ Need to fix:
+ 
+ - Intial start up in the middle of the ocean
+ - switching weapons during inflight projectiles
+ - leaderboard custom cell
+ 
+ - vertical lines (-3) going past the vertical limits
+ 
+ */
+
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;

@@ -9,24 +9,27 @@
 #import "MapViewController.h"
 
 #import <CoreMotion/CoreMotion.h>
-#import "CustomLoginViewController.h"
-#import "CustomSignUpViewController.h"
-#import <Parse/Parse.h>
-#import "UserController.h"
 #import "CountdownTimerViewController.h"
 #import "Weapon.h"
+#import "UserController.h"
 #import "WeaponController.h"
+#import "HealthDataController.h"
 #import "UserController.h"
 #import "GMSMarkerWithUser.h"
 #import "GMSMarker+addUser.h"
-#import "HealthData.h"
-#import "HealthDataController.h"
+
 #import "HealthBox.h"
 #import "InterfaceLineDrawer.h"
 #import "DrawProjectile.h"
 #import "BackgroundDrawer.h"
 #import "BallisticCalculator.h"
 #import "UIColor+InterfaceColors.h"
+
+#import <Parse/Parse.h>
+#import "CustomLoginViewController.h"
+#import "CustomSignUpViewController.h"
+#import "Projectile.h"
+#import "HealthData.h"
 
 #import "ObjectAL.h"
 #define BUTTONPRESS_SOUND @"buttonPress2.caf"
@@ -117,7 +120,7 @@ static bool kAnimate = true;
 @property (nonatomic, strong) BallisticCalculator *ballisticCalculator;
 @property (nonatomic) BOOL cameraFollow;
 
-@property (nonatomic, strong) Weapon *projectile;
+@property (nonatomic, strong) Weapon *weaponProjectile;
 @property (nonatomic, strong) HealthData *currentUserHealthData;
 @property (nonatomic, strong) HealthDataController *healthDataController;
 
@@ -297,7 +300,7 @@ static bool kAnimate = true;
     [self preloadSounds];
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
-    //[self setupSceneKitView];
+    [self setupSceneKitView];
     [self drawInterfaceLines];
     [UserController queryUsers];
     
@@ -548,7 +551,7 @@ static bool kAnimate = true;
     self.respawnButton.backgroundColor = [UIColor blueColor];
     [self.respawnButton setTitle:@"Respawn" forState:UIControlStateNormal];
     [self.respawnButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [self.respawnButton addTarget:self action:@selector(showRespawnButton) forControlEvents:UIControlEventTouchDown];
+    [self.respawnButton addTarget:self action:@selector(respawnButtonPressed) forControlEvents:UIControlEventTouchDown];
     self.respawnButton.layer.shadowColor = [UIColor blackColor].CGColor;
     self.respawnButton.layer.shadowOpacity = 0.8;
     self.respawnButton.layer.shadowRadius = 3;
@@ -559,7 +562,6 @@ static bool kAnimate = true;
     // Set up HealthBox
 
     self.healthBox = [[HealthBox alloc]initWithView:self.view];
-
     [self.view addSubview:self.healthBox];
     
     // Set up weapon/Camera Button
@@ -567,10 +569,35 @@ static bool kAnimate = true;
     [self setUpCameraFollow];
 }
 
-- (void) showRespawnButton {
+- (void) respawnButtonPressed {
     self.currentUserHealthData[healthKey] = @100;
     [HealthDataController saveHealthData:self.currentUserHealthData];
     self.respawnButton.hidden = YES;
+    [self enableFireButton];
+    
+    
+    // reinstantiate the observer
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDeadAlert) name:@"userDead" object:nil];
+}
+
+- (void) userDeadAlert {
+    UIAlertView *deadAlert = [[UIAlertView alloc]initWithTitle:@"You have been destroyed!" message:@"Well, looks like you're dead. Hopefully it's not because you aimed horribly." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:@"Who got me!?", nil];
+    [deadAlert show];
+    self.respawnButton.hidden = NO;
+    [self disableFireButton];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"userDead" object:nil];
+    
+}
+
+- (void) disableFireButton {
+    self.fireButton.backgroundColor = [UIColor grayColor];
+    self.fireButton.titleLabel.textColor = self.disabledTextColor;
+    self.fireButton.userInteractionEnabled = NO;
+    self.fireButton.layer.shadowOpacity = 0;
+    self.fireButton.layer.borderColor = self.disabledTextColor.CGColor;
+}
+
+- (void) enableFireButton {
     self.fireButton.backgroundColor = self.fireButtonColor;
     self.fireButton.titleLabel.textColor = [UIColor whiteColor];
     self.fireButton.userInteractionEnabled = YES;
@@ -579,22 +606,6 @@ static bool kAnimate = true;
     self.fireButton.layer.shadowColor = self.fireButtonColor.CGColor;
     self.fireButton.layer.shadowOpacity = 1;
     self.fireButton.layer.shadowRadius = 10;
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDeadAlert) name:@"userDead" object:nil];
-}
-
-- (void) userDeadAlert {
-    UIAlertView *deadAlert = [[UIAlertView alloc]initWithTitle:@"You have been destroyed!" message:@"Well, looks like you're dead. Hopefully it's not because you aimed horribly." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:@"Who got me!?", nil];
-    [deadAlert show];
-    self.respawnButton.hidden = NO;
-    self.fireButton.backgroundColor = [UIColor grayColor];
-    self.fireButton.titleLabel.textColor = self.disabledTextColor;
-    self.fireButton.userInteractionEnabled = NO;
-    self.fireButton.layer.shadowOpacity = 0;
-    self.fireButton.layer.borderColor = self.disabledTextColor.CGColor;
-
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"userDead" object:nil];
-    
 }
 
 
@@ -754,7 +765,6 @@ static bool kAnimate = true;
     button.frame = CGRectMake( xOrigin, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height - 80, width, width);
     [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     button.tintColor = [UIColor whiteColor];
-    button.alpha = .65;
     [self.view addSubview:button];
 }
 
@@ -877,6 +887,9 @@ static bool kAnimate = true;
 }
 
 - (void) fireButtonPressed:(id)sender {
+    // "reloading the cannon"
+    [self disableFireButton];
+    [self performSelector:@selector(enableFireButton) withObject:nil afterDelay:4];
     
     //[self createTimer]
     
@@ -884,8 +897,8 @@ static bool kAnimate = true;
     if (self.sound) [[OALSimpleAudio sharedInstance] playEffect:SHOOT_SOUND];
     
     // we need to create a separate projecile weapon instance, so when the user changes weapon mid-flight, it doesn't change that weapon also
-    self.projectile = [Weapon new];
-    self.projectile = [UserController sharedInstance].currentWeapon;
+    self.weaponProjectile = [Weapon new];
+    self.weaponProjectile = [UserController sharedInstance].currentWeapon;
     
     // Adds +1 to the "shotsFired" on Parse
     [[PFUser currentUser] incrementKey:shotsFiredKey];
@@ -927,7 +940,7 @@ static bool kAnimate = true;
         
         CLLocationCoordinate2D positionOfMarker = marker.position;
         CLLocation *locationOfMarker = [[CLLocation alloc]initWithCoordinate:positionOfMarker altitude:0 horizontalAccuracy:0 verticalAccuracy:0 timestamp:[NSDate date]];
-        if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage) {
+        if ([locationOfMarker distanceFromLocation:hitLocation] < self.weaponProjectile.radiusOfDamage) {
             
             NSNumber *healthForTarget = healthDataUserAtMarker[healthKey];
             int health = [healthForTarget doubleValue];
@@ -941,17 +954,17 @@ static bool kAnimate = true;
                 }
                 
                 // If the distance less than 35% away
-                if ([locationOfMarker distanceFromLocation:hitLocation] < self.projectile.radiusOfDamage * 0.35 ) {
+                if ([locationOfMarker distanceFromLocation:hitLocation] < self.weaponProjectile.radiusOfDamage * 0.35 ) {
                     
                     // do full damage
-                    health -= self.projectile.damage;
+                    health -= self.weaponProjectile.damage;
                     NSLog(@"FULL DAMAGE. Health: %d", health);
                     
                 } else {
                     
                     // otherwise do damage relative to is distance
-                    health -= self.projectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.projectile.radiusOfDamage);
-                    NSLog(@"did %f%% DAMAGE. Health: %d", self.projectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.projectile.radiusOfDamage), health);
+                    health -= self.weaponProjectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.weaponProjectile.radiusOfDamage);
+                    NSLog(@"did %f%% DAMAGE. Health: %d", self.weaponProjectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.weaponProjectile.radiusOfDamage), health);
                 }
                 
                 marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
@@ -999,7 +1012,7 @@ static bool kAnimate = true;
     NSInteger sizeOfRubble = 10;
     
     // checks if its rubble type, if not, the size of the crater according to the weapon is the offset.
-    if (type != rubble) overlayOffset = self.projectile.sizeOfCrater;
+    if (type != rubble) overlayOffset = self.weaponProjectile.sizeOfCrater;
     else overlayOffset = sizeOfRubble;
     
     // Create crater coordinates if its not "rubble" type

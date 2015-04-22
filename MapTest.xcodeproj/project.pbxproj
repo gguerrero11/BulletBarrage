@@ -103,6 +103,7 @@
 		49E6F3A61AE7384A007B4886 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F3A51AE7384A007B4886 /* art.scnassets */; };
 		49E6F3AA1AE7519B007B4886 /* BallisticCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F3A91AE7519B007B4886 /* BallisticCalculator.m */; };
 		49E6F3AD1AE81A23007B4886 /* UIColor+InterfaceColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F3AC1AE81A23007B4886 /* UIColor+InterfaceColors.m */; };
+		49E6F3B11AE84F6C007B4886 /* Projectile.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F3B01AE84F6C007B4886 /* Projectile.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -282,6 +283,8 @@
 		49E6F3A91AE7519B007B4886 /* BallisticCalculator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BallisticCalculator.m; sourceTree = "<group>"; };
 		49E6F3AB1AE81A23007B4886 /* UIColor+InterfaceColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+InterfaceColors.h"; sourceTree = "<group>"; };
 		49E6F3AC1AE81A23007B4886 /* UIColor+InterfaceColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+InterfaceColors.m"; sourceTree = "<group>"; };
+		49E6F3AF1AE84F6C007B4886 /* Projectile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Projectile.h; sourceTree = "<group>"; };
+		49E6F3B01AE84F6C007B4886 /* Projectile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Projectile.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -343,6 +346,8 @@
 		496857401AD59946000CE114 /* Weapons */ = {
 			isa = PBXGroup;
 			children = (
+				49E6F3AF1AE84F6C007B4886 /* Projectile.h */,
+				49E6F3B01AE84F6C007B4886 /* Projectile.m */,
 				49E6F2941AE241CC007B4886 /* DrawProjectile.h */,
 				49E6F2951AE241CC007B4886 /* DrawProjectile.m */,
 				4968573D1AD5993E000CE114 /* Weapon.h */,
@@ -816,6 +821,7 @@
 				49E6F37A1AE550D3007B4886 /* OALTools.m in Sources */,
 				49E6F3741AE550D3007B4886 /* OALSuspendHandler.m in Sources */,
 				4968573F1AD5993E000CE114 /* Weapon.m in Sources */,
+				49E6F3B11AE84F6C007B4886 /* Projectile.m in Sources */,
 				49E6F36E1AE550D3007B4886 /* ALListener.m in Sources */,
 				49E6F3661AE550D3007B4886 /* OALAudioTrackNotifications.m in Sources */,
 				49E6F3651AE550D3007B4886 /* OALAudioTrack.m in Sources */,
