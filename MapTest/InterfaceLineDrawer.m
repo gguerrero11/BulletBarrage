@@ -97,6 +97,7 @@ typedef void(^myCompletion)(BOOL);
     
     // adds glow to the lines
     verticalLine.layer.shadowOpacity = .9;
+    verticalLine.layer.shadowOffset = CGSizeMake(0, 0);
     verticalLine.layer.shadowRadius = self.lineShadowGlowRadius;
     verticalLine.layer.shadowColor = [UIColor lineColor].CGColor;
 

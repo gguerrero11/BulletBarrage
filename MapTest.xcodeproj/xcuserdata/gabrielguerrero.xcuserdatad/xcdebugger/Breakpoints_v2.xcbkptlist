@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MapTest/MapViewController.m"
-            timestampString = "451374354.061139"
+            timestampString = "451419386.809781"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "135"
-            endingLineNumber = "135"
+            startingLineNumber = "136"
+            endingLineNumber = "136"
             landmarkName = "-viewDidDisappear:"
             landmarkType = "5">
          </BreakpointContent>
@@ -154,11 +154,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MapTest/MapViewController.m"
-            timestampString = "451419264.406239"
+            timestampString = "451420255.972923"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "849"
-            endingLineNumber = "849"
+            startingLineNumber = "856"
+            endingLineNumber = "856"
             landmarkName = "-calculateProjectileTravelTime"
             landmarkType = "5">
          </BreakpointContent>

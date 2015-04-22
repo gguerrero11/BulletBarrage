@@ -27,5 +27,13 @@
     return  RGBA(123.0, 204.0, 112.0, .25);
 }
 
++ (UIColor *)healthBarOrange {
+    return  RGBA(245.0, 188.0, 118.0, 1);
+}
+
++ (UIColor *)healthBarOrangeTransparent {
+    return  RGBA(245.0, 188.0, 118.0, .25);
+}
+
 @end
 

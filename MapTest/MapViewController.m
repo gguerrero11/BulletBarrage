@@ -26,6 +26,7 @@
 #import "DrawProjectile.h"
 #import "BackgroundDrawer.h"
 #import "BallisticCalculator.h"
+#import "UIColor+InterfaceColors.h"
 
 #import "ObjectAL.h"
 #define BUTTONPRESS_SOUND @"buttonPress2.caf"
@@ -741,12 +742,18 @@ static bool kAnimate = true;
 
     }
     
-    button.layer.borderWidth = 1;
-    button.layer.borderColor = [UIColor blueColor].CGColor;
+    // adds glow to the lines
+    button.layer.shadowOpacity = .9;
+    button.layer.shadowOffset = CGSizeMake(0, 0);
+    button.layer.shadowRadius = 3.5;
+    button.layer.shadowColor = [UIColor lineColor].CGColor;
+    
+    button.layer.borderWidth = 1.5;
+    button.layer.borderColor = [UIColor lineColor].CGColor;
+    button.backgroundColor = [UIColor transparentBox];
     button.frame = CGRectMake( xOrigin, self.view.frame.size.height - self.tabBarController.tabBar.frame.size.height - 80, width, width);
     [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     button.tintColor = [UIColor whiteColor];
-    button.backgroundColor = [UIColor colorWithRed:.1 green:.1 blue:1 alpha:.35];
     button.alpha = .65;
     [self.view addSubview:button];
 }

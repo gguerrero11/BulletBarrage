@@ -18,4 +18,8 @@
 
 + (UIColor *)transparentBox;
 
++ (UIColor *)healthBarOrange;
+
++ (UIColor *)healthBarOrangeTransparent;
+
 @end
