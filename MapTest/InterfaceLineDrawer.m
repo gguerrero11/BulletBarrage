@@ -53,12 +53,10 @@ typedef void(^myCompletion)(BOOL);
         self.initalStartup = YES;
         self.lineThickness = 1.5;
         self.lengthOfLine = view.frame.size.height * .6;
-        self.lineShadowGlowRadius = 3;
+        self.lineShadowGlowRadius = 3.5;
         
         [self setUpColors];
-
-        [self drawGlowingLine];
-        [self drawScreenTintEffect];
+        //[self drawScreenTintEffect];
 
         [self drawVerticalLines:right];
         [self drawVerticalLines:left];
@@ -70,7 +68,7 @@ typedef void(^myCompletion)(BOOL);
 - (void) setUpColors {
     self.screenTintColor = [UIColor colorWithRed:123.0/255.0
                                            green:204.0/255.0
-                                            blue:123.0/255.0 alpha:.4];
+                                            blue:123.0/255.0 alpha:.3];
    
     self.lineColor =  [UIColor colorWithRed:123.0/255.0
                                       green:255.0/255.0
@@ -98,9 +96,9 @@ typedef void(^myCompletion)(BOOL);
     verticalLine.userInteractionEnabled = NO;
     
     // adds glow to the lines
-//    verticalLine.layer.shadowOpacity = .9;
-//    verticalLine.layer.shadowRadius = self.lineShadowGlowRadius;
-//    verticalLine.layer.shadowColor = self.lineColor.CGColor;
+    verticalLine.layer.shadowOpacity = .9;
+    verticalLine.layer.shadowRadius = self.lineShadowGlowRadius;
+    verticalLine.layer.shadowColor = self.lineColor.CGColor;
 
     [self addSubview:verticalLine];
     [self drawStudsForVerticalLine:verticalLine side:side];
@@ -218,9 +216,8 @@ typedef void(^myCompletion)(BOOL);
 -(void)drawRect:(CGRect)rect {
     [super drawRect:rect];
     
-    double lineTransparency = 0.3;
+    double lineTransparency = 0.4;
     
-    // diagonal, colored lines
     UIColor *interlaceLineColor = [UIColor colorWithRed:.1 green:.6 blue:.7 alpha:lineTransparency];
     
     [interlaceLineColor setStroke];
@@ -245,37 +242,6 @@ typedef void(^myCompletion)(BOOL);
     
 }
 
-
-- (void) drawGlowingLine {
-    
-    double heightOfLine = 100;
-    
-    // draw glowing animated line
-    UIView *glowLine = [[UIView alloc]initWithFrame:CGRectMake(-30, -heightOfLine, self.parentView.frame.size.width + 60, heightOfLine)];
-    glowLine.layer.shadowOpacity = 1.0;
-    glowLine.layer.shadowColor = [UIColor colorWithWhite:1 alpha:1].CGColor;
-    glowLine.layer.opacity = .15;
-    glowLine.layer.shadowRadius = 6;
-    glowLine.userInteractionEnabled = NO;
-    glowLine.backgroundColor = [UIColor colorWithWhite:1 alpha:1];
-    
-    [self addSubview:glowLine];
-    
-    // animate glow line
-    CGRect destinationFrame = CGRectMake(0, self.frame.size.height + 20, glowLine.frame.size.width, glowLine.frame.size.height);
-    
-    [UIView animateWithDuration:15
-                          delay:0.0
-                        options:UIViewAnimationCurveLinear | UIViewAnimationOptionRepeat | UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-                         glowLine.frame = destinationFrame;
-                     }
-                     completion:^(BOOL finished){
-                     }
-     ];
-    
-}
-
 - (void) drawDamageEventView {
     
     for (int i = 0; i < 10; i++) {
@@ -287,7 +253,7 @@ typedef void(^myCompletion)(BOOL);
         UIView *randomLine = [[UIView alloc]initWithFrame:CGRectMake(-30, randomYOrigin, self.parentView.frame.size.width + 60, heightOfLine)];
         [self.parentView addSubview:randomLine];
         
-        randomLine.backgroundColor = [UIColor colorWithWhite:.8 alpha:.8];
+        randomLine.backgroundColor = [UIColor colorWithWhite:.8 alpha:1];
         
         // "darken" the screen
         self.screenTintView.backgroundColor = [UIColor colorWithRed:.1 green:.1 blue:.1 alpha:.8];
@@ -314,9 +280,43 @@ typedef void(^myCompletion)(BOOL);
     }
 }
 
-
-
-
+// Permanently disabled: too taxing on the GPU/CPU
+/*
+ - (void) drawGlowingLine {
+ 
+ //
+ 
+ double heightOfLine = 100;
+ 
+ // draw glowing animated line
+ UIImageView *glowLine = [[UIImageView alloc]initWithFrame:CGRectMake(-30, -heightOfLine, self.parentView.frame.size.width + 60, heightOfLine)];
+ 
+ glowLine.image = [UIImage imageNamed:@"glowline"];
+ glowLine.alpha = .15;
+ 
+ //UIView *glowLine = [[UIView alloc]initWithFrame:CGRectMake(-30, -heightOfLine, self.parentView.frame.size.width + 60, heightOfLine)];
+ //    glowLine.layer.shadowOpacity = 1.0;
+ //    glowLine.layer.shadowColor = [UIColor colorWithWhite:1 alpha:1].CGColor;
+ //    glowLine.layer.shadowRadius = 6;
+ glowLine.userInteractionEnabled = NO;
+ //    glowLine.backgroundColor = [UIColor colorWithWhite:1 alpha:1];
+ 
+ [self addSubview:glowLine];
+ 
+ // animate glow line
+ CGRect destinationFrame = CGRectMake(0, self.frame.size.height + 20, glowLine.frame.size.width, glowLine.frame.size.height);
+ [UIView animateWithDuration:5
+ delay:0.0
+ options:UIViewAnimationCurveLinear | UIViewAnimationOptionRepeat | UIViewAnimationOptionBeginFromCurrentState
+ animations:^{
+ glowLine.frame = destinationFrame;
+ }
+ completion:^(BOOL finished){
+ }
+ ];
+ 
+ }
+ */
 
  //Only override drawRect: if you perform custom drawing.
  //An empty implementation adversely affects performance during animation.

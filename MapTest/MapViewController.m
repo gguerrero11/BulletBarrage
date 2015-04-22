@@ -130,7 +130,7 @@ static bool kAnimate = true;
     [self.locationManager stopUpdatingHeading];
     [self.locationManager stopUpdatingLocation];
     self.gmMapView.hidden = YES;
-    //[_motionManager stopDeviceMotionUpdates];
+    [_motionManager stopDeviceMotionUpdates];
 }
 
 
@@ -142,7 +142,11 @@ static bool kAnimate = true;
     [self.locationManager startUpdatingHeading];
     [self.locationManager startUpdatingLocation];
     self.gmMapView.hidden = NO;
-    //[_motionManager startDeviceMotionUpdates];
+    [self setUpMotionManager];
+
+    
+    
+    
     
     if (![PFUser currentUser]) { // No user logged in
         // Create the log in view controller
@@ -277,33 +281,36 @@ static bool kAnimate = true;
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-    [self preloadSounds];
-    
-    self.tabBarController.tabBar.alpha = 1;
-    [self createColors];
+
     self.initialLaunch = YES;
     self.healthDataController = [HealthDataController new];
     self.arrayOfCraters = [NSMutableArray new];
+    
     [self registerForNotifications];
     [[UserController sharedInstance] setWeaponForUser:cannon];
-    [self setUpMotionManager];
+    [self createColors];
+    [self preloadSounds];
     [self setUpLocationManagerAndHeading];
     [self showMainMapView];
-    [UserController queryUsers];
     [self setupSceneKitView];
-    self.interfaceLineDrawer = [[InterfaceLineDrawer alloc]initWithFrame:self.view.frame withView:self.view];
-    self.interfaceLineDrawer.attitude = self.attitude;
-    self.interfaceLineDrawer.mapCamera = self.gmMapView.camera;
-    self.interfaceLineDrawer.userInteractionEnabled = NO;
+    [self drawInterfaceLines];
+    [UserController queryUsers];
+    
     [self.view addSubview:self.interfaceLineDrawer];
     [self setUpDataDisplayAndButtons];
-    
     
     //set up tabBar image
     UIImageView *tabBar = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     tabBar.image = [UIImage imageNamed:@"metalBarsWithIconsMiddle"];
     [self.view addSubview:tabBar];
     
+}
+
+- (void) drawInterfaceLines {
+    self.interfaceLineDrawer = [[InterfaceLineDrawer alloc]initWithFrame:self.view.frame withView:self.view];
+    self.interfaceLineDrawer.attitude = self.attitude;
+    self.interfaceLineDrawer.mapCamera = self.gmMapView.camera;
+    self.interfaceLineDrawer.userInteractionEnabled = NO;
 }
 
 - (void) createTargets {
@@ -642,14 +649,6 @@ return YES;
     
     [scene.rootNode addChildNode:self.cameraSKHeadingRotationNode];
     
-    // Create pyramid
-    self.cannonBarrel = [SCNBox boxWithWidth:.05 height:.05 length:.5 chamferRadius:0];
-    self.cannonBarrel.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
-    
-    // Create cube
-    self.placement = [SCNPyramid pyramidWithWidth:.3 height:.3 length:.3];
-    self.placement.firstMaterial.diffuse.contents = [UIColor colorWithRed:0.149 green:0.604 blue:0.859 alpha:1.000];
-    
     // grid floor texture - major performance issues
 //    SCNNode*floor = [SCNNode node];
 //    floor.geometry = [SCNFloor floor];
@@ -675,7 +674,7 @@ return YES;
                                     inDirectory:nil
                                         options:@{SCNSceneSourceConvertToYUpKey : @YES,
                                                   SCNSceneSourceAnimationImportPolicyKey :SCNSceneSourceAnimationImportPolicyPlayRepeatedly}];
-    
+    // creates cannon turn table
     SCNScene *cannonTurnTableScene = [SCNScene sceneNamed:@"FlakTurnTable.dae"
                                      inDirectory:nil
                                          options:@{SCNSceneSourceConvertToYUpKey : @YES,
@@ -706,7 +705,8 @@ return YES;
     [cannonTurnTable addChildNode:cannonBarrel];
     [placementNode addChildNode:cannonTurnTable];
     [scene.rootNode addChildNode:placementNode];
-
+    
+    // sets the node properties here so we can animate them later with motionManager
     self.barrelPivotNode = cannonBarrel;
     self.cannonTurnTableNode = cannonTurnTable;
     self.placementNode = placementNode;

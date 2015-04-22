@@ -27,7 +27,7 @@
     Weapon *weapon = [Weapon new];
     
     if ([weaponString isEqualToString:cannon]) {
-        weapon.velocity = 100;
+        weapon.velocity = 820;  // measured in m/s (meters per second)
         weapon.damage = 30;
         weapon.radiusOfDamage = 100;
         weapon.sizeOfCrater = 150;

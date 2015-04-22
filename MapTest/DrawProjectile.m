@@ -79,13 +79,19 @@
     marker.icon = [UIImage imageNamed:@"bullet2x"];
     marker.map = self.view;
     marker.flat = YES;
+    marker.layer.opacity = 1;
     marker.rotation = self.heading;
+
     [self animateToNextCoord:marker];
     
 }
 
 
 - (void)animateToNextCoord:(GMSMarker *)marker {
+    
+[UIView animateWithDuration:1.5 delay:2 options:UIViewAnimationOptionRepeat animations:^{
+    //marker.layer.opacity = 1.0;
+} completion:nil];
     
 //    CLLocationDistance distance = GMSGeometryDistance(self.fromCoordinate , self.toCoordinate);
     
@@ -96,6 +102,7 @@
     [CATransaction begin];
     [CATransaction setAnimationDuration:self.animationDuration];  // custom duration, 50km/sec
     [CATransaction setCompletionBlock:^{
+
         marker.map = nil;
 
     }];

@@ -100,9 +100,8 @@
 		49E6F3811AE56213007B4886 /* metalClank.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F37F1AE56213007B4886 /* metalClank.caf */; };
 		49E6F3821AE56213007B4886 /* buttonPress.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F3801AE56213007B4886 /* buttonPress.caf */; };
 		49E6F3861AE565CF007B4886 /* buttonPress2.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F3851AE565CF007B4886 /* buttonPress2.caf */; };
-		49E6F39F1AE6F085007B4886 /* FlakBarrel.dae in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F39C1AE6F085007B4886 /* FlakBarrel.dae */; };
-		49E6F3A01AE6F085007B4886 /* FlakStand.dae in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F39D1AE6F085007B4886 /* FlakStand.dae */; };
-		49E6F3A11AE6F085007B4886 /* FlakTurnTable.dae in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F39E1AE6F085007B4886 /* FlakTurnTable.dae */; };
+		49E6F3A61AE7384A007B4886 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 49E6F3A51AE7384A007B4886 /* art.scnassets */; };
+		49E6F3AA1AE7519B007B4886 /* BallisticCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F3A91AE7519B007B4886 /* BallisticCalculator.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -277,9 +276,9 @@
 		49E6F37F1AE56213007B4886 /* metalClank.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = metalClank.caf; sourceTree = "<group>"; };
 		49E6F3801AE56213007B4886 /* buttonPress.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buttonPress.caf; sourceTree = "<group>"; };
 		49E6F3851AE565CF007B4886 /* buttonPress2.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = buttonPress2.caf; sourceTree = "<group>"; };
-		49E6F39C1AE6F085007B4886 /* FlakBarrel.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml.dae; path = FlakBarrel.dae; sourceTree = "<group>"; };
-		49E6F39D1AE6F085007B4886 /* FlakStand.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml.dae; path = FlakStand.dae; sourceTree = "<group>"; };
-		49E6F39E1AE6F085007B4886 /* FlakTurnTable.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml.dae; path = FlakTurnTable.dae; sourceTree = "<group>"; };
+		49E6F3A51AE7384A007B4886 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
+		49E6F3A81AE7519B007B4886 /* BallisticCalculator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BallisticCalculator.h; sourceTree = "<group>"; };
+		49E6F3A91AE7519B007B4886 /* BallisticCalculator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BallisticCalculator.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -416,6 +415,8 @@
 				4996BA661AD82B15002D5663 /* User.m */,
 				49603D6F1AD20ADF00AB3E50 /* UserController.h */,
 				49603D701AD20ADF00AB3E50 /* UserController.m */,
+				49E6F3A81AE7519B007B4886 /* BallisticCalculator.h */,
+				49E6F3A91AE7519B007B4886 /* BallisticCalculator.m */,
 				49603D6E1AD1023500AB3E50 /* Login */,
 				49B9DC3C1ACF37BB003EA46E /* MapView */,
 				49B9DC3D1ACF37C6003EA46E /* LeaderBoard */,
@@ -516,15 +517,13 @@
 		49C3A5DF1ADDA829007C8309 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				49E6F39C1AE6F085007B4886 /* FlakBarrel.dae */,
-				49E6F39D1AE6F085007B4886 /* FlakStand.dae */,
-				49E6F39E1AE6F085007B4886 /* FlakTurnTable.dae */,
 				49E6F31E1AE550D3007B4886 /* ObjectAL */,
 				49B9DBC51ACDD519003EA46E /* Main.storyboard */,
 				49DF85121ADEEB9100080987 /* Sounds */,
 				49B9DBC81ACDD519003EA46E /* Images.xcassets */,
 				49B9DBCA1ACDD519003EA46E /* LaunchScreen.xib */,
 				49E6F3951AE6DC60007B4886 /* gameModels */,
+				49E6F3A51AE7384A007B4886 /* art.scnassets */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -739,12 +738,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				49C3A5D51ADC3DC1007C8309 /* missleImpact.caf in Resources */,
-				49E6F3A11AE6F085007B4886 /* FlakTurnTable.dae in Resources */,
 				49B9DBC71ACDD519003EA46E /* Main.storyboard in Resources */,
+				49E6F3A61AE7384A007B4886 /* art.scnassets in Resources */,
 				49E6F3861AE565CF007B4886 /* buttonPress2.caf in Resources */,
-				49E6F39F1AE6F085007B4886 /* FlakBarrel.dae in Resources */,
 				49E6F3811AE56213007B4886 /* metalClank.caf in Resources */,
-				49E6F3A01AE6F085007B4886 /* FlakStand.dae in Resources */,
 				49B9DBCC1ACDD519003EA46E /* LaunchScreen.xib in Resources */,
 				49E6F3821AE56213007B4886 /* buttonPress.caf in Resources */,
 				49B9DBC91ACDD519003EA46E /* Images.xcassets in Resources */,
@@ -817,6 +814,7 @@
 				49E6F2961AE241CC007B4886 /* DrawProjectile.m in Sources */,
 				493583DF1AD5B173007A46EC /* WeaponController.m in Sources */,
 				49E6F29B1AE4536F007B4886 /* CustomTabBarViewController.m in Sources */,
+				49E6F3AA1AE7519B007B4886 /* BallisticCalculator.m in Sources */,
 				49E6F3631AE550D3007B4886 /* OALAudioActions.m in Sources */,
 				49E6F3751AE550D3007B4886 /* IOSVersion.m in Sources */,
 				4996BA6D1AD82F68002D5663 /* GMSMarkerWithUser.m in Sources */,
