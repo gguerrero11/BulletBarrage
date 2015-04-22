@@ -18,6 +18,7 @@ static NSString * const velocityKey = @"velocity";
 @property (nonatomic) NSInteger damage;
 @property (nonatomic) NSInteger radiusOfDamage;
 @property (nonatomic) NSInteger sizeOfCrater;
+@property (nonatomic, strong) NSString *weaponString;
 
 
 @end

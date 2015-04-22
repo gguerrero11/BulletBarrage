@@ -8,6 +8,9 @@
 
 #import "WeaponController.h"
 #import "UserController.h"
+#import <Parse/Parse.h>
+
+
 
 @implementation WeaponController
 
@@ -20,11 +23,46 @@
     return sharedInstance;
 }
 
++ (void) saveProjectileToParse:(Projectile *)projectile {
+    
+    [projectile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            NSLog(@"Projectile Data Saved");
 
+        } else {
+            NSLog(@"%@", error);
+            [projectile saveEventually];
+        }
+    }];
+}
+
+- (Projectile *) projectileWithHitLocation:(CLLocation *)hitLocation flightTime:(double)flightTime withWeapon:(NSString *)weaponString {
+    Projectile *projectile = [Projectile object];
+    
+    // attach geopoint
+    PFGeoPoint *hitLocationGeoPoint = [PFGeoPoint geoPointWithLocation:hitLocation];
+    projectile.hitLocationGeoPoint = hitLocationGeoPoint;
+
+    // the date/time the shot was fired
+    projectile.timeFired = [NSDate date];
+    
+    // set weaponType
+    projectile.weaponType = weaponString;
+    
+    // set date/time the shot will arrive at the target
+    NSDate *arrivalDate = [[NSDate alloc]initWithTimeIntervalSinceNow:flightTime];
+    NSLog(@"Flight Time: %f", flightTime);
+    NSLog(@"Departure Time: %@", projectile.timeFired);
+    NSLog(@"Arrival Time: %@", arrivalDate);
+    projectile.timeOfArrival = arrivalDate;
+    
+    return projectile;
+}
 
 - (Weapon *) getWeapon:(NSString *)weaponString {
     
     Weapon *weapon = [Weapon new];
+    weapon.weaponString = weaponString;
     
     if ([weaponString isEqualToString:grenade]) {
         weapon.velocity = 26.8224;  // measured in m/s (meters per second)

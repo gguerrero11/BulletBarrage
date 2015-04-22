@@ -887,13 +887,12 @@ static bool kAnimate = true;
 }
 
 - (void) fireButtonPressed:(id)sender {
+    
     // "reloading the cannon"
     [self disableFireButton];
     [self performSelector:@selector(enableFireButton) withObject:nil afterDelay:4];
     
     //[self createTimer]
-    
-//    if (self.sound) [[SoundController sharedInstance] playSoundEffect:cannon];
     if (self.sound) [[OALSimpleAudio sharedInstance] playEffect:SHOOT_SOUND];
     
     // we need to create a separate projecile weapon instance, so when the user changes weapon mid-flight, it doesn't change that weapon also
@@ -903,18 +902,25 @@ static bool kAnimate = true;
     // Adds +1 to the "shotsFired" on Parse
     [[PFUser currentUser] incrementKey:shotsFiredKey];
     
-    
     CLLocation *hitLocation = [[CLLocation alloc]initWithLatitude:[self calculateHitLocation].latitude
                                                         longitude:[self calculateHitLocation].longitude];
-    
     double projectileTravelTime = [self calculateProjectileTravelTime];
     [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:projectileTravelTime];
     
+    // draw projectile marker
     self.drawProjectile = [DrawProjectile new];
     [self.drawProjectile drawProjectileOnView:self.gmMapView atCoordinate:hitLocation.coordinate fromCoordinate:self.myLocation.coordinate animationDuration:projectileTravelTime];
 
+    // draw poly line trajectory line
     [self drawTrajectoryLineToLocation:hitLocation];
-}
+    
+    Projectile *projectile = [[WeaponController sharedInstance] projectileWithHitLocation:hitLocation flightTime:projectileTravelTime withWeapon:[UserController sharedInstance].currentWeapon.weaponString];
+    [WeaponController sharedInstance] save
+    
+    
+    
+    
+    }
 
 - (void) hitCheckerAtLocation:(CLLocation *)hitLocation {
     
