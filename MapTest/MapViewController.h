@@ -11,6 +11,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import "Projectile.h"
 
 @interface MapViewController : UIViewController <MKMapViewDelegate, CLLocationManagerDelegate, GMSMapViewDelegate>
 
@@ -21,6 +22,8 @@
 @property (nonatomic, strong) CLLocationManager *locationManager;
 
 + (double) convertToDegrees:(double)pitch;
+
+
 
 @end
 

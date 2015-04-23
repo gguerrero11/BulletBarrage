@@ -28,7 +28,6 @@
 #import <Parse/Parse.h>
 #import "CustomLoginViewController.h"
 #import "CustomSignUpViewController.h"
-#import "Projectile.h"
 #import "HealthData.h"
 
 #import "ObjectAL.h"
@@ -60,7 +59,6 @@
 
 
 //static const NSInteger handicap = 1;
-static const NSInteger gravityStatic = 9.8;
 static NSString * const craterBigSquare = @"craterBigSquare";
 static NSString * const rubble = @"rubble";
 static NSString * const smoke = @"smoke";
@@ -850,21 +848,22 @@ static bool kAnimate = true;
 }
 
 - (double) calculateDistanceFromUserWeapon {
-    NSLog(@"calculateDistanceFromUserWeapon %f", [self.ballisticCalculator getRangeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit]);
-    
-    return [self.ballisticCalculator getRangeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit];
+//    NSLog(@"calculateDistanceFromUserWeapon %f", [self.ballisticCalculator getRangeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit]);
 
     // formula to calculate the distance the projectile will travel
+    return [self.ballisticCalculator getRangeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit];
+
+    // Old calculation
     //    double range = ( powl([UserController sharedInstance].currentWeapon.velocity, 2 ) * sinl(2 * self.pitchWithLimit) ) / gravityStatic;
     //    return range;
 }
 
 - (double) calculateProjectileTravelTime {
-    
-        NSLog(@"calculateProjectileTravelTime %f", [self.ballisticCalculator getFlightTimeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit]);
+    //        NSLog(@"calculateProjectileTravelTime %f", [self.ballisticCalculator getFlightTimeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit]);
     
     return [self.ballisticCalculator getFlightTimeFromVelocity:[UserController sharedInstance].currentWeapon.velocity radians:self.pitchWithLimit];
     
+    // old calculation
     //    double time = [self calculateDistanceFromUserWeapon] / [UserController sharedInstance].currentWeapon.velocity * cosh(self.pitchWithLimit);
     //    return time;
 }
@@ -928,8 +927,7 @@ static bool kAnimate = true;
     explosion.map = self.gmMapView;
     explosion.position = hitLocation.coordinate;
     explosion.icon = [UIImage animatedImageNamed:@"explosion-" duration:0.7f];
-
-        [self performSelector:@selector(removeGMSMarker:) withObject:explosion afterDelay:0.7 ];
+    [self performSelector:@selector(removeGMSMarker:) withObject:explosion afterDelay:0.7 ];
     
     // create crater
     [self createGMSOverlayAtCoordinate:hitLocation.coordinate type:craterBigSquare disappear:YES];
@@ -961,13 +959,13 @@ static bool kAnimate = true;
                     
                     // do full damage
                     health -= self.weaponProjectile.damage;
-                    NSLog(@"FULL DAMAGE. Health: %d", health);
+                    //NSLog(@"FULL DAMAGE. Health: %d", health);
                     
                 } else {
                     
                     // otherwise do damage relative to is distance
                     health -= self.weaponProjectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.weaponProjectile.radiusOfDamage);
-                    NSLog(@"did %f%% DAMAGE. Health: %d", self.weaponProjectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.weaponProjectile.radiusOfDamage), health);
+                    //NSLog(@"did %f%% DAMAGE. Health: %d", self.weaponProjectile.damage * ([locationOfMarker distanceFromLocation:hitLocation] / self.weaponProjectile.radiusOfDamage), health);
                 }
                 
                 marker.icon = [GMSMarker markerImageWithColor:[self changeColorForHealth:health]];
@@ -979,7 +977,7 @@ static bool kAnimate = true;
                 if (health <= 0 ) {
                     
                     [self createAnimateLabel:@"TARGET DESTROYED!" bigText:NO lower:NO];
-                    NSLog(@"DEAD!");
+                    //NSLog(@"DEAD!");
                     
                     [self createGMSOverlayAtCoordinate:marker.position type:rubble disappear:NO];
                     
@@ -1114,6 +1112,12 @@ static bool kAnimate = true;
 
 - (void) removeGMSMarker:(GMSMarker *)marker {
     marker.map = nil;
+}
+
+- (void) createInboundProjectiles {
+    
+    
+    
 }
 
 

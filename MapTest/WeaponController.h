@@ -15,7 +15,18 @@ static NSString * const grenade = @"grenade";
 static NSString * const cannon = @"cannon";
 static NSString * const nuke = @"nuke";
 
+
+static NSString * const fromUserKey = @"fromUser";
+static NSString * const weaponTypeKey = @"weaponTypeKey";
+static NSString * const timeFiredKey = @"timeFired";
+static NSString * const timeOfArrival = @"timeOfArrial";
+static NSString * const hitLocationGeoPoint = @"hitLocationGeoPoint";
+
+
 @interface WeaponController : NSObject
+
+@property (nonatomic, strong) NSArray *arrayOfProjectilesInArea;
+@property (nonatomic, strong) NSArray *arrayOfProjectilesToBeDeleted;
 
 + (WeaponController *) sharedInstance;
 

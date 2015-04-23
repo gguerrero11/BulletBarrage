@@ -62,11 +62,55 @@
     return projectile;
 }
 
-- (void) queryProjectilesWithinMeterRadius:(double)radius {
+- (void)queryForAllProjectilesNearLocation:(CLLocationCoordinate2D)coordinates {
     
+    // Parse query calls.
     
-    
+    PFQuery *queryForProjectiles = [PFQuery queryWithClassName:@"Projectile"];
+    PFGeoPoint *geoPoint = [PFGeoPoint geoPointWithLatitude:coordinates.latitude
+                                                  longitude:coordinates.longitude];
+    [queryForProjectiles whereKey:hitLocationGeoPoint
+                nearGeoPoint:geoPoint
+                 withinMiles:2];
+    [queryForProjectiles findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (error) {
+            NSLog(@"%@", error);
+        }
+        else {
+            NSArray *arrayOfProjectilesFromParse = [[NSMutableArray alloc] initWithArray:objects];
+            
+            NSMutableArray *mutableArrayOfProjectiles = [[NSMutableArray alloc]initWithArray:self.arrayOfProjectilesInArea];
+            
+            // for (Projectile *projectile in arrayOfProjectilesFromParse) {
+            for (int index = 0; index < [WeaponController sharedInstance].arrayOfProjectilesInArea.count; index++) {
+                
+                Projectile *projectileAtIndex = [WeaponController sharedInstance].arrayOfProjectilesInArea[index];
+                
+                for (Projectile *projectile in arrayOfProjectilesFromParse) {
+                    if ([projectile.objectId isEqualToString:projectileAtIndex.objectId]) {
+                        // draw crater method
+                        
+                        NSDictionary* dict = [NSDictionary dictionaryWithObject:
+                                              [NSNumber numberWithInt:index]
+                                                                         forKey:@"index"];
+                        
+                        [[NSNotificationCenter defaultCenter] postNotificationName:@"myevent"
+                                                                            object:self
+                                                                          userInfo:dict];
+                        
+                        
+                        [mutableArrayOfProjectiles addObject:projectile];
+                    }
+                }
+            }
+            [WeaponController sharedInstance].arrayOfProjectilesInArea = mutableArrayOfProjectiles;
+            
+            NSLog(@"Total Projectiles inbound: %ld",(long)[WeaponController sharedInstance].arrayOfProjectilesInArea.count);
+        }
+    }];
 }
+
+
 
 - (Weapon *) getWeapon:(NSString *)weaponString {
     
