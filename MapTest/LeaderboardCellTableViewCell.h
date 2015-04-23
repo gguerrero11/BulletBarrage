@@ -13,6 +13,6 @@
 @property (nonatomic) UILabel *rank;
 @property (nonatomic) UILabel *username;
 @property (nonatomic) UILabel *location;
-@property (nonatomic) UILabel *data;
+@property (nonatomic) UILabel *record;
 
 @end

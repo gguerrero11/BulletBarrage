@@ -9,6 +9,9 @@
 #import "ProfileviewControllerViewController.h"
 #import "ProfileViewDataSource.h"
 #import "BackgroundDrawer.h"
+#import "AvatarTableViewCell.h"
+#import "WeaponsTableViewCell.h"
+#import "ProfileTableViewCell.h"
 
 #import "ObjectAL.h"
 #define BUTTONPRESS_SOUND @"buttonPress2.caf"
@@ -60,6 +63,7 @@
     self.tableView.delegate = self;
     self.tableView.scrollEnabled = NO;
     self.tableView.backgroundColor = [UIColor clearColor];
+    self.selectedIndex = 1;
     
     [self.dataSource registerTableView:self.tableView];
     [self.view addSubview:self.tableView];
@@ -79,7 +83,6 @@
     self.selectedCellHeight = self.view.frame.size.width;
     
     if (indexPath.row == self.selectedIndex) {
-        
         return self.selectedCellHeight;
     }
     
@@ -89,6 +92,7 @@
     self.view.frame.size.width -
     [UIApplication sharedApplication].statusBarFrame.size.height;
     self.unselectedCellHeight = remainingFrameSize / 2;
+    
     return self.unselectedCellHeight + 5;
 }
 
@@ -96,11 +100,12 @@
     // Deselect cell
         [[OALSimpleAudio sharedInstance] playEffect:BUTTONPRESS_SOUND];
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
-    
+    //[tableView cellForRowAtIndexPath:indexPath].clipsToBounds = YES;
     self.selectedIndex = indexPath.row;
     
     // This is where magic happens...
     [self.tableView beginUpdates];
+
     [self.tableView endUpdates];
 }
 

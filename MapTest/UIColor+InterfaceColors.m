@@ -35,5 +35,13 @@
     return  RGBA(245.0, 188.0, 118.0, .25);
 }
 
++ (UIColor *)tableBackgroundColor {
+    return  RGBA(.5, .5, .5, .3);
+}
+
++ (UIColor *)tableBorderColor {
+    return  RGBA(90.0, 195.0, 247.0, .6);
+}
+
 @end
 

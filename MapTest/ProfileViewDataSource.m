@@ -41,31 +41,45 @@ static NSString *profileCellIdentifier = @"profileCell";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    // avatar cell
-    if (indexPath.row == 0) {
-        AvatarTableViewCell *avatarCell = [tableView dequeueReusableCellWithIdentifier:avatarCellIdentifier];
-        avatarCell.backgroundColor = [UIColor clearColor];
-        avatarCell.textLabel.text = @"Avatar Cell";
-        avatarCell.selectionStyle = UITableViewCellSelectionStyleNone;
-        return avatarCell;
-    }
-    // weapon cell
-    if (indexPath.row == 1) {
-        WeaponsTableViewCell *weaponsCell = [tableView dequeueReusableCellWithIdentifier:weaponCellIdentifier];
-        weaponsCell.backgroundColor = [UIColor clearColor];
-        weaponsCell.textLabel.text = @"Weapon Cell";
-        weaponsCell.selectionStyle = UITableViewCellSelectionStyleNone;
-        return weaponsCell;
-    }
     
     // profile cell
-    if (indexPath.row == 2) {
+    if (indexPath.row == 0) {
         ProfileTableViewCell *profileCell = [tableView dequeueReusableCellWithIdentifier:profileCellIdentifier];
+        profileCell.textLabel.font = [UIFont fontWithName:@"Menlo" size:17];
+        profileCell.selectionStyle = UITableViewCellSelectionStyleNone;
+        profileCell.textLabel.textAlignment = NSTextAlignmentCenter;
+        profileCell.textLabel.textColor = [UIColor whiteColor];
         profileCell.backgroundColor = [UIColor clearColor];
         profileCell.textLabel.text = @"Profile Cell";
-        profileCell.selectionStyle = UITableViewCellSelectionStyleNone;
+        profileCell.clipsToBounds = YES;
         return profileCell;
     }
+
+    // avatar cell
+    if (indexPath.row == 1) {
+        AvatarTableViewCell *avatarCell = [tableView dequeueReusableCellWithIdentifier:avatarCellIdentifier];
+        avatarCell.selectionStyle = UITableViewCellSelectionStyleNone;
+        avatarCell.backgroundColor = [UIColor clearColor];
+        avatarCell.textLabel.text = @"";
+        avatarCell.clipsToBounds = YES;
+        return avatarCell;
+    }
+    
+    // weapon cell
+    if (indexPath.row == 2) {
+        WeaponsTableViewCell *weaponsCell = [tableView dequeueReusableCellWithIdentifier:weaponCellIdentifier];
+        weaponsCell.textLabel.font = [UIFont fontWithName:@"Menlo" size:17];
+        weaponsCell.selectionStyle = UITableViewCellSelectionStyleNone;
+        weaponsCell.textLabel.textAlignment = NSTextAlignmentCenter;
+        weaponsCell.textLabel.textColor = [UIColor whiteColor];
+        weaponsCell.backgroundColor = [UIColor clearColor];
+        weaponsCell.textLabel.text = @"Weapon Cell";
+        weaponsCell.clipsToBounds = YES;
+        return weaponsCell;
+    }
+
+    
+
     return false;
 }
 

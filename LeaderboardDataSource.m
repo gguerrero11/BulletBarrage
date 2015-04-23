@@ -39,7 +39,6 @@
     LeaderboardCellTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     NSArray *arrayOfUsers = [[NSArray alloc]initWithArray:[UserController sharedInstance].arrayOfUsers];
-    // NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:distanceKey ascending:NO];
     
     NSSortDescriptor *descriptor;
     switch (self.sortMode)
@@ -65,6 +64,10 @@
     NSArray *sortDescriptors = [NSArray arrayWithObject:descriptor];
     NSArray *arraySorted = [arrayOfUsers sortedArrayUsingDescriptors:sortDescriptors];
     PFUser *user = arraySorted[indexPath.row];
+    cell.rank.text = [NSString stringWithFormat:@"%ld", indexPath.row + 1];
+    cell.rank.textAlignment = NSTextAlignmentCenter;
+    cell.location.text = @"USA";
+    cell.username.text = user[usernameKey];
     
     HealthData *healthDataForUserAtCell;
     for (HealthData *healthData in [HealthDataController sharedInstance].arrayOfHealthData) {
@@ -75,11 +78,11 @@
     
     // Sets cell color to indicate the current user, and its ability to be selected
     if ([user.objectId isEqualToString:[PFUser currentUser].objectId]) {
-//        cell.backgroundColor = [UIColor colorWithRed:.47 green:.65 blue:.935 alpha:1];
-        cell.backgroundColor = [UIColor clearColor];
+        cell.backgroundColor = [UIColor colorWithRed:.47 green:.65 blue:.935 alpha:.3];
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.userInteractionEnabled = NO;
     } else {
+        cell.backgroundColor = [UIColor clearColor];
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.userInteractionEnabled = YES;
     }
@@ -92,19 +95,18 @@
             // Sorting the array by Distance for each User
         case sortByDistance:
             distance = user[distanceKey];
-            cell.textLabel.text = [NSString stringWithFormat:@"%ld %@ %.1f m", indexPath.row + 1, user[usernameKey], [distance doubleValue]];
+            cell.record.text = [NSString stringWithFormat:@"%.1f m", [distance doubleValue]];
             break;
             
             // Sorting the array by Kill/Death for each User
         case sortByKill:
-            cell.textLabel.text = [NSString stringWithFormat:@"%ld %@ %@/%lu", indexPath.row + 1, user[usernameKey],user[killKey],[healthDataForUserAtCell[deathKey]integerValue]];
+            cell.record.text = [NSString stringWithFormat:@"%@/%lu",user[killKey],[healthDataForUserAtCell[deathKey]integerValue]];
             break;
             
             // Sorting the array by Accuracy for each User
         case sortByAccuracy:
-            
             accuracy = user[accuracyKey];
-            cell.textLabel.text = [NSString stringWithFormat:@"%ld %@ %.1f%%", indexPath.row + 1, user[usernameKey], [accuracy doubleValue]];
+            cell.record.text = [NSString stringWithFormat:@"%.1f%%", [accuracy doubleValue]];
             break;
     }
     

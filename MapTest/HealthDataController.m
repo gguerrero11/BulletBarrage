@@ -44,10 +44,14 @@
 + (void) retrieveArrayOfHealthForUsers {
     
     PFQuery *healthQuery = [HealthData query];
-
+                            //[healthQuery includeKey:@"user"]; // including the key pulls the object as well!
     [healthQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (error) return;
         [HealthDataController sharedInstance].arrayOfHealthData = objects;
+        
+//        HealthData[@"user"][@"username"];
+//        HealthData[@"user.username"];
+        
         [[NSNotificationCenter defaultCenter] postNotificationName:@"healthQueryDone" object:nil];
     }];
 }

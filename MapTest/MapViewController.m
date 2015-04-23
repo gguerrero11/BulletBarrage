@@ -668,18 +668,18 @@ static bool kAnimate = true;
     // create Cannon stand
     SCNScene *cannonStand = [SCNScene sceneNamed:@"art.scnassets/geometry/FlakStand.dae"
                                     inDirectory:nil
-                                        options:@{SCNSceneSourceConvertToYUpKey : @YES,
+                                        options:@{
                                                   SCNSceneSourceAnimationImportPolicyKey :SCNSceneSourceAnimationImportPolicyPlayRepeatedly}];
     // creates cannon turn table
     SCNScene *cannonTurnTableScene = [SCNScene sceneNamed:@"art.scnassets/geometry/FlakTurnTable.dae"
                                      inDirectory:nil
-                                         options:@{SCNSceneSourceConvertToYUpKey : @YES,
+                                         options:@{
                                                    SCNSceneSourceAnimationImportPolicyKey :SCNSceneSourceAnimationImportPolicyPlayRepeatedly}];
     
     // create Cannon barrel
     SCNScene *cannonBarrelScene = [SCNScene sceneNamed:@"art.scnassets/geometry/FlakBarrel.dae"
                                     inDirectory:nil
-                                        options:@{SCNSceneSourceConvertToYUpKey : @YES,
+                                        options:@{
                                                   SCNSceneSourceAnimationImportPolicyKey :SCNSceneSourceAnimationImportPolicyPlayRepeatedly}];
     
     SCNNode *placementNode = cannonStand.rootNode;
@@ -919,7 +919,7 @@ static bool kAnimate = true;
     [self drawTrajectoryLineToLocation:hitLocation];
     
     Projectile *projectile = [[WeaponController sharedInstance] projectileWithHitLocation:hitLocation flightTime:projectileTravelTime withWeapon:[UserController sharedInstance].currentWeapon.weaponString];
-    [WeaponController saveProjectileToParse:projectile];
+    //[WeaponController saveProjectileToParse:projectile];
     
     }
 

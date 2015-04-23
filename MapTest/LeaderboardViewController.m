@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Gabe Guerrero. All rights reserved.
 //
 
+
 #import "LeaderboardViewController.h"
 #import "LeaderboardDataSource.h"
 #import "LeaderBoardController.h"
@@ -13,13 +14,14 @@
 #import <Parse/Parse.h>
 #import "UserController.h"
 #import "BackgroundDrawer.h"
+#import "UIColor+InterfaceColors.h"
 
 #import "ObjectAL.h"
 #define BUTTONPRESS_SOUND @"buttonPress2.caf"
 #define METALCLANK_SOUND @"metalClank.caf"
 
 static double padding = 17;
-static double margin = 25;
+static double margin = 10;
 static double tableBoxPadding = 0;
 
 @interface LeaderboardViewController () <UITableViewDelegate,UITabBarControllerDelegate>
@@ -93,8 +95,8 @@ static double tableBoxPadding = 0;
     [super viewDidLoad];
     self.title = @"";
     
-    self.tableBackgroundColor = [UIColor colorWithRed:.5 green:.5 blue:.5 alpha:.3];
-    self.tableBorderColor = [UIColor colorWithRed:90.0/255.0 green:195.0/255.0 blue:247.0/255.0 alpha:.6];
+    self.tableBackgroundColor = [UIColor tableBackgroundColor];
+    self.tableBorderColor = [UIColor tableBorderColor];
 
     self.tabBarController.tabBar.alpha = 1;
     
@@ -107,7 +109,7 @@ static double tableBoxPadding = 0;
     self.heightTabBar = self.tabBarController.tabBar.frame.size.height;
 
     // set up segmented control categories
-    NSArray *array = @[@"Distance", @"K/D", @"Accuracy"];
+    NSArray *array = @[@"DISTANCE", @"KILL/DEATH", @"ACCURACY"];
     
     // initialize datasource+
     self.dataSource = [LeaderboardDataSource new];
@@ -115,8 +117,7 @@ static double tableBoxPadding = 0;
     double widthOfSegControl = 30;
     
     // set up table view
-//    self.yOriginOfTableView = self.segControl.frame.origin.y + self.segControl.frame.size.height + 7;
-    self.yOriginOfTableView = self.heightOfStatusBarAndNavBar + padding * 4;
+    self.yOriginOfTableView = self.heightOfStatusBarAndNavBar + padding * 3.5;
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(margin, self.yOriginOfTableView,
                                                                   self.view.frame.size.width - margin * 2 - widthOfSegControl,
@@ -124,28 +125,36 @@ static double tableBoxPadding = 0;
     self.tableView.dataSource = self.dataSource;
     self.tableView.delegate = self;
     self.tableView.backgroundColor = [UIColor clearColor];
+
     [self drawTableBorder];
     [self.dataSource registerTableView:self.tableView];
     [self.view addSubview:self.tableView];
     
     [self createHeaderBarForTable];
     
-    double xOriginOfSegControl = margin + self.tableView.frame.size.width;
+    double xOriginOfSegControl = margin + self.tableView.frame.size.width + widthOfSegControl;
     
     // create segment control
     self.segControl = [[UISegmentedControl alloc]initWithItems:array];
-        self.segControl.layer.anchorPoint = CGPointMake(0.0f, 0.0f);
-    self.segControl.frame = CGRectMake(xOriginOfSegControl + margin*1.5, self.tableView.frame.origin.y, self.tableView.frame.size.height, widthOfSegControl);
+    self.segControl.layer.anchorPoint = CGPointMake(0.0f, 0.0f);
+    self.segControl.frame = CGRectMake(xOriginOfSegControl - 1, self.tableView.frame.origin.y,
+                                       self.tableView.frame.size.height, widthOfSegControl);
     self.segControl.selectedSegmentIndex = 0;
     self.segControl.backgroundColor = self.tableBackgroundColor;
     self.segControl.tintColor = self.tableBorderColor;
-
     self.segControl.transform = CGAffineTransformMakeRotation(M_PI / 2.0);
-
-    
+    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                [UIFont fontWithName:@"Menlo" size:10], NSFontAttributeName,
+                                [UIColor whiteColor], NSForegroundColorAttributeName,
+                                nil];
+    NSDictionary *highlightedAttributes = [NSDictionary dictionaryWithObject:[UIColor greenColor] forKey:NSForegroundColorAttributeName];
+    NSDictionary *selectedAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:NSForegroundColorAttributeName];
+    [self.segControl setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    [self.segControl setTitleTextAttributes:highlightedAttributes forState:UIControlStateHighlighted];
+    [self.segControl setTitleTextAttributes:selectedAttributes forState:UIControlStateSelected];
     [self.segControl addTarget:self action:@selector(updateSort:) forControlEvents:UIControlEventValueChanged];
     [self.view addSubview:self.segControl];
-
+    
 }
 
 - (void) createHeaderBarForTable {
@@ -155,14 +164,14 @@ static double tableBoxPadding = 0;
     headerBar.backgroundColor = self.tableBorderColor;
 
     [self insertLabelAtXOrigin:.02 text:@"RANK" onView:headerBar];
-    [self insertLabelAtXOrigin:.2 text:@"NAME" onView:headerBar];
-    [self insertLabelAtXOrigin:.45 text:@"COUNTRY" onView:headerBar];
+    [self insertLabelAtXOrigin:.12 text:@"COUNTRY" onView:headerBar];
+    [self insertLabelAtXOrigin:.4 text:@"NAME" onView:headerBar];
     [self insertLabelAtXOrigin:.85 text:@"RECORD" onView:headerBar];
 }
 
 - (void) insertLabelAtXOrigin:(double)xOrigin text:(NSString *)text onView:(UIView *)view{
     
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(xOrigin * view.frame.size.width, -30, 100, view.frame.size.height)];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(xOrigin * view.frame.size.width, - 20, 100, view.frame.size.height)];
     label.text = text;
     label.font = [UIFont fontWithName:@"Menlo" size:10];
     label.textColor = [UIColor whiteColor];
@@ -182,6 +191,13 @@ static double tableBoxPadding = 0;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 40;
+}
+
+#pragma mark table view delegates
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+
+    //[tableView cellForRowAtIndexPath:indexPath].backgroundColor = [UIColor redColor];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 /*

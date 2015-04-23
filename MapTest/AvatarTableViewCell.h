@@ -10,4 +10,18 @@
 
 @interface AvatarTableViewCell : UITableViewCell
 
+@property (nonatomic) UIView *containerView;
+
+@property (nonatomic) UIImageView *iconImageView;
+@property (nonatomic) UIImageView *weaponImageView;
+@property (nonatomic) UILabel *nameLabel;
+@property (nonatomic) UILabel *subtitleLabel;
+@property (nonatomic) UILabel *descriptionLabel;
+
+
+@property (nonatomic) UILabel *damageLabe;
+@property (nonatomic) UILabel *velocityLabel;
+@property (nonatomic) UILabel *blastRadiusLabel;
+@property (nonatomic) UILabel *rateOfFireLabel;
+
 @end

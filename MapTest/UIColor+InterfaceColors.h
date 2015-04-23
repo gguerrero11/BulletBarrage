@@ -22,4 +22,8 @@
 
 + (UIColor *)healthBarColorTransparent;
 
++ (UIColor *)tableBackgroundColor;
+
++ (UIColor *)tableBorderColor;
+
 @end
