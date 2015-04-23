@@ -20,11 +20,13 @@
 
 static double padding = 17;
 static double margin = 25;
-static double tableBoxPadding = 8;
+static double tableBoxPadding = 0;
 
 @interface LeaderboardViewController () <UITableViewDelegate,UITabBarControllerDelegate>
 
 @property (nonatomic,strong) UITableView *tableView;
+@property (nonatomic) UIView *tableBorder;
+
 @property (nonatomic,strong) LeaderboardDataSource *dataSource;
 @property (nonatomic) double heightOfStatusBarAndNavBar;
 @property (nonatomic) double heightTabBar;
@@ -76,15 +78,15 @@ static double tableBoxPadding = 8;
 }
 
 - (void)drawTableBorder {
-    UIView *tableBorder = [[UIView alloc]initWithFrame:CGRectMake(self.tableView.frame.origin.x - tableBoxPadding,
+    self.tableBorder = [[UIView alloc]initWithFrame:CGRectMake(self.tableView.frame.origin.x - tableBoxPadding,
                                                               self.tableView.frame.origin.y - tableBoxPadding,
                                                               self.tableView.frame.size.width + tableBoxPadding * 2,
                                                               self.tableView.frame.size.height + tableBoxPadding * 2)];
-    tableBorder.backgroundColor = self.tableBackgroundColor;
-    tableBorder.layer.borderWidth = 1;
-    tableBorder.layer.borderColor = self.tableBorderColor.CGColor;
+    self.tableBorder.backgroundColor = self.tableBackgroundColor;
+    self.tableBorder.layer.borderWidth = 1;
+    self.tableBorder.layer.borderColor = self.tableBorderColor.CGColor;
 
-    [self.view addSubview:tableBorder];
+    [self.view addSubview:self.tableBorder];
 }
 
 - (void)viewDidLoad {
@@ -110,20 +112,14 @@ static double tableBoxPadding = 8;
     // initialize datasource+
     self.dataSource = [LeaderboardDataSource new];
     
-    // create segment control
-    self.segControl = [[UISegmentedControl alloc]initWithItems:array];
-    self.segControl.frame = CGRectMake(padding, self.heightOfStatusBarAndNavBar + padding * 1.5, self.view.frame.size.width - padding * 2, 35);
-    self.segControl.selectedSegmentIndex = 0;
-    self.segControl.backgroundColor = self.tableBackgroundColor;
-    self.segControl.tintColor = self.tableBorderColor;
-    [self.segControl addTarget:self action:@selector(updateSort:) forControlEvents:UIControlEventValueChanged];
-    [self.view addSubview:self.segControl];
+    double widthOfSegControl = 30;
     
     // set up table view
-    self.yOriginOfTableView = self.segControl.frame.origin.y + self.segControl.frame.size.height + 7;
+//    self.yOriginOfTableView = self.segControl.frame.origin.y + self.segControl.frame.size.height + 7;
+    self.yOriginOfTableView = self.heightOfStatusBarAndNavBar + padding * 4;
     
     self.tableView = [[UITableView alloc]initWithFrame:CGRectMake(margin, self.yOriginOfTableView,
-                                                                  self.view.frame.size.width - margin * 2,
+                                                                  self.view.frame.size.width - margin * 2 - widthOfSegControl,
                                                                   self.view.frame.size.height - (self.heightOfStatusBarAndNavBar + self.heightTabBar + self.yOriginOfTableView))];
     self.tableView.dataSource = self.dataSource;
     self.tableView.delegate = self;
@@ -131,8 +127,46 @@ static double tableBoxPadding = 8;
     [self drawTableBorder];
     [self.dataSource registerTableView:self.tableView];
     [self.view addSubview:self.tableView];
+    
+    [self createHeaderBarForTable];
+    
+    double xOriginOfSegControl = margin + self.tableView.frame.size.width;
+    
+    // create segment control
+    self.segControl = [[UISegmentedControl alloc]initWithItems:array];
+        self.segControl.layer.anchorPoint = CGPointMake(0.0f, 0.0f);
+    self.segControl.frame = CGRectMake(xOriginOfSegControl + margin*1.5, self.tableView.frame.origin.y, self.tableView.frame.size.height, widthOfSegControl);
+    self.segControl.selectedSegmentIndex = 0;
+    self.segControl.backgroundColor = self.tableBackgroundColor;
+    self.segControl.tintColor = self.tableBorderColor;
+
+    self.segControl.transform = CGAffineTransformMakeRotation(M_PI / 2.0);
 
     
+    [self.segControl addTarget:self action:@selector(updateSort:) forControlEvents:UIControlEventValueChanged];
+    [self.view addSubview:self.segControl];
+
+}
+
+- (void) createHeaderBarForTable {
+    //create header for table indicating rank/country/record
+    UIView *headerBar = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, -20)];
+    [self.tableBorder addSubview:headerBar];
+    headerBar.backgroundColor = self.tableBorderColor;
+
+    [self insertLabelAtXOrigin:.02 text:@"RANK" onView:headerBar];
+    [self insertLabelAtXOrigin:.2 text:@"NAME" onView:headerBar];
+    [self insertLabelAtXOrigin:.45 text:@"COUNTRY" onView:headerBar];
+    [self insertLabelAtXOrigin:.85 text:@"RECORD" onView:headerBar];
+}
+
+- (void) insertLabelAtXOrigin:(double)xOrigin text:(NSString *)text onView:(UIView *)view{
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(xOrigin * view.frame.size.width, -30, 100, view.frame.size.height)];
+    label.text = text;
+    label.font = [UIFont fontWithName:@"Menlo" size:10];
+    label.textColor = [UIColor whiteColor];
+    [view addSubview:label];
 }
 
 - (void)updateSort:(id)sender {

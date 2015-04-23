@@ -25,8 +25,8 @@ static NSString * const hitLocationGeoPoint = @"hitLocationGeoPoint";
 
 @interface WeaponController : NSObject
 
-@property (nonatomic, strong) NSArray *arrayOfProjectilesInArea;
-@property (nonatomic, strong) NSArray *arrayOfProjectilesToBeDeleted;
+@property (nonatomic, strong) NSMutableArray *arrayOfProjectilesInArea;
+@property (nonatomic, strong) NSMutableArray *arrayOfProjectilesToBeDeleted;
 
 + (WeaponController *) sharedInstance;
 
@@ -35,5 +35,7 @@ static NSString * const hitLocationGeoPoint = @"hitLocationGeoPoint";
 - (Projectile *) projectileWithHitLocation:(CLLocation *)hitLocation flightTime:(double)flightTime withWeapon:(NSString *)weaponString;
 
 + (void) saveProjectileToParse:(Projectile *)projectile;
+
+- (void)queryForAllProjectilesNearLocation:(CLLocationCoordinate2D)coordinates;
 
 @end

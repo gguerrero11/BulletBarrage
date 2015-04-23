@@ -250,6 +250,7 @@ static bool kAnimate = true;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(registerHDataNotifAndCreateTargets) name:@"queryDone" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(removeTimer) name:@"timerDone" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDeadAlert) name:@"userDead" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(createInboundProjectiles) name:@"createInBoundProjectiles" object:nil];
 
 }
 
@@ -887,6 +888,7 @@ static bool kAnimate = true;
 
 - (void) fireButtonPressed:(id)sender {
     
+    
     // "reloading the cannon"
     [self disableFireButton];
     [self performSelector:@selector(enableFireButton) withObject:nil afterDelay:4];
@@ -905,6 +907,9 @@ static bool kAnimate = true;
                                                         longitude:[self calculateHitLocation].longitude];
     double projectileTravelTime = [self calculateProjectileTravelTime];
     [self performSelector:@selector(hitCheckerAtLocation:) withObject:hitLocation afterDelay:projectileTravelTime];
+    
+    //queries all possible inbound projectiles
+    //[[WeaponController sharedInstance] queryForAllProjectilesNearLocation:hitLocation.coordinate];
     
     // draw projectile marker
     self.drawProjectile = [DrawProjectile new];
@@ -1116,8 +1121,23 @@ static bool kAnimate = true;
 
 - (void) createInboundProjectiles {
     
-    
-    
+    for (Projectile *projectile in [WeaponController sharedInstance].arrayOfProjectilesInArea) {
+        
+        PFGeoPoint *geoPoint = projectile.hitLocationGeoPoint;
+        CLLocationCoordinate2D hitCoordinate = CLLocationCoordinate2DMake(geoPoint.latitude, geoPoint.longitude);
+
+        // delayed time of crater animation according to the date of arrival for the projectile
+        NSTimeInterval timeInterval = [projectile.timeOfArrival timeIntervalSinceNow];
+        double delayInSeconds = timeInterval;
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+            [self createGMSOverlayAtCoordinate:hitCoordinate type:craterBigSquare disappear:NO];
+        });
+        
+        // moves the projectile (now created) to be deleted (when the user logs out/puts app into background)
+        [[WeaponController sharedInstance].arrayOfProjectilesToBeDeleted addObject:projectile];
+        [[WeaponController sharedInstance].arrayOfProjectilesInArea removeObject:projectile];
+    }
 }
 
 
