@@ -11,6 +11,6 @@
 
 @interface DrawProjectile : NSObject
 
-- (void)drawProjectileOnView:(GMSMapView *)passedView atCoordinate:(CLLocationCoordinate2D)coordinate fromCoordinate:(CLLocationCoordinate2D)fromCoordinate animationDuration:(double)animationDuration;
+- (void)drawProjectileOnView:(GMSMapView *)passedView atCoordinate:(CLLocationCoordinate2D)toCoordinate fromCoordinate:(CLLocationCoordinate2D)fromCoordinate animationDuration:(double)animationDuration withIcon:(UIImage *)icon;
 
 @end

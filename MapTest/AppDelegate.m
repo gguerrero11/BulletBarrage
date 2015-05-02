@@ -50,23 +50,19 @@
     // [Optional] Track statistics around application opens.
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
+    MapViewController *mapViewController = [MapViewController new];
+    mapViewController.tabBarItem.title = @"Select Target";
     
-//    UIViewController *mapView = [UIViewController new];
-    MapViewController *mapView = [MapViewController new];
-    mapView.tabBarItem.title = @"Select Target";
-//    mapView.tabBarItem.image = [UIImage imageNamed:@"Mortar Filled-50"];
-    
-    UINavigationController *navBarMapView = [[UINavigationController alloc]initWithRootViewController:mapView];
+    UINavigationController *navBarMapView = [[UINavigationController alloc]initWithRootViewController:mapViewController];
     navBarMapView.navigationBarHidden = YES;
     
     LeaderboardViewController *leaderboardVC = [LeaderboardViewController new];
-//    leaderboardVC.tabBarItem.image = [UIImage imageNamed:@"Medal-50"];
+
     
     UINavigationController *navBarLeaderboard = [[UINavigationController alloc]initWithRootViewController:leaderboardVC];
         navBarLeaderboard.navigationBarHidden = YES;
     
     ProfileviewControllerViewController *profileVC = [ProfileviewControllerViewController new];
-  //  profileVC.tabBarItem.image = [UIImage imageNamed:@"Military Backpack Radio Filled-50"];
     
     UINavigationController *navBarProfileVC = [[UINavigationController alloc]initWithRootViewController:profileVC];
         navBarProfileVC.navigationBarHidden = YES;

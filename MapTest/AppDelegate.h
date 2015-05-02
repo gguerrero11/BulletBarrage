@@ -15,9 +15,10 @@
  
  - Intial start up in the middle of the ocean
  - switching weapons during inflight projectiles
- - leaderboard custom cell
  - increment damage (switch to damage %)
  - vertical lines (-3) going past the vertical limits
+ - projectiles uploaded to parse
+ 
  
  */
 

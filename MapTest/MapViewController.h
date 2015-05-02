@@ -15,10 +15,6 @@
 
 @interface MapViewController : UIViewController <MKMapViewDelegate, CLLocationManagerDelegate, GMSMapViewDelegate>
 
-//@property (weak, nonatomic) IBOutlet MKMapView *mapView;
-
-@property (nonatomic, strong) MKMapView *mapView;
-
 @property (nonatomic, strong) CLLocationManager *locationManager;
 
 + (double) convertToDegrees:(double)pitch;

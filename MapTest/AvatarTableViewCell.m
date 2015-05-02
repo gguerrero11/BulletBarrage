@@ -8,7 +8,7 @@
 
 #import "AvatarTableViewCell.h"
 #import "UIColor+InterfaceColors.h"
-
+#import "WeaponController.h"
 
 static double const padding = 5;
 
@@ -41,7 +41,7 @@ static double const padding = 5;
         double yOriginNameLabel = iconImageContainer.frame.origin.y;
         double nameLabelHeight = iconImageContainer.frame.size.height * .5;
         double nameLabelWidth = self.contentView.frame.size.width - xOriginNameLabel;
-        self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(xOriginNameLabel + padding, yOriginNameLabel, nameLabelWidth, nameLabelHeight)];
+        self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(xOriginNameLabel + padding, yOriginNameLabel + 5, nameLabelWidth, nameLabelHeight)];
         self.nameLabel.text = @"FLAK 88";
         self.nameLabel.textColor = [UIColor whiteColor];
         self.nameLabel.font = [UIFont fontWithName:@"Helvetica-bold" size:40];
@@ -78,17 +78,61 @@ static double const padding = 5;
         [self.descriptionLabel sizeToFit];
         [self.contentView addSubview:self.descriptionLabel];
         
+        // setup divider lines
+        double yOriginDividerLine = yOriginDescriptionLabel + self.descriptionLabel.frame.size.height;
+        double widthOfDividerLine = self.frame.size.width * .75;
+        UIView *dividerLineTop = [[UIView alloc]initWithFrame:CGRectMake(xOriginIconImageView,
+                                                                      yOriginDividerLine + padding * 2, widthOfDividerLine, 1.5)];
+        dividerLineTop.backgroundColor = [UIColor whiteColor];
+        [self.contentView addSubview:dividerLineTop];
+        dividerLineTop.alpha = .45;
+
         
-        // setup stats
+        double yOriginDividerLineBottom = yOriginDividerLine * 2;
+        UIView *dividerLineBottom = [[UIView alloc]initWithFrame:CGRectMake(xOriginIconImageView,
+                                                                      yOriginDividerLineBottom, widthOfDividerLine, 1.5)];
+        dividerLineBottom.backgroundColor = [UIColor whiteColor];
+        [self.contentView addSubview:dividerLineBottom];
+        dividerLineBottom.alpha = .45;
         
+        // setup damage label
+        double heightOfDamageLabel = 40;
+        double yOriginDamageLabel = (yOriginDividerLineBottom - yOriginDividerLine / 2) -(heightOfDamageLabel / 2);
+
+        self.damageLabe = [[UILabel alloc]initWithFrame:CGRectMake(xOriginIconImageView, yOriginDamageLabel, 50, heightOfDamageLabel)];
+        self.damageLabe.font = [UIFont fontWithName:@"Helvetica-bold" size:heightOfDamageLabel];
+        self.damageLabe.textColor = [UIColor whiteColor];
+        [self.contentView addSubview:self.damageLabe];
+        self.damageLabe.text = @"30";
         
+        UILabel *damageTitleLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, heightOfDamageLabel + padding / 3, 100, 10)];;
+        damageTitleLabel.font = [UIFont fontWithName:@"Helvetica-bold" size:10];
+        damageTitleLabel.textAlignment = NSTextAlignmentLeft;
+        damageTitleLabel.textColor = [UIColor whiteColor];
+        [self.damageLabe addSubview:damageTitleLabel];
+        damageTitleLabel.text = @"DAMAGE";
         
+        // set up stats
+        UILabel *statTitlesLabel = [[UILabel alloc]initWithFrame:CGRectMake(dividerLineTop.frame.size.width * .75, dividerLineTop.frame.origin.y + 5, -120, 130)];
+        statTitlesLabel.text = @"MUZZLE VELOCITY:\nBLAST RADIUS:\nRATE OF FIRE:\nTOTAL SHOTS:";
+        statTitlesLabel.font = [UIFont fontWithName:@"Helvetica-bold" size:10];
+        statTitlesLabel.textAlignment = NSTextAlignmentRight;
+        statTitlesLabel.textColor = [UIColor whiteColor];
+        [self.contentView addSubview:statTitlesLabel];
+        statTitlesLabel.numberOfLines = 0;
         
-        
+                // set up BS stats
+        UILabel *stats = [[UILabel alloc]initWithFrame:CGRectMake(dividerLineTop.frame.size.width * .75, dividerLineTop.frame.origin.y + 5, 120, 130)];
+        stats.text = @" 860 m/s \n 100m \n 15-20 RPM \n 32";
+        stats.font = [UIFont fontWithName:@"Helvetica-bold" size:10];
+        stats.textAlignment = NSTextAlignmentLeft;
+        stats.textColor = [UIColor whiteColor];
+        [self.contentView addSubview:stats];
+        stats.numberOfLines = 0;
+
     }
     return self;
 }
-
 
 - (void) insertLabel:(UILabel *)label atXOrigin:(double)xOrigin width:(double)width alignmentRight:(BOOL)alignmentRight {
     
@@ -98,7 +142,6 @@ static double const padding = 5;
     if (alignmentRight == YES)label.textAlignment = NSTextAlignmentRight;
     [self.contentView addSubview:label];
 }
-
 
 
 - (void)awakeFromNib {

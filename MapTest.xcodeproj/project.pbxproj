@@ -104,6 +104,7 @@
 		49E6F3AA1AE7519B007B4886 /* BallisticCalculator.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F3A91AE7519B007B4886 /* BallisticCalculator.m */; };
 		49E6F3AD1AE81A23007B4886 /* UIColor+InterfaceColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F3AC1AE81A23007B4886 /* UIColor+InterfaceColors.m */; };
 		49E6F3B11AE84F6C007B4886 /* Projectile.m in Sources */ = {isa = PBXBuildFile; fileRef = 49E6F3B01AE84F6C007B4886 /* Projectile.m */; };
+		49FCC5381AE9EB71002C5B97 /* grenadeThrow.caf in Resources */ = {isa = PBXBuildFile; fileRef = 49FCC5371AE9EB71002C5B97 /* grenadeThrow.caf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -285,6 +286,7 @@
 		49E6F3AC1AE81A23007B4886 /* UIColor+InterfaceColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+InterfaceColors.m"; sourceTree = "<group>"; };
 		49E6F3AF1AE84F6C007B4886 /* Projectile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Projectile.h; sourceTree = "<group>"; };
 		49E6F3B01AE84F6C007B4886 /* Projectile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Projectile.m; sourceTree = "<group>"; };
+		49FCC5371AE9EB71002C5B97 /* grenadeThrow.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = grenadeThrow.caf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -524,12 +526,12 @@
 		49C3A5DF1ADDA829007C8309 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				49E6F31E1AE550D3007B4886 /* ObjectAL */,
 				49B9DBC51ACDD519003EA46E /* Main.storyboard */,
+				49E6F3951AE6DC60007B4886 /* gameModels */,
+				49E6F31E1AE550D3007B4886 /* ObjectAL */,
 				49DF85121ADEEB9100080987 /* Sounds */,
 				49B9DBC81ACDD519003EA46E /* Images.xcassets */,
 				49B9DBCA1ACDD519003EA46E /* LaunchScreen.xib */,
-				49E6F3951AE6DC60007B4886 /* gameModels */,
 				49E6F3A51AE7384A007B4886 /* art.scnassets */,
 			);
 			name = Resources;
@@ -538,6 +540,7 @@
 		49DF85121ADEEB9100080987 /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
+				49FCC5371AE9EB71002C5B97 /* grenadeThrow.caf */,
 				49E6F3851AE565CF007B4886 /* buttonPress2.caf */,
 				49E6F37F1AE56213007B4886 /* metalClank.caf */,
 				49E6F3801AE56213007B4886 /* buttonPress.caf */,
@@ -765,6 +768,7 @@
 				49B9DBC91ACDD519003EA46E /* Images.xcassets in Resources */,
 				49C3A5D11ADC35D6007C8309 /* cannon.caf in Resources */,
 				49C3A5D41ADC3DC1007C8309 /* bombExplosion.caf in Resources */,
+				49FCC5381AE9EB71002C5B97 /* grenadeThrow.caf in Resources */,
 				49835E191AD39CE40058917B /* GoogleMaps.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

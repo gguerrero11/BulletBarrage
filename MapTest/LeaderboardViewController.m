@@ -60,6 +60,8 @@ static double tableBoxPadding = 0;
     [self.bgDrawer continueDrawing];
     [self.bgDrawer enterAnimation];
     
+    [UserController queryUsers];
+    
     [[OALSimpleAudio sharedInstance] playEffect:METALCLANK_SOUND];
     [[OALSimpleAudio sharedInstance] playEffect:BUTTONPRESS_SOUND];
 

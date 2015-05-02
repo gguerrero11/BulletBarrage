@@ -114,6 +114,8 @@
         weapon.damage = 30;
         weapon.radiusOfDamage = 10;
         weapon.sizeOfCrater = 8;
+        weapon.soundEffect = @"grenadeThrow.caf";
+                weapon.weaponIcon = [UIImage imageNamed:@"grenade"];
     }
     
     if ([weaponString isEqualToString:cannon]) {
@@ -121,6 +123,12 @@
         weapon.damage = 50;
         weapon.radiusOfDamage = 100;
         weapon.sizeOfCrater = 150;
+        weapon.weaponIcon = [UIImage imageNamed:cannon];
+        weapon.weaponImage = [UIImage imageNamed:@"Flak88Profile"];
+        weapon.weaponName = @"FLAK 88";
+        weapon.weaponType = @"CANNON";
+        weapon.soundEffect = @"cannon.caf";
+        weapon.weaponIcon = [UIImage imageNamed:@"bullet2x"];
     }
     
     if ([weaponString isEqualToString:nuke]) {
@@ -128,6 +136,8 @@
         weapon.damage = 500;
         weapon.radiusOfDamage = 2000;
         weapon.sizeOfCrater = 2000;
+        weapon.soundEffect = @"cannon.caf";
+        weapon.weaponIcon = [UIImage imageNamed:@"bullet2x"];
     }
     return  weapon;
 }

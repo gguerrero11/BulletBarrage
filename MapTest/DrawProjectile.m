@@ -55,7 +55,7 @@
 @implementation DrawProjectile
 
 // set up background image
-- (void)drawProjectileOnView:(GMSMapView *)passedView atCoordinate:(CLLocationCoordinate2D)toCoordinate fromCoordinate:(CLLocationCoordinate2D)fromCoordinate animationDuration:(double)animationDuration {
+- (void)drawProjectileOnView:(GMSMapView *)passedView atCoordinate:(CLLocationCoordinate2D)toCoordinate fromCoordinate:(CLLocationCoordinate2D)fromCoordinate animationDuration:(double)animationDuration withIcon:(UIImage *)icon {
     
     self.view = passedView;
     self.animationDuration = animationDuration;
@@ -76,7 +76,7 @@
     self.heading = GMSGeometryHeading(self.fromCoordinate, self.toCoordinate);
 
     marker = [GMSMarker markerWithPosition:[self.coords coordinateAtIndex:0]];
-    marker.icon = [UIImage imageNamed:@"bullet2x"];
+    marker.icon = icon;
     marker.map = self.view;
     marker.flat = YES;
     marker.layer.opacity = 1;

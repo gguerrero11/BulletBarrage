@@ -50,7 +50,7 @@ static NSString *profileCellIdentifier = @"profileCell";
         profileCell.textLabel.textAlignment = NSTextAlignmentCenter;
         profileCell.textLabel.textColor = [UIColor whiteColor];
         profileCell.backgroundColor = [UIColor clearColor];
-        profileCell.textLabel.text = @"Profile Cell";
+        profileCell.textLabel.text = @"";
         profileCell.clipsToBounds = YES;
         return profileCell;
     }
@@ -73,7 +73,7 @@ static NSString *profileCellIdentifier = @"profileCell";
         weaponsCell.textLabel.textAlignment = NSTextAlignmentCenter;
         weaponsCell.textLabel.textColor = [UIColor whiteColor];
         weaponsCell.backgroundColor = [UIColor clearColor];
-        weaponsCell.textLabel.text = @"Weapon Cell";
+        weaponsCell.textLabel.text = @"";
         weaponsCell.clipsToBounds = YES;
         return weaponsCell;
     }

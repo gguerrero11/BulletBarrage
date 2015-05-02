@@ -10,4 +10,10 @@
 
 @interface ProfileTableViewCell : UITableViewCell
 
+@property (nonatomic) UIImageView *iconImageView;
+@property (nonatomic) UIImageView *weaponImageView;
+@property (nonatomic) UILabel *nameLabel;
+@property (nonatomic) UILabel *subtitleLabel;
+@property (nonatomic) UILabel *descriptionLabel;
+
 @end
