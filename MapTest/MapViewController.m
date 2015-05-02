@@ -1197,21 +1197,23 @@ static bool kAnimate = true;
 }
 
 - (BOOL) mapView:(GMSMarker *)mapView didTapMarker:(GMSMarker *)marker {
-    
-    NSLog(@"did tap");
-    
+    self.mapView.selectedMarker = marker;
     return YES;
-    
 }
 
-//- (UIView *)mapView:(GMSMapView *)mapView markerInfoWindow:(GMSMarker *)marker {
-//    
-//    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 40,40)];
-//    view.backgroundColor = [UIColor redColor];
-//    
-//    marker.title = @"title";
-//    return view;
-//}
+- (UIView *)mapView:(GMSMapView *)mapView markerInfoWindow:(GMSMarker *)marker {
+    
+    marker.infoWindowAnchor = CGPointMake(2, 0);
+    
+    // View's origin cannot be changed, only the with the marker.infoWindowAnchor;
+    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0,0,100,150)];
+    view.backgroundColor = [UIColor redColor];
+    
+    
+
+
+    return view;
+}
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 10) return;

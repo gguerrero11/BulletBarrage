@@ -13,7 +13,7 @@
 #import <GoogleMaps/GoogleMaps.h>
 #import "Projectile.h"
 
-@interface MapViewController : UIViewController <MKMapViewDelegate, CLLocationManagerDelegate, GMSMapViewDelegate>
+@interface MapViewController : UIViewController <CLLocationManagerDelegate, GMSMapViewDelegate>
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 

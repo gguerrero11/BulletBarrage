@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4927CA261AF54DAA00DF44FF /* MarkerInfoWindowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4927CA251AF54DAA00DF44FF /* MarkerInfoWindowView.m */; };
 		493583DF1AD5B173007A46EC /* WeaponController.m in Sources */ = {isa = PBXBuildFile; fileRef = 493583DE1AD5B173007A46EC /* WeaponController.m */; };
 		4937A1D81AE0236300B8F771 /* InterfaceLineDrawer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4937A1D71AE0236300B8F771 /* InterfaceLineDrawer.m */; };
 		49603D641AD0B84700AB3E50 /* WeaponsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 49603D631AD0B84700AB3E50 /* WeaponsTableViewCell.m */; };
@@ -45,7 +46,6 @@
 		49835E271AD39D640058917B /* libicucore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 49835E261AD39D640058917B /* libicucore.dylib */; };
 		49835E291AD39D760058917B /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49835E281AD39D760058917B /* OpenGLES.framework */; };
 		4996BA671AD82B15002D5663 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 4996BA661AD82B15002D5663 /* User.m */; };
-		4996BA6D1AD82F68002D5663 /* GMSMarkerWithUser.m in Sources */ = {isa = PBXBuildFile; fileRef = 4996BA6C1AD82F68002D5663 /* GMSMarkerWithUser.m */; };
 		4996BA701AD88F05002D5663 /* HitChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 4996BA6F1AD88F05002D5663 /* HitChecker.m */; };
 		4996BA731AD8CF34002D5663 /* CountdownTimerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4996BA721AD8CF34002D5663 /* CountdownTimerViewController.m */; };
 		49B9DBBE1ACDD519003EA46E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 49B9DBBD1ACDD519003EA46E /* main.m */; };
@@ -118,6 +118,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4927CA241AF54DAA00DF44FF /* MarkerInfoWindowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkerInfoWindowView.h; sourceTree = "<group>"; };
+		4927CA251AF54DAA00DF44FF /* MarkerInfoWindowView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkerInfoWindowView.m; sourceTree = "<group>"; };
 		493583DD1AD5B173007A46EC /* WeaponController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WeaponController.h; sourceTree = "<group>"; };
 		493583DE1AD5B173007A46EC /* WeaponController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WeaponController.m; sourceTree = "<group>"; };
 		4937A1D61AE0236300B8F771 /* InterfaceLineDrawer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterfaceLineDrawer.h; sourceTree = "<group>"; };
@@ -168,8 +170,6 @@
 		49835E281AD39D760058917B /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		4996BA651AD82B15002D5663 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		4996BA661AD82B15002D5663 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
-		4996BA6B1AD82F68002D5663 /* GMSMarkerWithUser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMSMarkerWithUser.h; sourceTree = "<group>"; };
-		4996BA6C1AD82F68002D5663 /* GMSMarkerWithUser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GMSMarkerWithUser.m; sourceTree = "<group>"; };
 		4996BA6E1AD88F04002D5663 /* HitChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HitChecker.h; sourceTree = "<group>"; };
 		4996BA6F1AD88F05002D5663 /* HitChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HitChecker.m; sourceTree = "<group>"; };
 		4996BA711AD8CF34002D5663 /* CountdownTimerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CountdownTimerViewController.h; sourceTree = "<group>"; };
@@ -467,6 +467,8 @@
 			children = (
 				49B9DBE91ACDDB2A003EA46E /* MapViewController.h */,
 				49B9DBEA1ACDDB2A003EA46E /* MapViewController.m */,
+				4927CA241AF54DAA00DF44FF /* MarkerInfoWindowView.h */,
+				4927CA251AF54DAA00DF44FF /* MarkerInfoWindowView.m */,
 				4937A1D61AE0236300B8F771 /* InterfaceLineDrawer.h */,
 				4937A1D71AE0236300B8F771 /* InterfaceLineDrawer.m */,
 				49C3A5E01ADDAF4A007C8309 /* HealthDataController.h */,
@@ -477,8 +479,6 @@
 				49C3A5E41ADDBE92007C8309 /* HealthBox.m */,
 				4996BA6E1AD88F04002D5663 /* HitChecker.h */,
 				4996BA6F1AD88F05002D5663 /* HitChecker.m */,
-				4996BA6B1AD82F68002D5663 /* GMSMarkerWithUser.h */,
-				4996BA6C1AD82F68002D5663 /* GMSMarkerWithUser.m */,
 				4996BA711AD8CF34002D5663 /* CountdownTimerViewController.h */,
 				4996BA721AD8CF34002D5663 /* CountdownTimerViewController.m */,
 				49835E151AD39C050058917B /* GoogleMapAPI.h */,
@@ -831,6 +831,7 @@
 				49E6F3651AE550D3007B4886 /* OALAudioTrack.m in Sources */,
 				4996BA701AD88F05002D5663 /* HitChecker.m in Sources */,
 				49B9DC441ACF4952003EA46E /* ProfileTableViewCell.m in Sources */,
+				4927CA261AF54DAA00DF44FF /* MarkerInfoWindowView.m in Sources */,
 				4996BA731AD8CF34002D5663 /* CountdownTimerViewController.m in Sources */,
 				49E6F36A1AE550D3007B4886 /* ALCaptureDevice.m in Sources */,
 				49603D6C1AD1022300AB3E50 /* CustomLoginViewController.m in Sources */,
@@ -841,7 +842,6 @@
 				49E6F3AA1AE7519B007B4886 /* BallisticCalculator.m in Sources */,
 				49E6F3631AE550D3007B4886 /* OALAudioActions.m in Sources */,
 				49E6F3751AE550D3007B4886 /* IOSVersion.m in Sources */,
-				4996BA6D1AD82F68002D5663 /* GMSMarkerWithUser.m in Sources */,
 				49B9DBBE1ACDD519003EA46E /* main.m in Sources */,
 				49E6F2931AE2313B007B4886 /* BackgroundDrawer.m in Sources */,
 				49C3A5DE1ADDA7C8007C8309 /* HealthData.m in Sources */,
