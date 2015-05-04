@@ -10,7 +10,6 @@
 #import <CoreLocation/CoreLocation.h>
 #import <GoogleMaps/GoogleMaps.h>
 #import "UserController.h"
-#import "GMSMarkerWithUser.h"
 
 @implementation HitChecker
 

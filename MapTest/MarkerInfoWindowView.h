@@ -7,7 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <GoogleMaps/GoogleMaps.h>
+#import "GMSMarker+addUser.h"
 
 @interface MarkerInfoWindowView : UIView
+
+- (id) initWithFrame:(CGRect)frame andMarker:(GMSMarker *)marker;
 
 @end

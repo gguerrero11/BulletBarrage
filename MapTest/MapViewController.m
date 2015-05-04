@@ -15,8 +15,8 @@
 #import "WeaponController.h"
 #import "HealthDataController.h"
 #import "UserController.h"
-#import "GMSMarkerWithUser.h"
 #import "GMSMarker+addUser.h"
+#import "MarkerInfoWindowView.h"
 
 #import "HealthBox.h"
 #import "InterfaceLineDrawer.h"
@@ -1198,22 +1198,53 @@ static bool kAnimate = true;
 
 - (BOOL) mapView:(GMSMarker *)mapView didTapMarker:(GMSMarker *)marker {
     self.mapView.selectedMarker = marker;
+    NSLog(@"tapped");
+
     return YES;
 }
 
 - (UIView *)mapView:(GMSMapView *)mapView markerInfoWindow:(GMSMarker *)marker {
     
-    marker.infoWindowAnchor = CGPointMake(2, 0);
+    marker.infoWindowAnchor = CGPointMake(.5, 0);
     
     // View's origin cannot be changed, only the with the marker.infoWindowAnchor;
-    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0,0,100,150)];
-    view.backgroundColor = [UIColor redColor];
+    MarkerInfoWindowView *markerInfoWindowView = [[MarkerInfoWindowView alloc]initWithFrame:CGRectMake(0,0,200,30)
+                                                                                  andMarker:marker];
+    //[self labelMakerWithText:@"TEXT HERE" YOrigin:30];
+    return markerInfoWindowView;
     
-    
-
-
-    return view;
 }
+
+- (void) labelMakerWithText:(NSString *)text YOrigin:(double)yOrigin withMarker:(GMSMarker *)marker {
+    UILabel *label = [UILabel new];
+    [self.view addSubview:label];
+    label.frame = CGRectMake(0, yOrigin, self.view.frame.size.width, 30);
+    label.backgroundColor = [UIColor redColor];
+    label.font = [UIFont fontWithName:@"Helvetica-bold" size:10];
+    label.textColor = [UIColor whiteColor];
+    label.text = text;
+    [self animateLabel:label];
+}
+
+
+- (void)animateLabel:(UILabel *)label {
+    // ending frame
+    CGRect endingFrame = label.frame;
+    CGAffineTransform beginScaleTransform = CGAffineTransformMakeScale(1.4, 1.4);
+    CGAffineTransform rotationEndTransform = CGAffineTransformMakeRotation(1.4);
+
+    
+    // set the beginning frame
+    label.frame = CGRectMake(label.frame.origin.x, label.frame.origin.y, 0, 0);
+    
+    [UIView animateWithDuration:10 delay:0
+                        options:UIViewAnimationOptionCurveEaseOut | UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                          label.frame = endingFrame;
+                         label.transform = CGAffineTransformConcat(beginScaleTransform, rotationEndTransform);
+                     } completion:nil];
+}
+
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 10) return;

@@ -11,8 +11,6 @@
 #import "WeaponController.h"
 
 #import <GoogleMaps/GoogleMaps.h>
-#import "GMSMarkerWithUser.h"
-
 #import "GMSMarker+addUser.h"
 
 @implementation UserController
